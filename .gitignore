@@ -31,4 +31,13 @@
 *.exe
 *.out
 *.app
-_Build
+_Build/
+
+# IDE / build directories
+.vs/
+.idea/
+
+out/
+_Build/
+cmake-build-debug/
+cmake-build-release/

@@ -23,6 +23,14 @@
 // endregion
 
 namespace ModelDevelop::TGC {
+    enum class GuidancePhase {
+        Boost = 0,
+        Climb,
+        Glide,
+        Handover,
+        Terminal
+    };
+
     struct EigenInfo {
         double mass = 0;
         Eigen::Vector3d P_body{};
@@ -42,6 +50,8 @@ namespace ModelDevelop::TGC {
     struct GCInfo {
         LosInfo losInfo{};
         Eigen::Vector3d acc_cmd_v;
+        GuidancePhase phase = GuidancePhase::Boost;
+        double handoverRatio = 0.0;
     };
 
     struct ImuInfo {

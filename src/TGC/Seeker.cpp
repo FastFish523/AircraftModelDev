@@ -53,6 +53,7 @@ namespace ModelDevelop::TGC {
         const auto sigma_elv_dot = rel_w.x() * sin(psi) + rel_w.z() * cos(psi);
 
         const auto dis_dot = rel_pos.dot(rel_vel) / dis;
+        const auto rel_pos_body = ModelDevelop::Utils::CoordinateHelper::nueToBodyVector(rel_pos, state.qbn);
 
         LosInfo los_info{};
         los_info.dis_dot       = dis_dot;
@@ -60,6 +61,8 @@ namespace ModelDevelop::TGC {
         los_info.sigma_elv_dot = sigma_elv_dot;
         los_info.sigma_elv     = ModelDevelop::Utils::CoordinateHelper::getTheta(rel_pos);
         los_info.sigma_az      = ModelDevelop::Utils::CoordinateHelper::getPsi(rel_pos);
+        los_info.sigma_elv_b   = std::atan2(rel_pos_body.y(), rel_pos_body.x());
+        los_info.sigma_az_b    = std::atan2(-rel_pos_body.z(), rel_pos_body.x());
 
         return los_info;
     }

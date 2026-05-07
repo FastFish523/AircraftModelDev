@@ -15,7 +15,7 @@
 #include <deque>
 #include <filesystem>
 #include <optional>
-#include "CommonStructs.h"
+#include <string_view>
 #include "Control.h"
 #include "Engine.h"
 #include "FileSaver.h"
@@ -339,7 +339,12 @@ namespace ModelDevelop::TGC {
          * @brief 气动导数计算
          * @return
          */
-        [[nodiscard]]
+        [[nodiscard]] GuidancePhase phase() const {
+            return _phase;
+        }
+
+        [[nodiscard]] const char *phaseName() const;
+
         Derivative derivative() const;
 
 // endregion
@@ -435,6 +440,7 @@ namespace ModelDevelop::TGC {
          * @brief 视线偏角变化率
          */
         double _sigma_az_dot = 0;
+        GuidancePhase _phase = GuidancePhase::Boost;
         /*!
          * @brief 舵偏
          */

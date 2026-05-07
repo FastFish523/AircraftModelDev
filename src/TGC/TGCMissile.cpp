@@ -68,7 +68,13 @@ namespace ModelDevelop::TGC {
 
 // region Public Methods
     void Missile::init(const double step, const Eigen::Vector3d &lla) {
-        _step         = step;
+        _step = step;
+        _flyTime = 0.0;
+        _launchFlag = false;
+        _currentRouteId = 0;
+        _routePoints.clear();
+        distance_deque.clear();
+        _phase = GuidancePhase::Boost;
         _state.posEcf = ModelDevelop::Utils::CoordinateHelper::llaToEcef(lla);
         _state.velEcf.setZero();
         _state.wnb_b.setZero();
@@ -84,6 +90,7 @@ namespace ModelDevelop::TGC {
         _state.velEcf                  = ModelDevelop::Utils::CoordinateHelper::nueToEcefVelocity(vel_nue, lla.x(), lla.y());
 
         _launchFlag = true;
+        _phase = GuidancePhase::Boost;
     }
 
     void Missile::setTargetEcf(const Eigen::Vector3d &targetPosEcf, const Eigen::Vector3d &targetVelEcf, const bool clearQueue) {
@@ -107,6 +114,8 @@ namespace ModelDevelop::TGC {
             std::cout << "min route point count is 2" << std::endl;
             return;
         }
+        _currentRouteId = 0;
+        _routePoints.clear();
         _routePoints.push_back(lla());
         for (const auto &r: routes) {
             _routePoints.push_back(r);
@@ -128,19 +137,13 @@ namespace ModelDevelop::TGC {
 
         if (_targetPosEcf.has_value()) {
             LosInfo losInfo{};
-            Eigen::Vector3d acc_cmd_v;
 
-            if (_routePoints.empty()) {
-                const auto gcInfo = _guidance.getGCInfo(flyTime(), _p_body.norm(), _totalMass, _targetPosEcf.value(), _targetVelEcf, _state, _maxLoad);
-                losInfo           = gcInfo.losInfo;
-                acc_cmd_v         = gcInfo.acc_cmd_v;
-            } else {
-                const auto gcInfo = _guidance.getGCInfoRouteL1(_state, _maxLoad, _routePoints, _currentRouteId);
-                losInfo           = gcInfo.losInfo;
-                acc_cmd_v         = gcInfo.acc_cmd_v;
-                if (_currentRouteId == -1) {
-                    _routePoints.clear();
-                }
+            const auto gcInfo = _guidance.getMissionGCInfo(flyTime(), _p_body.norm(), _totalMass, _targetPosEcf.value(), _targetVelEcf, _state, _maxLoad, _routePoints, _currentRouteId);
+            losInfo           = gcInfo.losInfo;
+            const Eigen::Vector3d acc_cmd_v = gcInfo.acc_cmd_v;
+            _phase            = gcInfo.phase;
+            if (_currentRouteId == -1) {
+                _routePoints.clear();
             }
             auto acc_cmd_b        = ModelDevelop::Utils::CoordinateHelper::velocityToBodyAcceleration(acc_cmd_v, this->alpha() / 57.3, this->beta() / 57.3);
             _acc_cmd_b_y          = acc_cmd_b.y();
@@ -168,15 +171,15 @@ namespace ModelDevelop::TGC {
             distance_deque.pop_front();
         }
         if (dis < 2000 && distance_deque.size() >= 4) {
-            bool success = true;
+            bool increasing = false;
             for (auto it = distance_deque.begin(); it + 1 != distance_deque.end(); ++it) {
-                if (*it > *(it + 1)) {
-                    success = false;
+                if (*it < *(it + 1)) {
+                    increasing = true;
                     break;
                 }
             }
-            if (success || lla().z() <= 0) {
-                const auto terminal_dis = distance_deque.at(1);
+            if (increasing || lla().z() <= 0) {
+                const auto terminal_dis = *std::min_element(distance_deque.begin(), distance_deque.end());
                 return terminal_dis;
             }
         }
@@ -365,6 +368,23 @@ namespace ModelDevelop::TGC {
         derivative.b38 = -1 / mass() / V();
 
         return derivative;
+    }
+
+    const char *Missile::phaseName() const {
+        switch (_phase) {
+            case GuidancePhase::Boost:
+                return "boost";
+            case GuidancePhase::Climb:
+                return "climb";
+            case GuidancePhase::Glide:
+                return "glide";
+            case GuidancePhase::Handover:
+                return "handover";
+            case GuidancePhase::Terminal:
+                return "terminal";
+            default:
+                return "unknown";
+        }
     }
 
 // endregion

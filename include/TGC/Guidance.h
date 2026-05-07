@@ -16,6 +16,7 @@
 #include "Seeker.h"
 #include "State.h"
 #include <deque>
+#include <optional>
 // endregion
 // endregion
 
@@ -57,7 +58,8 @@ namespace ModelDevelop::TGC {
          * @param maxLoad 最大过载
          * @return
          */
-        GCInfo getGCInfo(double flyTime, double P, double Mass, const Eigen::Vector3d &targetPosEcf, const Eigen::Vector3d &targetVelEcf, const State &state, double maxLoad);
+        GCInfo getMissionGCInfo(double flyTime, double P, double Mass, const Eigen::Vector3d &targetPosEcf, const Eigen::Vector3d &targetVelEcf, const State &state, double maxLoad,
+                                const std::deque<Eigen::Vector3d> &waypoints, int &currentWpIndex);
 
         /*!
          * @brief 获取制导控制信息
@@ -183,6 +185,12 @@ namespace ModelDevelop::TGC {
          * @return
          */
         static Eigen::Vector3d guidance_pn(double theta, double sigma_az_dot, double sigma_elv_dot, double dis_dot);
+
+        static double wrapAngle(double angle);
+
+        static double clamp(double value, double minValue, double maxValue);
+
+        static double computeBlendRatio(double targetDistance, double startDistance, double endDistance);
 
 // endregion
     };
