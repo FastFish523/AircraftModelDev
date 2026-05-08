@@ -117,6 +117,19 @@ namespace ModelDevelop::TGC {
             return _flyTime;
         }
 
+        [[nodiscard]]
+        std::deque<Eigen::Vector3d> routePointsLaunchNUE() const {
+            std::deque<Eigen::Vector3d> routePointsNue;
+            for (size_t i = 1; i < _routePoints.size(); ++i) {
+                const auto &routePointLla = _routePoints[i];
+                routePointsNue.push_back(ModelDevelop::Utils::CoordinateHelper::ecefToNuePosition(
+                    ModelDevelop::Utils::CoordinateHelper::llaToEcef(routePointLla),
+                    _launchLLA.x(),
+                    _launchLLA.y()));
+            }
+            return routePointsNue;
+        }
+
         /*!
          * @brief 获取自身发射系nue位置
          * @return

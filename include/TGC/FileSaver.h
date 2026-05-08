@@ -70,6 +70,7 @@ namespace ModelDevelop::TGC {
          * @brief 气动导数文件的指针
          */
         FILE *fp_aero = nullptr;
+        bool _routePointsSaved = false;
 // endregion
 
 // region Private Methods
@@ -77,6 +78,8 @@ namespace ModelDevelop::TGC {
         auto result_fp_aero() -> FILE *;
 
         auto result_fp_traj() -> FILE *;
+
+        void save_route_points(const Missile *missile);
 
 // endregion
     };

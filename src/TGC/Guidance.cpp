@@ -40,7 +40,8 @@ namespace ModelDevelop::TGC {
         const auto los_midcourse = getLOSInfo(targetPosEcf, targetVelEcf, state);
         const auto los_terminal = _seeker.getLOSInfo(targetPosEcf, targetVelEcf, state);
         const bool seekerInFov = std::abs(los_terminal.sigma_az_b) <= seekerHalfFov && std::abs(los_terminal.sigma_elv_b) <= seekerHalfFov;
-        const bool seekerLocked = target_dis <= seekerAcquireDistance && seekerInFov;
+        //const bool seekerLocked = target_dis <= seekerAcquireDistance && seekerInFov;
+        const bool seekerLocked = target_dis <= seekerAcquireDistance;
 
         Eigen::Vector3d acc_cmd_v = Eigen::Vector3d::Zero();
         double handoverRatio = 0.0;
@@ -52,7 +53,7 @@ namespace ModelDevelop::TGC {
             gc_info.phase = GuidancePhase::Climb;
             gc_info.losInfo = los_midcourse;
 
-            double desired_h = 12000.0;
+            double desired_h = 10000.0;
             double lateral_acc = 0.0;
             if (hasRoute) {
                 auto routeIndex = currentWpIndex;

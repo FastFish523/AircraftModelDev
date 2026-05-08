@@ -26,6 +26,18 @@ namespace ModelDevelop::TGC {
 // region Static Attributes Init
 // endregion
 
+    namespace {
+        void write_route_marker_row(FILE *fp_traj, const Eigen::Vector3d &routePointNue) {
+            fprintf(
+                fp_traj,
+                "-1.000000 %.6f %.6f %.6f nan nan nan nan nan nan nan nan nan nan nan nan nan nan nan nan nan nan nan nan nan nan nan nan nan nan nan nan nan nan nan nan nan nan\n",
+                routePointNue.x(),
+                routePointNue.y(),
+                routePointNue.z()
+            );
+        }
+    }
+
 // region USING/FRIEND
 // endregion
 
@@ -47,6 +59,7 @@ namespace ModelDevelop::TGC {
 
 // region Public Methods
     void FileSaver::save_traj(const Missile *missile) {
+        save_route_points(missile);
         fprintf(
             result_fp_traj(),
             "%.6f %.6f %.6f %.6f %.6f %.6f %.6f %.6f %.6f %.6f %.6f %.6f %.6f %.6f %.6f %.6f %.6f %.6f %.6f %.6f %.6f %.6f %.6f %.6f %.6f %.6f %.6f %.6f %.6f %.6f %.6f %.6f %.6f %.6f %.6f %.6f %.6f %.6f\n",
@@ -153,6 +166,24 @@ namespace ModelDevelop::TGC {
             }
         }
         return fp_traj;
+    }
+
+    void FileSaver::save_route_points(const Missile *missile) {
+        if (_routePointsSaved) {
+            return;
+        }
+
+        const auto routePointsNue = missile->routePointsLaunchNUE();
+        if (routePointsNue.empty()) {
+            _routePointsSaved = true;
+            return;
+        }
+
+        auto *fp_traj = result_fp_traj();
+        for (const auto &routePointNue: routePointsNue) {
+            write_route_marker_row(fp_traj, routePointNue);
+        }
+        _routePointsSaved = true;
     }
 
 // endregion

@@ -24,8 +24,9 @@ int main() {
     const Eigen::Vector3d targetPosEcf = CoordinateHelper::llaToEcef(targetLLA);
 
     std::deque<Eigen::Vector3d> routePoints = {
-        {119.85, 40.12, 25000.0},
-        {119.55, 40.32, 11000.0}
+        {119.85, 40.12, 12000.0},
+        {119.65, 40.22, 11000.0},
+        {119.52, 40.35, 9000.0}
         //{119.35, 40.48, 8000.0},
         //{119.24, 40.56, 4000.0}
     };
