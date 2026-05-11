@@ -23,7 +23,7 @@
 namespace ModelDevelop::TGC {
     GCInfo Guidance::getMissionGCInfo(const double flyTime, const double P, const double Mass, const Eigen::Vector3d &targetPosEcf, const Eigen::Vector3d &targetVelEcf,
                                       const State &state, const double maxLoad, const std::deque<Eigen::Vector3d> &waypoints, int &currentWpIndex) {
-        constexpr double safeSeparationTime = 0.6;
+        constexpr double safeSeparationTime = 0.4;
         constexpr double seekerAcquireDistance = 20000.0;
         constexpr double handoverEndDistance = 12000.0;
         constexpr double seekerHalfFov = 60.0 / 57.3;

@@ -7,6 +7,7 @@
 
 // region Include
 // region STL
+#include <array>
 // endregion
 // region ThirdParty
 // endregion
@@ -23,10 +24,19 @@
 
 // region Define
 #define PRETTY_FILE_NAME "ModelDevelop/TGC/TGC"
+#if defined(_WIN32) && !defined(StaticTGC_Build)
+#ifdef SharedTGC_Build
+#define TGC_ENGINE_API __declspec(dllexport)
+#else
+#define TGC_ENGINE_API __declspec(dllimport)
+#endif
+#else
+#define TGC_ENGINE_API
+#endif
 // endregion
 
 namespace ModelDevelop::TGC {
-    class Engine {
+    class TGC_ENGINE_API Engine {
 // region USING/FRIEND
     private:
 // endregion
@@ -46,71 +56,56 @@ namespace ModelDevelop::TGC {
 // region Public Methods
     public:
         /*!
-         * @brief 获取发动机推力质量信息
-         * @param simStep 仿真步长
-         * @param flyTime 飞行时间
-         * @param state
-         * @param dx 喷管摆角 弧度
-         * @param dy 喷管摆角 弧度
-         * @param dz 喷管摆角 弧度
-         * @return
+         * @brief 获取当前助推器推力、剩余安装助推器质量和惯量。
+         * @param simStep 仿真步长，秒。
+         * @param flyTime 飞行时间，秒。
+         * @param state 导弹状态。
+         * @param dx 喷管偏转角，弧度。
+         * @param dy 喷管偏转角，弧度。
+         * @param dz 喷管偏转角，弧度。
+         * @return 发动机质量/推力/惯量信息。
          */
         EigenInfo getEigenInfo(double simStep, double flyTime, const State &state, double dx = 0, double dy = 0, double dz = 0);
 
+        void reset();
+
+        [[nodiscard]]
+        static double boostTotalTime();
+
+        [[nodiscard]]
+        static std::array<double, 3> boostBurnOutTimes();
+
 // endregion
 
-// region Get/Set选择器
+// region Get/Set
     public:
 // endregion
 
 // region Private Attributes
     private:
+        struct BoostStage {
+            double propellantMass;     // kg
+            double totalMass;          // kg
+            double thrust;             // N
+            double burnTime;           // s
+        };
+
+        inline static constexpr std::array<BoostStage, 3> boostStages{{
+            {45370.0, 48990.0, 2049.6 * 1000.0, 56.4},
+            {24490.0, 27670.0, 1222.8 * 1000.0, 60.7},
+            {7070.0, 7710.0, 289.1 * 1000.0, 72.0},
+        }};
+
         /*!
-         * @brief 一级平均推力
-         */
-        double F1 = 220 * 1000;
-        /*!
-         * @brief 二级平均推力
-         */
-        double F2 = 135 * 1000;
-        /*!
-         * @brief 一级最大推力建立时间
-         */
-        double dT1_up = 0.5;
-        /*!
-         * @brief 一级平均推力作用时间
-         */
-        double T1 = 3;
-        /*!
-         * @brief 一级推力消退时间
-         */
-        double dT1_down = 0.5;
-        /*!
-         * @brief 二级平均推力作用时间
-         */
-        double T2 = 6.9;
-        /*!
-         * @brief 二级推力消退时间
-         */
-        double dT2_down = 0.1;
-        /*!
-         * @brief 质量
-         */
-        double m = 726;
-        /*!
-         * @brief 比冲
-         */
-        double Isp = 245.0;
-        /*!
-         * @brief 额外转动惯量
+         * @brief 附加转动惯量（绕 X 轴）。
          */
         double jx = 0;
         /*!
-         * @brief 额外转动惯量
+         * @brief 附加转动惯量（绕 Y 轴）。
          */
         double jy = 0;
         /*!
-         * @brief 额外转动惯量
+         * @brief 附加转动惯量（绕 Z 轴）。
          */
         double jz = 0;
 
@@ -121,4 +116,5 @@ namespace ModelDevelop::TGC {
 // endregion
     };
 }
+#undef TGC_ENGINE_API
 #undef PRETTY_FILE_NAME

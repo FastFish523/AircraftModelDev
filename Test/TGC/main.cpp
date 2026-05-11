@@ -2,84 +2,69 @@
 // Created by 17298 on 2026/4/22.
 //
 
-#include <deque>
+#include <array>
+#include <cmath>
 #include <iomanip>
 #include <iostream>
-#include <limits>
 
+#include "TGC/Engine.h"
 #include "TGC/TGCMissile.h"
+#include "Util/CoordinateHelper.h"
+
+namespace {
+    void printBoostState(const int stage, const ModelDevelop::TGC::Missile &missile) {
+        const auto lla = missile.lla();
+        const auto attitude = missile.attitudeEuler();
+        const double theta = missile.velocityTheta();
+
+        std::cout << "[stage " << stage << " burnout] "
+                  << "t=" << missile.flyTime()
+                  << "s, V=" << missile.V()
+                  << "m/s, alt=" << lla.z()
+                  << "m, theta=" << theta
+                  << "deg, vertical_offset=" << std::abs(90.0 - theta)
+                  << "deg, pitch=" << attitude.y()
+                  << "deg, mass=" << missile.mass()
+                  << "kg, P=" << missile.P()
+                  << "N" << std::endl;
+    }
+}
 
 int main() {
-    using ModelDevelop::TGC::GuidancePhase;
+    using ModelDevelop::TGC::Engine;
     using ModelDevelop::TGC::Missile;
-    using ModelDevelop::Utils::CoordinateHelper;
 
     constexpr double step = 0.01;
-    constexpr double maxSimTime = 900.0;
-
     const Eigen::Vector3d missileLLA = {120.0, 40.0, 10.0};
-    //const Eigen::Vector3d targetLLA = {119.20, 40.60, 0.0};
-    const Eigen::Vector3d targetLLA = {119.50, 40.40, 100.0};
-    const Eigen::Vector3d targetVelEcf = Eigen::Vector3d::Zero();
-    const Eigen::Vector3d targetPosEcf = CoordinateHelper::llaToEcef(targetLLA);
+    const Eigen::Vector3d targetLLA = {160.0, 5.0, 0.0};
+    const auto burnOutTimes = Engine::boostBurnOutTimes();
+    const double maxSimTime = Engine::boostTotalTime();
 
-    std::deque<Eigen::Vector3d> routePoints = {
-        {119.85, 40.12, 12000.0},
-        {119.65, 40.22, 11000.0},
-        {119.52, 40.35, 9000.0}
-        //{119.35, 40.48, 8000.0},
-        //{119.24, 40.56, 4000.0}
-    };
-
-    const Eigen::Vector3d targetPosNue = CoordinateHelper::ecefToNuePosition(targetPosEcf, missileLLA.x(), missileLLA.y());
-    const double launchPsi = CoordinateHelper::getPsi(targetPosNue) * 57.3;
+    // 计算发射偏角：发射点 → 目标点
+    const auto targetEcef = ModelDevelop::Utils::CoordinateHelper::llaToEcef(targetLLA);
+    const auto relNue = ModelDevelop::Utils::CoordinateHelper::ecefToNuePosition(
+        targetEcef, missileLLA.x(), missileLLA.y());
+    const double launchPsi = ModelDevelop::Utils::CoordinateHelper::getPsi(relNue) * 180.0 / std::acos(-1.0);
 
     Missile missile;
     missile.init(step, missileLLA);
-    missile.setTargetEcf(targetPosEcf, targetVelEcf, true);
-    missile.setRoutePoints(routePoints);
-    missile.launch(25.0, launchPsi);
-
-    GuidancePhase lastPhase = missile.phase();
-    double minDistance = std::numeric_limits<double>::max();
-    double nextReportTime = 0.0;
+    missile.setTargetLLA(targetLLA, Eigen::Vector3d::Zero(), true);
+    missile.launch(89.0, launchPsi);
 
     std::cout << std::fixed << std::setprecision(2);
-    std::cout << "TGC full mission test started" << std::endl;
+    std::cout << "TGC vertical boost test started" << std::endl;
     std::cout << "launch lla: [" << missileLLA.x() << ", " << missileLLA.y() << ", " << missileLLA.z() << "]" << std::endl;
     std::cout << "target lla: [" << targetLLA.x() << ", " << targetLLA.y() << ", " << targetLLA.z() << "]" << std::endl;
-    std::cout << "initial heading psi(deg): " << launchPsi << std::endl;
+    std::cout << "launchPsi: " << launchPsi << " deg" << std::endl;
+    std::cout << "boost burnout schedule(s): [" << burnOutTimes[0] << ", " << burnOutTimes[1] << ", " << burnOutTimes[2] << "]" << std::endl;
 
-    for (int i = 0; i < static_cast<int>(maxSimTime / step); ++i) {
-        const double terminalDistance = missile.update();
-        minDistance = std::min(minDistance, missile.targetDis());
+    size_t nextBurnOut = 0;
+    while (missile.flyTime() < maxSimTime - step * 0.5) {
+        missile.update();
 
-        if (missile.phase() != lastPhase) {
-            lastPhase = missile.phase();
-            std::cout << "[phase] t=" << missile.flyTime()
-                      << "s -> " << missile.phaseName()
-                      << ", range=" << missile.targetDis()
-                      << "m, alt=" << missile.lla().z()
-                      << "m" << std::endl;
-        }
-
-        if (missile.flyTime() >= nextReportTime) {
-            std::cout << "[status] t=" << missile.flyTime()
-                      << "s, phase=" << missile.phaseName()
-                      << ", range=" << missile.targetDis()
-                      << "m, V=" << missile.V()
-                      << "m/s, alt=" << missile.lla().z()
-                      << "m, theta=" << missile.velocityTheta()
-                      << "deg, psi=" << missile.velocityPsi()
-                      << "deg" << std::endl;
-            nextReportTime += 5.0;
-        }
-
-        if (terminalDistance > 0.0) {
-            std::cout << "terminal distance: " << terminalDistance << " m" << std::endl;
-            std::cout << "minimum distance: " << minDistance << " m" << std::endl;
-            std::cout << "flight time: " << missile.flyTime() << " s" << std::endl;
-            return 0;
+        while (nextBurnOut < burnOutTimes.size() && missile.flyTime() + step * 0.5 >= burnOutTimes[nextBurnOut]) {
+            printBoostState(static_cast<int>(nextBurnOut + 1), missile);
+            ++nextBurnOut;
         }
 
         if (missile.lla().z() < -50.0) {
@@ -88,10 +73,12 @@ int main() {
         }
     }
 
-    std::cout << "simulation finished without terminal hit." << std::endl;
-    std::cout << "final phase: " << missile.phaseName() << std::endl;
-    std::cout << "final range: " << missile.targetDis() << " m" << std::endl;
-    std::cout << "minimum distance: " << minDistance << " m" << std::endl;
-    std::cout << "final altitude: " << missile.lla().z() << " m" << std::endl;
+    std::cout << "[final] t=" << missile.flyTime()
+              << "s, V=" << missile.V()
+              << "m/s, alt=" << missile.lla().z()
+              << "m, theta=" << missile.velocityTheta()
+              << "deg, mass=" << missile.mass()
+              << "kg, P=" << missile.P()
+              << "N" << std::endl;
     return 0;
 }

@@ -35,7 +35,7 @@ namespace ModelDevelop::TGC {
         _s         = 0.223;
         _l         = 6.55;
         _b         = 6.55;
-        _mass      = 459;
+        _mass      = 1000;
         _inertia << 18.010, 0.0, 0.0, 0.0, 1191.985, 0.0, 0.0, 0.0, 1191.985;
         _kinematics._dynamics._aerodynamics.computeAeroCoefficientsCB =
                 [this](const double alpha, const double beta, const double dx, const double dy, const double dz, const double Ma, double &CD, double &CL, double &CZ, double &Cl,
@@ -71,6 +71,7 @@ namespace ModelDevelop::TGC {
         _step = step;
         _flyTime = 0.0;
         _launchFlag = false;
+        _engine.reset();
         _currentRouteId = 0;
         _routePoints.clear();
         distance_deque.clear();
