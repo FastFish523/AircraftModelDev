@@ -269,6 +269,10 @@ namespace ModelDevelop::TGC {
             return _rudder * 57.3;
         }
 
+        [[nodiscard]] Eigen::Vector3d tvcCommand() const {
+            return _tvcCommand * 57.3;
+        }
+
         /*
          * @brief 获取nue 速度 米/s
          * @return
@@ -458,6 +462,7 @@ namespace ModelDevelop::TGC {
          * @brief 舵偏
          */
         Eigen::Vector3d _rudder{0, 0, 0};
+        Eigen::Vector3d _tvcCommand{0, 0, 0};
         /*!
          * @brief 弹体系推力向量
          */

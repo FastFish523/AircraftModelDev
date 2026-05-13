@@ -17,6 +17,7 @@
 #include "State.h"
 #include <deque>
 #include <optional>
+#include <utility>
 // endregion
 // endregion
 
@@ -68,8 +69,10 @@ namespace ModelDevelop::TGC {
          * @param waypoints
          * @param currentWpIndex
          * @return
-         */
+        */
         GCInfo getGCInfoRouteL1(const State &state, double maxLoad, const std::deque<Eigen::Vector3d> &waypoints, int &currentWpIndex);
+
+        void reset();
 
         /*!
          * @brief l1制导律调用入口
@@ -129,8 +132,9 @@ namespace ModelDevelop::TGC {
         Seeker _seeker{};
         /*!
          * @brief 上一个预期高度
-         */
+        */
         double lastDesiredH = 0;
+        std::optional<double> boostInitialPsi = std::nullopt;
         /*!
          * @brief 兰伯特制导参数
          */
@@ -191,6 +195,11 @@ namespace ModelDevelop::TGC {
         static double clamp(double value, double minValue, double maxValue);
 
         static double computeBlendRatio(double targetDistance, double startDistance, double endDistance);
+
+        std::pair<Eigen::Vector3d, Eigen::Vector3d> calculateBoostGuidance(double flyTime, double P, double Mass, const Eigen::Vector3d &targetPosEcf, double maxLoad,
+                                                                           const State &state);
+
+        static double smoothStep(double ratio);
 
 // endregion
     };

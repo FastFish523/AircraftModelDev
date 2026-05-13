@@ -31,12 +31,13 @@ namespace ModelDevelop::TGC {
 
     Missile::Missile() {
         _fileSaver = std::make_shared<FileSaver>("./Results/TGC/");
-        _maxLoad   = 30;
-        _s         = 0.223;
-        _l         = 6.55;
-        _b         = 6.55;
-        _mass      = 1000;
-        _inertia << 18.010, 0.0, 0.0, 0.0, 1191.985, 0.0, 0.0, 0.0, 1191.985;
+        _s       = 0.223;   // m^2, assumed aerodynamic reference area
+        _l       = 6.55;    // m, assumed reference length
+        _b       = 6.55;    // m, temporary lateral reference length; should be refined
+        _mass    = 1000;    // kg, HTV-2-like glide vehicle mass
+        _inertia << 18.010, 0.0, 0.0,
+                    0.0, 1191.985, 0.0,
+                    0.0, 0.0, 1191.985;
         _kinematics._dynamics._aerodynamics.computeAeroCoefficientsCB =
                 [this](const double alpha, const double beta, const double dx, const double dy, const double dz, const double Ma, double &CD, double &CL, double &CZ, double &Cl,
                        double &Cm, double &Cn) {
@@ -72,6 +73,7 @@ namespace ModelDevelop::TGC {
         _flyTime = 0.0;
         _launchFlag = false;
         _engine.reset();
+        _guidance.reset();
         _currentRouteId = 0;
         _routePoints.clear();
         distance_deque.clear();
@@ -127,14 +129,17 @@ namespace ModelDevelop::TGC {
         if (!_launchFlag)
             return -1;
         _rudder.setZero();
+        _tvcCommand.setZero();
         _p_body.setZero();
         _m_body.setZero();
 
         // 推力 质量 转动惯量更新
-        const auto [mass, P_body, inertia] = _engine.getEigenInfo(_step, _flyTime, _state);
-        _p_body                            = P_body;
-        _totalMass                         = _mass + mass;
-        _inertia                           = _inertia + inertia;
+        const Eigen::Matrix3d baseInertia = _inertia;
+        auto engineInfo = _engine.getEigenInfo(_step, _flyTime, _state);
+        _p_body        = engineInfo.P_body;
+        _totalMass     = _mass + engineInfo.mass;
+        _inertia       = baseInertia + engineInfo.inertia;
+        _maxLoad       = 30;
 
         if (_targetPosEcf.has_value()) {
             LosInfo losInfo{};
@@ -142,6 +147,11 @@ namespace ModelDevelop::TGC {
             const auto gcInfo = _guidance.getMissionGCInfo(flyTime(), _p_body.norm(), _totalMass, _targetPosEcf.value(), _targetVelEcf, _state, _maxLoad, _routePoints, _currentRouteId);
             losInfo           = gcInfo.losInfo;
             const Eigen::Vector3d acc_cmd_v = gcInfo.acc_cmd_v;
+            _tvcCommand       = gcInfo.tvc_cmd;
+            engineInfo        = _engine.getEigenInfo(_step, _flyTime, _state, _tvcCommand.x(), _tvcCommand.y(), _tvcCommand.z());
+            _p_body           = engineInfo.P_body;
+            _totalMass        = _mass + engineInfo.mass;
+            _inertia          = baseInertia + engineInfo.inertia;
             _phase            = gcInfo.phase;
             if (_currentRouteId == -1) {
                 _routePoints.clear();
@@ -153,9 +163,11 @@ namespace ModelDevelop::TGC {
             _sigma_elv_dot        = losInfo.sigma_elv_dot;
             _sigma_elv            = losInfo.sigma_elv;
             _sigma_az             = losInfo.sigma_az;
-            const auto [fst, snd] = _control.P6dof_Control(_step, acc_cmd_v, _state, _totalMass, _p_body, _imu_info, 1, 0, _s);
-            _rudder               = fst;
-            _m_body               = snd;
+            if (gcInfo.phase != GuidancePhase::Boost) {
+                const auto [fst, snd] = _control.P6dof_Control(_step, acc_cmd_v, _state, _totalMass, _p_body, _imu_info, 1, 0, _s);
+                _rudder               = fst;
+                _m_body               = snd;
+            }
         }
         // rk4更新
         const Eigen::Vector3d acc_ecf = rk4(_rudder, _p_body, _m_body);

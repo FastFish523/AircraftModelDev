@@ -7,6 +7,7 @@
 
 // region Include
 // region STL
+#include <array>
 // endregion
 // region ThirdParty
 // endregion
@@ -70,7 +71,9 @@ namespace ModelDevelop::TGC {
          * @brief 气动导数文件的指针
          */
         FILE *fp_aero = nullptr;
+        FILE *fp_boost = nullptr;
         bool _routePointsSaved = false;
+        std::array<bool, 4> _boostEventsSaved{false, false, false, false};
 // endregion
 
 // region Private Methods
@@ -79,7 +82,11 @@ namespace ModelDevelop::TGC {
 
         auto result_fp_traj() -> FILE *;
 
+        auto result_fp_boost() -> FILE *;
+
         void save_route_points(const Missile *missile);
+
+        void save_boost_events(const Missile *missile);
 
 // endregion
     };

@@ -49,7 +49,8 @@ namespace ModelDevelop::TGC {
 
     struct GCInfo {
         LosInfo losInfo{};
-        Eigen::Vector3d acc_cmd_v;
+        Eigen::Vector3d acc_cmd_v{0, 0, 0};
+        Eigen::Vector3d tvc_cmd{0, 0, 0};
         GuidancePhase phase = GuidancePhase::Boost;
         double handoverRatio = 0.0;
     };
