@@ -7,6 +7,7 @@
 #include <iomanip>
 #include <iostream>
 
+#include "TGC/BoostConfig.h"
 #include "TGC/Engine.h"
 #include "TGC/TGCMissile.h"
 #include "Util/CoordinateHelper.h"
@@ -49,7 +50,7 @@ int main() {
     Missile missile;
     missile.init(step, missileLLA);
     missile.setTargetLLA(targetLLA, Eigen::Vector3d::Zero(), true);
-    missile.launch(45.0, launchPsi);
+    missile.launch(ModelDevelop::TGC::BoostConfig::LAUNCH_THETA_F, launchPsi);
 
     std::cout << std::fixed << std::setprecision(2);
     std::cout << "TGC vertical boost test started" << std::endl;

@@ -13,7 +13,9 @@
 #include "TGC/Guidance.h"
 #include "TGC/Engine.h"
 #include "TGC/Seeker.h"
+#include "TGC/BoostConfig.h"
 #include "CoordinateHelper.h"
+#include "Constants.h"
 // endregion
 // endregion
 
@@ -28,7 +30,6 @@ namespace ModelDevelop::TGC {
         constexpr double seekerAcquireDistance = 20000.0;
         constexpr double handoverEndDistance = 12000.0;
         constexpr double seekerHalfFov = 60.0 / 57.3;
-        constexpr double climbThetaCmd = 18.0 / 57.3;
 
         GCInfo gc_info;
         const auto lla = ModelDevelop::Utils::CoordinateHelper::ecefToLla(state.posEcf);
@@ -88,10 +89,8 @@ namespace ModelDevelop::TGC {
     Guidance::BoostGuidanceInfo Guidance::calculateBoostGuidance(const double flyTime, const double P, const double Mass,
                                                                  const Eigen::Vector3d &targetPosEcf, const double maxLoad,
                                                                  const State &state) {
-        constexpr double degToRad = 3.14159265358979323846 / 180.0;
-        constexpr double thirdStageSplitTime = 145.0;
-        constexpr double targetBurnoutAltitude = 123000.0;
-        constexpr double targetBurnoutVelocity = 6000.0;
+        using namespace BoostConfig;
+        constexpr double degToRad = Utils::Constants::DEG_TO_RAD;
 
         const auto burnOutTimes = Engine::boostBurnOutTimes();
         const double firstStageEnd = burnOutTimes[0];
@@ -118,38 +117,38 @@ namespace ModelDevelop::TGC {
 
         const auto losToTarget = getLOSInfo(targetPosEcf, Eigen::Vector3d::Zero(), state);
         const double targetPsi = losToTarget.sigma_az;
-        double thetaCmd = 90.0 * degToRad;
+        double thetaCmd = STAGE1_START_BLEND_THETA * degToRad;
         double psiCmd = boostInitialPsi.value();
-        double tvcLimit = 2.0 * degToRad;
+        double tvcLimit = TVC_LIMIT_STAGE1 * degToRad;
 
         if (flyTime <= firstStageEnd) {
             const double ratio = smoothStep(flyTime / firstStageEnd);
-            thetaCmd = (45.0 + (40.0 - 45.0) * ratio) * degToRad;
-            tvcLimit = 2.0 * degToRad;
+            thetaCmd = (STAGE1_START_BLEND_THETA + (STAGE1_END_TARGET_THETA - STAGE1_START_BLEND_THETA) * ratio) * degToRad;
         } else if (flyTime <= secondStageEnd) {
             const double ratio = smoothStep((flyTime - firstStageEnd) / (secondStageEnd - firstStageEnd));
-            thetaCmd = (40.0 + (10.0 - 40.0) * ratio) * degToRad;
-            tvcLimit = 4.0 * degToRad;
-        } else if (flyTime <= thirdStageSplitTime) {
-            const double ratio = smoothStep((flyTime - secondStageEnd) / (thirdStageSplitTime - secondStageEnd));
-            thetaCmd = (10.0 + (5.0 - 10.0) * ratio) * degToRad;
+            thetaCmd = (STAGE2_START_BLEND_THETA + (STAGE2_END_TARGET_THETA - STAGE2_START_BLEND_THETA) * ratio) * degToRad;
+            tvcLimit = TVC_LIMIT_STAGE2 * degToRad;
+        } else if (flyTime <= THIRD_STAGE_SPLIT_TIME) {
+            const double ratio = smoothStep((flyTime - secondStageEnd) / (THIRD_STAGE_SPLIT_TIME - secondStageEnd));
+            thetaCmd = (STAGE3_SPLIT_START_THETA + (STAGE3_SPLIT_END_THETA - STAGE3_SPLIT_START_THETA) * ratio) * degToRad;
             psiCmd = boostInitialPsi.value() + wrapAngle(targetPsi - boostInitialPsi.value()) * ratio;
-            tvcLimit = 10.0 * degToRad;
+            tvcLimit = TVC_LIMIT_STAGE3_SPLIT * degToRad;
         } else {
-            const double ratio = smoothStep((flyTime - thirdStageSplitTime) / (thirdStageEnd - thirdStageSplitTime));
-            const double altitudeError = targetBurnoutAltitude - lla.z();
-            const double velocityError = targetBurnoutVelocity - speed;
-            const double terminalCorrection = clamp(altitudeError * 2.0e-7 + velocityError * 1.0e-5, -2.0 * degToRad, 2.0 * degToRad);
-            thetaCmd = (5.0 + (3.7 - 5.0) * ratio) * degToRad + terminalCorrection;
+            const double ratio = smoothStep((flyTime - THIRD_STAGE_SPLIT_TIME) / (thirdStageEnd - THIRD_STAGE_SPLIT_TIME));
+            const double altitudeError = TARGET_BURNOUT_ALTITUDE - lla.z();
+            const double velocityError = TARGET_BURNOUT_VELOCITY - speed;
+            const double terminalCorrection = clamp(altitudeError * TERMINAL_ALTITUDE_GAIN + velocityError * TERMINAL_VELOCITY_GAIN,
+                                                    -TERMINAL_CORRECTION_LIMIT * degToRad, TERMINAL_CORRECTION_LIMIT * degToRad);
+            thetaCmd = (STAGE3_FINAL_START_THETA + (STAGE3_FINAL_END_THETA - STAGE3_FINAL_START_THETA) * ratio) * degToRad + terminalCorrection;
             psiCmd = targetPsi;
-            tvcLimit = 5.0 * degToRad;
+            tvcLimit = TVC_LIMIT_STAGE3_FINAL * degToRad;
         }
 
         const double thetaError = wrapAngle(thetaCmd - theta);
         const double psiError = wrapAngle(psiCmd - psi);
         Eigen::Vector3d accCmdV = Eigen::Vector3d::Zero();
-        accCmdV.y() = 9.8 * std::cos(theta) + 1.6 * speed * thetaError - 0.35 * velocityNue.y();
-        accCmdV.z() = -1.2 * speed * psiError;
+        accCmdV.y() = 9.8 * std::cos(theta) + BOOST_SPEED_THETA_GAIN * speed * thetaError - BOOST_DAMPING_GAIN * speed * std::sin(thetaError);
+        accCmdV.z() = -BOOST_PSI_GAIN * speed * psiError;
         accCmdV.y() = clamp(accCmdV.y(), -9.8 * maxLoad, 9.8 * maxLoad);
         accCmdV.z() = clamp(accCmdV.z(), -9.8 * maxLoad, 9.8 * maxLoad);
 
@@ -164,7 +163,7 @@ namespace ModelDevelop::TGC {
 
         boostInfo.acc_cmd_v = accCmdV;
         boostInfo.tvc_cmd = tvcCmd;
-        boostInfo.pitch_cmd = thetaCmd;
+        boostInfo.pitch_cmd = thetaCmd + 15.0 * degToRad;
         boostInfo.pitch_cmd_valid = true;
         return boostInfo;
     }
@@ -304,18 +303,20 @@ namespace ModelDevelop::TGC {
 
     Eigen::Vector3d Guidance::guidance_pn(const double theta, const double sigma_az_dot, const double sigma_elv_dot, const double dis_dot) {
         constexpr double K = 4;
-        constexpr double gravity = 9.8;
-        const auto ny_tc = K * std::fabs(dis_dot) * sigma_elv_dot + gravity * std::cos(theta);
+        constexpr double g = 9.8;
+        const auto ny_tc = K * std::fabs(dis_dot) * sigma_elv_dot + g * std::cos(theta);
         const auto nz_tc = -K * std::fabs(dis_dot) * sigma_az_dot;
         return Eigen::Vector3d(0, ny_tc, nz_tc);
     }
 
     double Guidance::wrapAngle(double angle) {
-        while (angle > 3.14159265358979323846) {
-            angle -= 2.0 * 3.14159265358979323846;
+        constexpr double pi = Utils::Constants::PI;
+        constexpr double twoPi = 2.0 * pi;
+        while (angle > pi) {
+            angle -= twoPi;
         }
-        while (angle < -3.14159265358979323846) {
-            angle += 2.0 * 3.14159265358979323846;
+        while (angle < -pi) {
+            angle += twoPi;
         }
         return angle;
     }
@@ -341,240 +342,6 @@ namespace ModelDevelop::TGC {
         boostInitialPsi = std::nullopt;
     }
 
-    void Guidance::Lambert_Resolve_Dv1(const Eigen::Vector3d &r_m, const Eigen::Vector3d &r_pip, double &T_pip, double vd_m[3], double &Range) const {
-        double v_m[3];
-
-        double gamma_min, gamma_max, gamma0;
-        double V0, lambda, temp;
-        Eigen::Vector3d i_vec, j_vec, Temp_Vec;
-
-        double t0 = 0;
-        double R_m = r_m.norm();
-        double R_pip = r_pip.norm();
-        double R_m_pip = r_m.dot(r_pip);
-        double theta_f = acos(R_m_pip / R_m / R_pip);
-
-        Range = theta_f * earth_ae / 1000;
-        double Ve = sqrt(2 * c_dMiu / R_m);
-        if (Range < 9000) {
-            gamma_min = atan((cos(theta_f) - R_m / R_pip) / sin(theta_f));
-            gamma_max = atan((sin(theta_f) + sqrt((1 - cos(theta_f)) * 2 * R_m / R_pip)) / (1 - cos(theta_f)));
-
-            gamma0 = (gamma_min + gamma_max) / 2;
-            V0 = R_pip * (1 - cos(theta_f)) * c_dMiu / R_m / (R_m * (cos(gamma0) * cos(gamma0)) - R_pip * cos(theta_f + gamma0) * cos(gamma0));
-            V0 = sqrt(V0);
-            lambda = R_m * V0 * V0 / c_dMiu;
-
-            if ((lambda > 0) && (lambda < 2)) {
-                t0 = (tan(gamma0) * (1 - cos(theta_f)) + (1 - lambda) * sin(theta_f)) / (2 - lambda) / R_m * R_pip;
-                t0 = t0 + 2 * cos(gamma0) * atan(sqrt(2 / lambda - 1) / (cos(gamma0) * (1 / tan(theta_f / 2)) - sin(gamma0))) / lambda / pow((2 / lambda - 1), 1.5);
-                t0 = t0 * R_m / V0 / cos(gamma0);
-            }
-
-            i_vec = r_m / R_m;
-            Temp_Vec = r_m.cross(r_pip);
-            j_vec = Temp_Vec.cross(r_m);
-            temp = j_vec.norm();
-            j_vec = j_vec / temp;
-
-            vd_m[0] = V0 * sin(gamma0) * i_vec[0] + V0 * cos(gamma0) * j_vec[0];
-            vd_m[1] = V0 * sin(gamma0) * i_vec[1] + V0 * cos(gamma0) * j_vec[1];
-            vd_m[2] = V0 * sin(gamma0) * i_vec[2] + V0 * cos(gamma0) * j_vec[2];
-            v_m[0] = vd_m[0];
-            v_m[1] = vd_m[1];
-            v_m[2] = vd_m[2];
-            T_pip = t0;
-        } else {
-            T_pip = 2500 - (13000 - Range) / 7;
-
-            double mask, t_delt, kesi, gamma_d, Vd;
-            int n;
-            double gamma[1000], t_ff[1000], V[1000];
-
-            kesi = 0.001;
-            mask = 0;
-            gamma_d = 0;
-            Vd = 0;
-            gamma_min = atan((cos(theta_f) - R_m / R_pip) / sin(theta_f));
-            gamma_max = atan((sin(theta_f) + sqrt((1 - cos(theta_f)) * 2 * R_m / R_pip)) / (1 - cos(theta_f)));
-
-            gamma0 = (gamma_min + gamma_max) / 2;
-            V0 = R_pip * (1 - cos(theta_f)) * c_dMiu / R_m / (R_m * (cos(gamma0) * cos(gamma0)) - R_pip * cos(theta_f + gamma0) * cos(gamma0));
-            V0 = sqrt(V0);
-            lambda = R_m * V0 * V0 / c_dMiu;
-
-            if ((lambda > 0) && (lambda < 2)) {
-                t0 = (tan(gamma0) * (1 - cos(theta_f)) + (1 - lambda) * sin(theta_f)) / (2 - lambda) / R_m * R_pip;
-                t0 = t0 + 2 * cos(gamma0) * atan(sqrt(2 / lambda - 1) / (cos(gamma0) * (1 / tan(theta_f / 2)) - sin(gamma0))) / lambda / pow((2 / lambda - 1), 1.5);
-                t0 = t0 * R_m / V0 / cos(gamma0);
-            }
-            if (t0 > T_pip) {
-                gamma[0] = (gamma_min + gamma0) / 2;
-                mask = 1;
-            } else {
-                gamma[0] = (gamma_max + gamma0) / 2;
-                mask = -1;
-            }
-            t_delt = T_pip;
-            n = 0;
-            while (abs(t_delt) > kesi) {
-                V[n] = R_pip * (1 - cos(theta_f)) * c_dMiu / R_m /
-                       (R_m * (cos(gamma[n]) * cos(gamma[n])) - R_pip * cos(theta_f + gamma[n]) * cos(gamma[n]));
-                V[n] = sqrt(V[n]);
-                lambda = R_m * V[n] * V[n] / c_dMiu;
-                if (lambda > 0 && lambda < 2) {
-                    t_ff[n] = (tan(gamma[n]) * (1 - cos(theta_f)) + (1 - lambda) * sin(theta_f)) / (2 - lambda) / R_m * R_pip;
-                    t_ff[n] = t_ff[n] + 2 * cos(gamma[n]) * atan(sqrt(2 / lambda - 1) / (cos(gamma[n]) * (1 / tan(theta_f / 2)) - sin(gamma[n]))) /
-                              lambda / pow((2 / lambda - 1), 1.5);
-                    t_ff[n] = t_ff[n] * R_m / V[n] / cos(gamma[n]);
-                } else {
-                    t_ff[n] = t_ff[n - 1];
-                }
-                t_delt = T_pip - t_ff[n];
-                if (abs(t_delt) > kesi) {
-                    if (n == 0) {
-                        gamma[n + 1] = gamma[n] + (gamma[n] - gamma0) * (T_pip - t_ff[n]) / (t_ff[n] - t0);
-                    } else {
-                        gamma[n + 1] = gamma[n] + (gamma[n] - gamma[n - 1]) * (T_pip - t_ff[n]) / (t_ff[n] - t_ff[n - 1]);
-                    }
-                    if ((gamma[n + 1] < gamma_min) || (gamma[n + 1] > gamma_max)) {
-                        if (mask == 1) {
-                            if (n == 0) {
-                                gamma[n + 1] = (std::min(gamma[n], gamma0) + gamma_min) / 2;
-                            } else {
-                                gamma[n + 1] = (std::min(gamma[n], gamma[n - 1]) + gamma_min) / 2;
-                            }
-                        } else {
-                            if (n == 0) {
-                                gamma[n + 1] = (std::max(gamma[n], gamma0) + gamma_max) / 2;
-                            } else {
-                                gamma[n + 1] = (std::max(gamma[n], gamma[n - 1]) + gamma_max) / 2;
-                            }
-                        }
-                    }
-                } else {
-                    gamma_d = gamma[n];
-                    Vd = V[n];
-                }
-
-                n = n + 1;
-            }
-            i_vec = r_m / R_m;
-            Temp_Vec = r_m.cross(r_pip);
-            j_vec = Temp_Vec.cross(r_m);
-            temp = j_vec.norm();
-            j_vec = j_vec / temp;
-
-            vd_m[0] = Vd * sin(gamma_d) * i_vec[0] + Vd * cos(gamma_d) * j_vec[0];
-            vd_m[1] = Vd * sin(gamma_d) * i_vec[1] + Vd * cos(gamma_d) * j_vec[1];
-            vd_m[2] = Vd * sin(gamma_d) * i_vec[2] + Vd * cos(gamma_d) * j_vec[2];
-
-            v_m[0] = vd_m[0];
-            v_m[1] = vd_m[1];
-            v_m[2] = vd_m[2];
-        }
-    }
-
-    void Guidance::Lambert_Resolve_Dv(const Eigen::Vector3d &r_m, const Eigen::Vector3d &r_pip, double &T_pip, double vd_m[3], double &Range) const {
-        double v_m[3];
-        Eigen::Vector3d i_vec, j_vec, Temp_Vec;
-
-        double t0 = 0;
-        double R_m = r_m.norm();
-        double R_pip = r_pip.norm();
-        double R_m_pip = r_m.dot(r_pip);
-        double theta_f = acos(R_m_pip / R_m / R_pip);
-
-        Range = theta_f * earth_ae / 1000;
-        double Ve = sqrt(2 * c_dMiu / R_m);
-
-        double gamma[10000], t_ff[10000], V[10000];
-
-        double kesi = 0.0001;
-        double mask = 0;
-        double gamma_d = 0;
-        double Vd = 0;
-        double gamma_min = atan((cos(theta_f) - R_m / R_pip) / sin(theta_f));
-        double gamma_max = atan((sin(theta_f) + sqrt((1 - cos(theta_f)) * 2 * R_m / R_pip)) / (1 - cos(theta_f)));
-
-        double gamma0 = (gamma_min + gamma_max) / 2;
-        double V0 = R_pip * (1 - cos(theta_f)) * c_dMiu / R_m /
-                    (R_m * (cos(gamma0) * cos(gamma0)) - R_pip * cos(theta_f + gamma0) * cos(gamma0));
-        V0 = sqrt(V0);
-        double lambda = R_m * V0 * V0 / c_dMiu;
-
-        if ((lambda > 0) && (lambda < 2)) {
-            t0 = (tan(gamma0) * (1 - cos(theta_f)) + (1 - lambda) * sin(theta_f)) / (2 - lambda) / R_m * R_pip;
-            t0 = t0 + 2 * cos(gamma0) * atan(sqrt(2 / lambda - 1) / (cos(gamma0) * (1 / tan(theta_f / 2)) - sin(gamma0))) / lambda / pow((2 / lambda - 1), 1.5);
-            t0 = t0 * R_m / V0 / cos(gamma0);
-        }
-        if (t0 > T_pip) {
-            gamma[0] = (gamma_min + gamma0) / 2;
-            mask = 1;
-        } else {
-            gamma[0] = (gamma_max + gamma0) / 2;
-            mask = -1;
-        }
-        double t_delt = T_pip;
-        int n = 0;
-        while (abs(t_delt) > kesi) {
-            V[n] = R_pip * (1 - cos(theta_f)) * c_dMiu / R_m / (R_m * (cos(gamma[n]) * cos(gamma[n])) - R_pip * cos(theta_f + gamma[n]) * cos(gamma[n]));
-            V[n] = sqrt(V[n]);
-            lambda = R_m * V[n] * V[n] / c_dMiu;
-            if (lambda > 0 && lambda < 2) {
-                t_ff[n] = (tan(gamma[n]) * (1 - cos(theta_f)) + (1 - lambda) * sin(theta_f)) / (2 - lambda) / R_m * R_pip;
-                t_ff[n] = t_ff[n] + 2 * cos(gamma[n]) * atan(sqrt(2 / lambda - 1) / (cos(gamma[n]) * (1 / tan(theta_f / 2)) - sin(gamma[n]))) /
-                          lambda / pow((2 / lambda - 1), 1.5);
-                t_ff[n] = t_ff[n] * R_m / V[n] / cos(gamma[n]);
-            } else {
-                t_ff[n] = t_ff[n - 1];
-                Vd = 12e3;
-                break;
-            }
-
-            t_delt = T_pip - t_ff[n];
-            if (abs(t_delt) > kesi) {
-                if (n == 0) {
-                    gamma[n + 1] = gamma[n] + (gamma[n] - gamma0) * (T_pip - t_ff[n]) / (t_ff[n] - t0);
-                } else {
-                    gamma[n + 1] = gamma[n] + (gamma[n] - gamma[n - 1]) * (T_pip - t_ff[n]) / (t_ff[n] - t_ff[n - 1]);
-                }
-                if ((gamma[n + 1] < gamma_min) || (gamma[n + 1] > gamma_max)) {
-                    if (mask == 1) {
-                        if (n == 0) {
-                            gamma[n + 1] = (std::min(gamma[n], gamma0) + gamma_min) / 2;
-                        } else {
-                            gamma[n + 1] = (std::min(gamma[n], gamma[n - 1]) + gamma_min) / 2;
-                        }
-                    } else {
-                        if (n == 0) {
-                            gamma[n + 1] = (std::max(gamma[n], gamma0) + gamma_max) / 2;
-                        } else {
-                            gamma[n + 1] = (std::max(gamma[n], gamma[n - 1]) + gamma_max) / 2;
-                        }
-                    }
-                }
-            } else {
-                gamma_d = gamma[n];
-                Vd = V[n];
-            }
-            n = n + 1;
-        }
-
-        i_vec = r_m / R_m;
-        Temp_Vec = r_m.cross(r_pip);
-        j_vec = Temp_Vec.cross(r_m);
-        double temp = j_vec.norm();
-        j_vec = j_vec / temp;
-
-        vd_m[0] = Vd * sin(gamma_d) * i_vec[0] + Vd * cos(gamma_d) * j_vec[0];
-        vd_m[1] = Vd * sin(gamma_d) * i_vec[1] + Vd * cos(gamma_d) * j_vec[1];
-        vd_m[2] = Vd * sin(gamma_d) * i_vec[2] + Vd * cos(gamma_d) * j_vec[2];
-
-        v_m[0] = vd_m[0];
-        v_m[1] = vd_m[1];
-        v_m[2] = vd_m[2];
-    }
 }
 
 #undef PRETTY_FILE_NAME

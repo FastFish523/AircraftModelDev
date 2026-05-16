@@ -61,14 +61,6 @@ namespace ModelDevelop::TGC {
                                                                   const Eigen::Vector3d &p_body, const ImuInfo &imu_info, double rel_dis, double rel_dis_dot, double s);
 
         /*!
-         * @brief 最简单的一阶惯性环节
-         * @param input
-         * @param prev_output
-         * @return
-         */
-        static double firstOrderFilter(double input, double prev_output);
-
-        /*!
          * @brief 限幅方法
          * @param x
          * @param lower

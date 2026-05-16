@@ -25,7 +25,6 @@
 namespace ModelDevelop::TGC {
     enum class GuidancePhase {
         Boost = 0,
-        Climb,
         Glide,
         Handover,
         Terminal

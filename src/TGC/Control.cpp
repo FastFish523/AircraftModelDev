@@ -123,12 +123,6 @@ namespace ModelDevelop::TGC {
         return {rudder, m_b};
     }
 
-    double Control::firstOrderFilter(const double input, const double prev_output) {
-        constexpr double Ts = 0.005;
-        constexpr double T  = 0.005;
-        return (Ts * input + T * prev_output) / (T + Ts);
-    }
-
     double Control::limit(const double x, const double lower, const double upper) {
         return x < lower ? lower : (x > upper ? upper : x);
     }
