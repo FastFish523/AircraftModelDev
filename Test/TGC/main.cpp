@@ -49,7 +49,7 @@ int main() {
     Missile missile;
     missile.init(step, missileLLA);
     missile.setTargetLLA(targetLLA, Eigen::Vector3d::Zero(), true);
-    missile.launch(89.0, launchPsi);
+    missile.launch(45.0, launchPsi);
 
     std::cout << std::fixed << std::setprecision(2);
     std::cout << "TGC vertical boost test started" << std::endl;

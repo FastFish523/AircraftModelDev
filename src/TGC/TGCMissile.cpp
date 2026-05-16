@@ -20,6 +20,24 @@
 
 // endregion
 
+namespace {
+    double wrapToPi(double angle) {
+        constexpr double pi = 3.14159265358979323846;
+        constexpr double twoPi = 2.0 * pi;
+        while (angle > pi) {
+            angle -= twoPi;
+        }
+        while (angle < -pi) {
+            angle += twoPi;
+        }
+        return angle;
+    }
+
+    double clampValue(const double value, const double lower, const double upper) {
+        return value < lower ? lower : (value > upper ? upper : value);
+    }
+}
+
 namespace ModelDevelop::TGC {
 // region Static Attributes Init
 // endregion
@@ -163,7 +181,15 @@ namespace ModelDevelop::TGC {
             _sigma_elv_dot        = losInfo.sigma_elv_dot;
             _sigma_elv            = losInfo.sigma_elv;
             _sigma_az             = losInfo.sigma_az;
-            if (gcInfo.phase != GuidancePhase::Boost) {
+            if (gcInfo.phase == GuidancePhase::Boost && gcInfo.pitch_cmd_valid) {
+                constexpr double pitchKp = 2.0e5;
+                constexpr double pitchKd = 2.0e4;
+                constexpr double maxPitchMoment = 3.0e5;
+                const double pitch = ModelDevelop::Utils::CoordinateHelper::quaternionToEuler231(_state.qbn).y() / 57.3;
+                const double pitchError = wrapToPi(gcInfo.pitch_cmd - pitch);
+                const double pitchRate = _state.wnb_b.z();
+                _m_body.z() = clampValue(pitchKp * pitchError - pitchKd * pitchRate, -maxPitchMoment, maxPitchMoment);
+            } else if (gcInfo.phase != GuidancePhase::Boost) {
                 const auto [fst, snd] = _control.P6dof_Control(_step, acc_cmd_v, _state, _totalMass, _p_body, _imu_info, 1, 0, _s);
                 _rudder               = fst;
                 _m_body               = snd;

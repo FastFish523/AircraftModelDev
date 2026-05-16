@@ -53,9 +53,11 @@ namespace ModelDevelop::TGC {
         } else if (P > 1.0e3) {
             gc_info.phase = GuidancePhase::Boost;
             gc_info.losInfo = los_midcourse;
-            auto [boostAccCmd, boostTvcCmd] = calculateBoostGuidance(flyTime, P, Mass, targetPosEcf, maxLoad, state);
-            acc_cmd_v = boostAccCmd;
-            gc_info.tvc_cmd = boostTvcCmd;
+            const auto boostInfo = calculateBoostGuidance(flyTime, P, Mass, targetPosEcf, maxLoad, state);
+            acc_cmd_v = boostInfo.acc_cmd_v;
+            gc_info.tvc_cmd = boostInfo.tvc_cmd;
+            gc_info.pitch_cmd = boostInfo.pitch_cmd;
+            gc_info.pitch_cmd_valid = boostInfo.pitch_cmd_valid;
         } else if (hasRoute && !seekerLocked) {
             gc_info = getGCInfoRouteL1(state, maxLoad, waypoints, currentWpIndex);
             gc_info.phase = GuidancePhase::Glide;
@@ -83,9 +85,9 @@ namespace ModelDevelop::TGC {
         return gc_info;
     }
 
-    std::pair<Eigen::Vector3d, Eigen::Vector3d> Guidance::calculateBoostGuidance(const double flyTime, const double P, const double Mass,
-                                                                                 const Eigen::Vector3d &targetPosEcf, const double maxLoad,
-                                                                                 const State &state) {
+    Guidance::BoostGuidanceInfo Guidance::calculateBoostGuidance(const double flyTime, const double P, const double Mass,
+                                                                 const Eigen::Vector3d &targetPosEcf, const double maxLoad,
+                                                                 const State &state) {
         constexpr double degToRad = 3.14159265358979323846 / 180.0;
         constexpr double thirdStageSplitTime = 145.0;
         constexpr double targetBurnoutAltitude = 123000.0;
@@ -96,17 +98,16 @@ namespace ModelDevelop::TGC {
         const double secondStageEnd = burnOutTimes[1];
         const double thirdStageEnd = burnOutTimes[2];
 
-        Eigen::Vector3d accCmdV = Eigen::Vector3d::Zero();
-        Eigen::Vector3d tvcCmd = Eigen::Vector3d::Zero();
+        BoostGuidanceInfo boostInfo;
         if (flyTime >= thirdStageEnd || P <= 1.0e3 || Mass <= 1.0) {
-            return {accCmdV, tvcCmd};
+            return boostInfo;
         }
 
         const auto lla = ModelDevelop::Utils::CoordinateHelper::ecefToLla(state.posEcf);
         const auto velocityNue = ModelDevelop::Utils::CoordinateHelper::ecefToNueVelocity(state.velEcf, lla.x(), lla.y());
         const double speed = velocityNue.norm();
         if (speed < 1.0e-6) {
-            return {accCmdV, tvcCmd};
+            return boostInfo;
         }
 
         const double theta = ModelDevelop::Utils::CoordinateHelper::getTheta(velocityNue);
@@ -123,11 +124,11 @@ namespace ModelDevelop::TGC {
 
         if (flyTime <= firstStageEnd) {
             const double ratio = smoothStep(flyTime / firstStageEnd);
-            thetaCmd = (90.0 + (87.0 - 90.0) * ratio) * degToRad;
+            thetaCmd = (45.0 + (40.0 - 45.0) * ratio) * degToRad;
             tvcLimit = 2.0 * degToRad;
         } else if (flyTime <= secondStageEnd) {
             const double ratio = smoothStep((flyTime - firstStageEnd) / (secondStageEnd - firstStageEnd));
-            thetaCmd = (87.0 + (10.0 - 87.0) * ratio) * degToRad;
+            thetaCmd = (40.0 + (10.0 - 40.0) * ratio) * degToRad;
             tvcLimit = 4.0 * degToRad;
         } else if (flyTime <= thirdStageSplitTime) {
             const double ratio = smoothStep((flyTime - secondStageEnd) / (thirdStageSplitTime - secondStageEnd));
@@ -146,6 +147,7 @@ namespace ModelDevelop::TGC {
 
         const double thetaError = wrapAngle(thetaCmd - theta);
         const double psiError = wrapAngle(psiCmd - psi);
+        Eigen::Vector3d accCmdV = Eigen::Vector3d::Zero();
         accCmdV.y() = 9.8 * std::cos(theta) + 1.6 * speed * thetaError - 0.35 * velocityNue.y();
         accCmdV.z() = -1.2 * speed * psiError;
         accCmdV.y() = clamp(accCmdV.y(), -9.8 * maxLoad, 9.8 * maxLoad);
@@ -155,10 +157,16 @@ namespace ModelDevelop::TGC {
         double beta = 0.0;
         ModelDevelop::Utils::CoordinateHelper::calculateAngleOfAttack(velocityNue, state.qbn, alpha, beta);
         const auto accCmdBody = ModelDevelop::Utils::CoordinateHelper::velocityToBodyAcceleration(accCmdV, alpha, beta);
+        Eigen::Vector3d tvcCmd = Eigen::Vector3d::Zero();
         tvcCmd.x() = 0.0;
         tvcCmd.y() = clamp(2.0 * Mass * accCmdBody.y() / P, -tvcLimit, tvcLimit);
         tvcCmd.z() = clamp(2.0 * Mass * accCmdBody.z() / P, -tvcLimit, tvcLimit);
-        return {accCmdV, tvcCmd};
+
+        boostInfo.acc_cmd_v = accCmdV;
+        boostInfo.tvc_cmd = tvcCmd;
+        boostInfo.pitch_cmd = thetaCmd;
+        boostInfo.pitch_cmd_valid = true;
+        return boostInfo;
     }
 
     LosInfo Guidance::getLOSInfo(const Eigen::Vector3d &targetPosEcf, const Eigen::Vector3d &targetVelEcf, const State &state) {

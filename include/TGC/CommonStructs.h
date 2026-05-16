@@ -51,6 +51,8 @@ namespace ModelDevelop::TGC {
         LosInfo losInfo{};
         Eigen::Vector3d acc_cmd_v{0, 0, 0};
         Eigen::Vector3d tvc_cmd{0, 0, 0};
+        double pitch_cmd = 0.0;
+        bool pitch_cmd_valid = false;
         GuidancePhase phase = GuidancePhase::Boost;
         double handoverRatio = 0.0;
     };

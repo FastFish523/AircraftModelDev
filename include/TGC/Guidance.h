@@ -178,6 +178,13 @@ namespace ModelDevelop::TGC {
          * @param state
          * @return
          */
+        struct BoostGuidanceInfo {
+            Eigen::Vector3d acc_cmd_v{0, 0, 0};
+            Eigen::Vector3d tvc_cmd{0, 0, 0};
+            double pitch_cmd = 0.0;
+            bool pitch_cmd_valid = false;
+        };
+
         static LosInfo getLOSInfo(const Eigen::Vector3d &targetPosEcf, const Eigen::Vector3d &targetVelEcf, const State &state);
 
         /*!
@@ -196,8 +203,8 @@ namespace ModelDevelop::TGC {
 
         static double computeBlendRatio(double targetDistance, double startDistance, double endDistance);
 
-        std::pair<Eigen::Vector3d, Eigen::Vector3d> calculateBoostGuidance(double flyTime, double P, double Mass, const Eigen::Vector3d &targetPosEcf, double maxLoad,
-                                                                           const State &state);
+        BoostGuidanceInfo calculateBoostGuidance(double flyTime, double P, double Mass, const Eigen::Vector3d &targetPosEcf, double maxLoad,
+                                                 const State &state);
 
         static double smoothStep(double ratio);
 
