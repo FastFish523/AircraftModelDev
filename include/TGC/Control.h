@@ -58,7 +58,16 @@ namespace ModelDevelop::TGC {
          * @return rudder moment_body
          */
         std::pair<Eigen::Vector3d, Eigen::Vector3d> P6dof_Control(double step, const Eigen::Vector3d &acc_cmd_v, const State &state, double totalMass,
-                                                                  const Eigen::Vector3d &p_body, const ImuInfo &imu_info, double rel_dis, double rel_dis_dot, double s);
+                                                                  const Eigen::Vector3d &p_body, const ImuInfo &imu_info, double rel_dis, double rel_dis_dot, double s,
+                                                                  GuidancePhase phase = GuidancePhase::Glide);
+
+        /*!
+         * @brief 鏈€绠€鍗曠殑涓€闃舵儻鎬х幆鑺?
+         * @param input
+         * @param prev_output
+         * @return
+         */
+        static double firstOrderFilter(double input, double prev_output);
 
         /*!
          * @brief 限幅方法
@@ -73,6 +82,13 @@ namespace ModelDevelop::TGC {
 
 // region Get/Set选择器
     public:
+        [[nodiscard]] double alphaCmd() const {
+            return alpha_cmd * 57.3;
+        }
+
+        [[nodiscard]] double betaCmd() const {
+            return beta_cmd * 57.3;
+        }
 // endregion
 
 // region Private Attributes

@@ -14,6 +14,7 @@
 #include "CommonStructs.h"
 #include <deque>
 #include <filesystem>
+#include <limits>
 #include <optional>
 #include <string_view>
 #include "Control.h"
@@ -47,6 +48,8 @@
 
 namespace ModelDevelop::TGC {
     class DLL_EXPORT_IMPORT Missile {
+        EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+
 // region USING/FRIEND
     private:
 // endregion
@@ -71,6 +74,8 @@ namespace ModelDevelop::TGC {
          * @param lla 经纬高 度 米
          */
         void init(double step, const Eigen::Vector3d &lla);
+
+        void initDiveTest(double step, const Eigen::Vector3d &lla, double speed, double theta_d, double psi_d);
 
         /*!
          * @brief 发射
@@ -177,6 +182,11 @@ namespace ModelDevelop::TGC {
             return ModelDevelop::Utils::CoordinateHelper::getTheta(vel_nue) * 57.3;
         }
 
+        [[nodiscard]]
+        double thetaCmd() const {
+            return _theta_cmd * 57.3;
+        }
+
         /*!
          * @brief 获取速度偏角 度
          * @return
@@ -214,6 +224,16 @@ namespace ModelDevelop::TGC {
             const Eigen::Vector3d vel_nue = ModelDevelop::Utils::CoordinateHelper::ecefToNueVelocity(_state.velEcf, lla.x(), lla.y());
             ModelDevelop::Utils::CoordinateHelper::calculateAngleOfAttack(vel_nue, _state.qbn, alpha, beta);
             return beta * 57.3;
+        }
+
+        [[nodiscard]]
+        double alphaCmd() const {
+            return _control.alphaCmd();
+        }
+
+        [[nodiscard]]
+        double betaCmd() const {
+            return _control.betaCmd();
         }
 
         /*!
@@ -360,6 +380,8 @@ namespace ModelDevelop::TGC {
             return _phase;
         }
 
+        [[nodiscard]] int phaseId() const;
+
         [[nodiscard]] const char *phaseName() const;
 
         Derivative derivative() const;
@@ -440,6 +462,7 @@ namespace ModelDevelop::TGC {
          * @brief 体侧向加速度指令
          */
         double _acc_cmd_b_z = 0;
+        double _theta_cmd = std::numeric_limits<double>::quiet_NaN();
 
         /*!
          * @brief 视线倾角

@@ -62,6 +62,9 @@ namespace ModelDevelop::TGC {
         GCInfo getMissionGCInfo(double flyTime, double P, double Mass, const Eigen::Vector3d &targetPosEcf, const Eigen::Vector3d &targetVelEcf, const State &state, double maxLoad,
                                 const std::deque<Eigen::Vector3d> &waypoints, int &currentWpIndex);
 
+        GCInfo getDiveGCInfo(double flyTime, const Eigen::Vector3d &targetPosEcf, const Eigen::Vector3d &targetVelEcf, const State &state, double maxLoad,
+                             const DiveGuidanceConfig &config = DiveGuidanceConfig{});
+
         /*!
          * @brief 获取制导控制信息
          * @param state 自身状态
@@ -71,6 +74,17 @@ namespace ModelDevelop::TGC {
          * @return
         */
         GCInfo getGCInfoRouteL1(const State &state, double maxLoad, const std::deque<Eigen::Vector3d> &waypoints, int &currentWpIndex);
+
+        /*!
+         * @brief 鍩轰簬瑙ｆ瀽闃诲姏鍔犻€熷害鍓栭潰鐨勬粦缈旀涓埗瀵?
+         * @param Mass 褰撳墠璐ㄩ噺 kg
+         * @param targetPosEcf 鐩爣浣嶇疆
+         * @param targetVelEcf 鐩爣閫熷害
+         * @param state 褰撳墠鐘舵€?
+         * @param maxLoad 鏈€澶ц繃杞?
+         * @return 鍒跺鎺у埗淇℃伅
+         */
+        GCInfo getGCInfoAnalyticGlide(double Mass, const Eigen::Vector3d &targetPosEcf, const Eigen::Vector3d &targetVelEcf, const State &state, double maxLoad);
 
         void reset();
 
@@ -115,6 +129,20 @@ namespace ModelDevelop::TGC {
         */
         double lastDesiredH = 0;
         std::optional<double> boostInitialPsi = std::nullopt;
+        double lastBankSign = 1.0;
+        std::optional<double> _lastDiveThetaCmd = std::nullopt;
+        std::optional<double> _lastDiveThetaCmdTime = std::nullopt;
+        std::optional<GuidancePhase> _lastDivePhase = std::nullopt;
+        std::optional<Eigen::Vector3d> _lastTerminalAccCmd = std::nullopt;
+        std::optional<double> _lastTerminalAccCmdTime = std::nullopt;
+        const double c_dPi = 3.1415926535897932384626433832795;
+        const double D2R = c_dPi / 180.0;
+        const double R2D = 180.0 / c_dPi;
+        const double av = 340.0;
+        const double earth_ae = 6371004.0;
+        const double earth_g0 = 9.80665;
+        const double earth_omega = 7.292115E-5;
+        const double c_dMiu = 3.986004418e14;
 // endregion
 
 // region Private Methods
@@ -129,6 +157,7 @@ namespace ModelDevelop::TGC {
         struct BoostGuidanceInfo {
             Eigen::Vector3d acc_cmd_v{0, 0, 0};
             Eigen::Vector3d tvc_cmd{0, 0, 0};
+            double theta_cmd = std::numeric_limits<double>::quiet_NaN();
             double pitch_cmd = 0.0;
             bool pitch_cmd_valid = false;
         };
@@ -150,6 +179,22 @@ namespace ModelDevelop::TGC {
 
         static double smoothStep(double ratio);
         static double computeBlendRatio(double targetDistance, double startDistance, double endDistance);
+
+        GCInfo getGCInfoAnalyticMidcourse(double flyTime, const Eigen::Vector3d &targetPosEcf, const Eigen::Vector3d &targetVelEcf, const State &state, double mass, double maxLoad);
+
+        double estimateDragAcceleration(const State &state, double mass) const;
+
+        double estimateLiftAcceleration(const State &state, double mass, double maxLoad) const;
+
+        double solveDragProfileMidpoint(double v0, double vf, double d0, double df, double rangeToGo) const;
+
+        double dragProfile(double v, double v0, double vf, double d0, double dc, double df) const;
+
+        double dragProfileSlope(double v, double v0, double vf, double d0, double dc, double df) const;
+
+        double profileRange(double v0, double vf, double d0, double dc, double df) const;
+
+        static double guidanceHeadingSign(double headingError, double corridor);
 
     public:
         static double wrapAngle(double angle);

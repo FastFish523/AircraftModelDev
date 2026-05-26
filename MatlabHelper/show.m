@@ -3,6 +3,7 @@ clc
 close all
 
 data = load('result.dat');
+ncol = size(data, 2);
 time = data(:,1);
 xg = data(:,2);
 yg = data(:,3);
@@ -12,44 +13,86 @@ yaw = data(:,6);
 pitch = data(:,7);
 roll = data(:,8);
 theta = data(:,9);
-psi = data(:,10);
-alpha = data(:,11);
-beta = data(:,12);
-accx = data(:,13);
-accy = data(:,14);
-accz = data(:,15);
+if ncol >= 45
+    theta_cmd = data(:,10);
+    psi = data(:,11);
+    alpha = data(:,12);
+    beta = data(:,13);
+    alpha_cmd = data(:,14);
+    beta_cmd = data(:,15);
+    accx = data(:,16);
+    accy = data(:,17);
+    accz = data(:,18);
 
-mass = data(:,16);
-P = data(:,17);
+    mass = data(:,19);
+    P = data(:,20);
 
-acc_cmd_by = data(:,18);
-acc_cmd_bz = data(:,19);
+    acc_cmd_by = data(:,21);
+    acc_cmd_bz = data(:,22);
 
+    xgt = data(:,23);
+    ygt = data(:,24);
+    zgt = data(:,25);
 
-xgt = data(:,20);
-ygt = data(:,21);
-zgt = data(:,22);
+    dx = data(:,26);
+    dy = data(:,27);
+    dz = data(:,28);
 
-dx = data(:,23);
-dy = data(:,24);
-dz = data(:,25);
+    vx = data(:,29);
+    vy = data(:,30);
+    vz = data(:,31);
 
-vx = data(:,26);
-vy = data(:,27);
-vz = data(:,28);
+    wx = data(:,32);
+    wy = data(:,33);
+    wz = data(:,34);
 
-wx = data(:,29);
-wy = data(:,30);
-wz = data(:,31);
+    lon = data(:,35);
+    lat = data(:,36);
+    h = data(:,37);
 
-lon = data(:,32);
-lat = data(:,33);
-h = data(:,34);
+    sigma_evl = data(:,38);
+    sigma_az = data(:,39);
+    sigma_evl_dot = data(:,40);
+    sigma_az_dot = data(:,41);
+else
+    psi = data(:,10);
+    alpha = data(:,11);
+    beta = data(:,12);
+    accx = data(:,13);
+    accy = data(:,14);
+    accz = data(:,15);
 
-sigma_evl = data(:,35);
-sigma_az = data(:,36);
-sigma_evl_dot = data(:,37);
-sigma_az_dot = data(:,38);
+    mass = data(:,16);
+    P = data(:,17);
+
+    acc_cmd_by = data(:,18);
+    acc_cmd_bz = data(:,19);
+
+    xgt = data(:,20);
+    ygt = data(:,21);
+    zgt = data(:,22);
+
+    dx = data(:,23);
+    dy = data(:,24);
+    dz = data(:,25);
+
+    vx = data(:,26);
+    vy = data(:,27);
+    vz = data(:,28);
+
+    wx = data(:,29);
+    wy = data(:,30);
+    wz = data(:,31);
+
+    lon = data(:,32);
+    lat = data(:,33);
+    h = data(:,34);
+
+    sigma_evl = data(:,35);
+    sigma_az = data(:,36);
+    sigma_evl_dot = data(:,37);
+    sigma_az_dot = data(:,38);
+end
 
 
 figure(1)

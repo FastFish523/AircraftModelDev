@@ -16,17 +16,17 @@ constexpr double LAUNCH_THETA_F             = 45.0;   // 发射倾角（发射�
 // ============================================================
 // 助推段程序角设计 (度) —— 各阶段俯仰角指令
 // ============================================================
-constexpr double STAGE1_START_BLEND_THETA   = 70.0;   // 一级混合起始角
-constexpr double STAGE1_END_TARGET_THETA    = 30.0;   // 一级结束目标角
+constexpr double STAGE1_START_BLEND_THETA   = 45.0;   // 一级混合起始角
+constexpr double STAGE1_END_TARGET_THETA    = 45.0;   // 一级结束目标角
 
-constexpr double STAGE2_START_BLEND_THETA   = 30.0;   // 二级混合起始角
-constexpr double STAGE2_END_TARGET_THETA    = 0.0;   // 二级结束目标角
+constexpr double STAGE2_START_BLEND_THETA   = 45.0;   // 二级混合起始角
+constexpr double STAGE2_END_TARGET_THETA    = 15.0;   // 二级结束目标角
 
-constexpr double STAGE3_SPLIT_START_THETA   = 0.0;   // 三级分段起始角
-constexpr double STAGE3_SPLIT_END_THETA     = -20.0;    // 三级分段结束目标角
+constexpr double STAGE3_SPLIT_START_THETA   = 15.0;   // 三级分段起始角
+constexpr double STAGE3_SPLIT_END_THETA     = -40.0;    // 三级分段结束目标角
 
-constexpr double STAGE3_FINAL_START_THETA   = -20.0;    // 三级末段程序角起始
-constexpr double STAGE3_FINAL_END_THETA     = 5.0;    // 三级末段程序角结束（燃尽时刻）
+constexpr double STAGE3_FINAL_START_THETA   = -40.0;    // 三级末段程序角起始
+constexpr double STAGE3_FINAL_END_THETA     = 10.0;    // 三级末段程序角结束（燃尽时刻）
 
 // ============================================================
 // TVC 摆角限幅 (度)
@@ -39,7 +39,7 @@ constexpr double TVC_LIMIT_STAGE3_FINAL     = 60.0;    // 三级末段
 // ============================================================
 // 时序参数 (秒)
 // ============================================================
-constexpr double THIRD_STAGE_SPLIT_TIME     = 120.0;  // 三级从程序制导向终端修正切换的时间
+constexpr double THIRD_STAGE_SPLIT_TIME     = 150.0;  // 三级从程序制导向终端修正切换的时间
 
 // ============================================================
 // 目标 Burnout 状态

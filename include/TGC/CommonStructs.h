@@ -7,6 +7,7 @@
 
 // region Include
 // region STL
+#include <limits>
 // endregion
 // region ThirdParty
 // endregion
@@ -25,12 +26,44 @@
 namespace ModelDevelop::TGC {
     enum class GuidancePhase {
         Boost = 0,
+        Climb,
         Glide,
         Handover,
-        Terminal
+        Terminal,
+        DiveEntry,
+        DiveMid,
+        DiveHandover,
+        DiveTerminal
+    };
+
+    struct DiveGuidanceConfig {
+        double entryDistance = 100000.0;
+        double entryAltitude = 25000.0;
+        double midDistance = 55000.0;
+        double midAltitude = 15000.0;
+        double handoverDistance = 15000.0;
+        double handoverAltitude = 8000.0;
+        double terminalDistance = 5000.0;
+        double terminalAltitude = 2500.0;
+        double terminalTime = 3.0;
+        double minClosingVelocity = 1.0;
+        double entryThetaCmd = -20.0 / 57.3;
+        double midThetaCmd = -35.0 / 57.3;
+        double terminalThetaCmd = -50.0 / 57.3;
+        double thetaCmdFilterTimeConstant = 0.05;
+        double pnFilterTimeConstant = 0.08;
+        double pnAccRateLimit = 1200.0;
+        double desiredSpeed = 1200.0;
+        double thetaGain = 2.5;
+        double altitudeGain = 0.015;
+        double verticalDamping = 0.45;
+        double headingGain = 1.0;
+        double speedGain = 0.03;
     };
 
     struct EigenInfo {
+        EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+
         double mass = 0;
         Eigen::Vector3d P_body{};
         Eigen::Matrix3d inertia;
@@ -47,6 +80,8 @@ namespace ModelDevelop::TGC {
     };
 
     struct GCInfo {
+        EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+
         LosInfo losInfo{};
         Eigen::Vector3d acc_cmd_v{0, 0, 0};
         Eigen::Vector3d tvc_cmd{0, 0, 0};
@@ -54,9 +89,12 @@ namespace ModelDevelop::TGC {
         bool pitch_cmd_valid = false;
         GuidancePhase phase = GuidancePhase::Boost;
         double handoverRatio = 0.0;
+        double theta_cmd = std::numeric_limits<double>::quiet_NaN();
     };
 
     struct ImuInfo {
+        EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+
         Eigen::Vector3d imu_acc_body{0, 0, 0};
         Eigen::Vector3d imu_w_xyz_body{0, 0, 0};
         Eigen::Vector3d imu_ypr{0, 0, 0};

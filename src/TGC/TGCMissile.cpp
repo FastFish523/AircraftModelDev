@@ -21,6 +21,12 @@
 // endregion
 
 namespace ModelDevelop::TGC {
+    namespace {
+        GuidancePhase keepForwardPhase(const GuidancePhase currentPhase, const GuidancePhase candidatePhase) {
+            return static_cast<int>(candidatePhase) < static_cast<int>(currentPhase) ? currentPhase : candidatePhase;
+        }
+    }
+
 // region Static Attributes Init
 // endregion
 
@@ -78,11 +84,31 @@ namespace ModelDevelop::TGC {
         _routePoints.clear();
         distance_deque.clear();
         _phase = GuidancePhase::Boost;
+        _theta_cmd = std::numeric_limits<double>::quiet_NaN();
         _state.posEcf = ModelDevelop::Utils::CoordinateHelper::llaToEcef(lla);
         _state.velEcf.setZero();
         _state.wnb_b.setZero();
         _state.qbn.setIdentity();
         _launchLLA = lla;
+    }
+
+    void Missile::initDiveTest(const double step, const Eigen::Vector3d &lla, const double speed, const double theta_d, const double psi_d) {
+        init(step, lla);
+
+        _flyTime = Engine::boostTotalTime() + step;
+        _phase = GuidancePhase::DiveEntry;
+        _state.qbn = ModelDevelop::Utils::CoordinateHelper::euler231ToQuaternion(psi_d, theta_d, 0.0);
+
+        const Eigen::Vector3d vel_body = {speed, 0.0, 0.0};
+        const Eigen::Vector3d vel_nue = ModelDevelop::Utils::CoordinateHelper::bodyToNueVelocity(vel_body, _state.qbn);
+        _state.velEcf = ModelDevelop::Utils::CoordinateHelper::nueToEcefVelocity(vel_nue, lla.x(), lla.y());
+
+        const auto engineInfo = _engine.getEigenInfo(_step, _flyTime, _state);
+        _p_body = engineInfo.P_body;
+        _totalMass = _mass + engineInfo.mass;
+        _inertia = _inertia + engineInfo.inertia;
+
+        _launchFlag = true;
     }
 
     void Missile::launch(const double theta_f_d, const double psi_f_d) {
@@ -152,7 +178,7 @@ namespace ModelDevelop::TGC {
             _p_body           = engineInfo.P_body;
             _totalMass        = _mass + engineInfo.mass;
             _inertia          = baseInertia + engineInfo.inertia;
-            _phase            = gcInfo.phase;
+            _phase            = keepForwardPhase(_phase, gcInfo.phase);
             if (_currentRouteId == -1) {
                 _routePoints.clear();
             }
@@ -163,6 +189,7 @@ namespace ModelDevelop::TGC {
             _sigma_elv_dot        = losInfo.sigma_elv_dot;
             _sigma_elv            = losInfo.sigma_elv;
             _sigma_az             = losInfo.sigma_az;
+            _theta_cmd            = gcInfo.theta_cmd;
             if (gcInfo.phase == GuidancePhase::Boost && gcInfo.pitch_cmd_valid) {
                 constexpr double pitchKp = 2.0e5;
                 constexpr double pitchKd = 2.0e4;
@@ -172,7 +199,7 @@ namespace ModelDevelop::TGC {
                 const double pitchRate = _state.wnb_b.z();
                 _m_body.z() = Guidance::clamp(pitchKp * pitchError - pitchKd * pitchRate, -maxPitchMoment, maxPitchMoment);
             } else if (gcInfo.phase != GuidancePhase::Boost) {
-                const auto [fst, snd] = _control.P6dof_Control(_step, acc_cmd_v, _state, _totalMass, _p_body, _imu_info, 1, 0, _s);
+                const auto [fst, snd] = _control.P6dof_Control(_step, acc_cmd_v, _state, _totalMass, _p_body, _imu_info, 1, 0, _s, _phase);
                 _rudder               = fst;
                 _m_body               = snd;
             }
@@ -391,16 +418,30 @@ namespace ModelDevelop::TGC {
         return derivative;
     }
 
+    int Missile::phaseId() const {
+        return static_cast<int>(_phase);
+    }
+
     const char *Missile::phaseName() const {
         switch (_phase) {
             case GuidancePhase::Boost:
                 return "boost";
+            case GuidancePhase::Climb:
+                return "climb";
             case GuidancePhase::Glide:
                 return "glide";
             case GuidancePhase::Handover:
                 return "handover";
             case GuidancePhase::Terminal:
                 return "terminal";
+            case GuidancePhase::DiveEntry:
+                return "dive_entry";
+            case GuidancePhase::DiveMid:
+                return "dive_mid";
+            case GuidancePhase::DiveHandover:
+                return "dive_handover";
+            case GuidancePhase::DiveTerminal:
+                return "dive_terminal";
             default:
                 return "unknown";
         }

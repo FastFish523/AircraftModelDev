@@ -35,7 +35,7 @@ namespace ModelDevelop::TGC {
 // region Public Methods
     std::pair<Eigen::Vector3d, Eigen::Vector3d> Control::P6dof_Control(double step, const Eigen::Vector3d &acc_cmd_v, const State &state, const double totalMass,
                                                                        const Eigen::Vector3d &p_body, const ImuInfo &imu_info, const double rel_dis, const double rel_dis_dot,
-                                                                       const double s) {
+                                                                       const double s, const GuidancePhase phase) {
         auto lla                = ModelDevelop::Utils::CoordinateHelper::ecefToLla(state.posEcf);
         const auto velocity_nue = ModelDevelop::Utils::CoordinateHelper::ecefToNueVelocity(state.velEcf, lla.x(), lla.y());
         const auto theta        = ModelDevelop::Utils::CoordinateHelper::getTheta(velocity_nue);
@@ -86,11 +86,20 @@ namespace ModelDevelop::TGC {
         const double wx         = imu_info.imu_w_xyz_body.x();
         const double wy         = imu_info.imu_w_xyz_body.y();
         const double wz         = imu_info.imu_w_xyz_body.z();
+        const bool diveProfile = phase == GuidancePhase::DiveEntry ||
+                                 phase == GuidancePhase::DiveMid ||
+                                 phase == GuidancePhase::DiveHandover ||
+                                 phase == GuidancePhase::DiveTerminal;
 
         if (rel_dis > rel_dis_dot * step * 10) {
             ex = 0 - imu_info.imu_ypr.z();
-            ey = acc_cmd_body.z() - imu_info.imu_acc_body.z();
-            ez = acc_cmd_body.y() - imu_info.imu_acc_body.y();
+            if (diveProfile) {
+                ey = beta_cmd - beta;
+                ez = alpha_cmd - alpha;
+            } else {
+                ey = acc_cmd_body.z() - imu_info.imu_acc_body.z();
+                ez = acc_cmd_body.y() - imu_info.imu_acc_body.y();
+            }
             iex += (pre_ex + ex) * 0.5 * step;
             iey += (pre_ey + ey) * 0.5 * step;
             iez += (pre_ez + ez) * 0.5 * step;
@@ -98,9 +107,15 @@ namespace ModelDevelop::TGC {
             pre_ey = ey;
             pre_ez = ez;
 
-            rudder.z() = -alpha_cmd + 0.05 * wz + 1 * (-0.0001 * ez - 0.005 * iez);
-            rudder.y() = -beta_cmd + 0.05 * wy + 1 * (+0.0001 * ey + 0.005 * iey);
-            rudder.x() = 0.5 * wx - 4.0 * ex - 0.1 * iex;
+            if (diveProfile) {
+                rudder.z() = -alpha_cmd + 0.5 * wz + 1 * (-0.001 * ez - 0.01 * iez);
+                rudder.y() = -beta_cmd + 0.5 * wy + 1 * (+0.0001 * ey + 0.005 * iey);
+                rudder.x() = 0.8 * wx - 4.0 * ex - 0.1 * iex;
+            } else {
+                rudder.z() = -alpha_cmd + 0.05 * wz + 1 * (-0.0001 * ez - 0.005 * iez);
+                rudder.y() = -beta_cmd + 0.05 * wy + 1 * (+0.0001 * ey + 0.005 * iey);
+                rudder.x() = 0.5 * wx - 4.0 * ex - 0.1 * iex;
+            }
 
             rudder.z() = limit(rudder.z(), -45 / 57.3, 45 / 57.3);
             rudder.y() = limit(rudder.y(), -45 / 57.3, 45 / 57.3);
@@ -121,6 +136,12 @@ namespace ModelDevelop::TGC {
         m_b.x() = 0;
 
         return {rudder, m_b};
+    }
+
+    double Control::firstOrderFilter(const double input, const double prev_output) {
+        constexpr double Ts = 0.005;
+        constexpr double T  = 0.005;
+        return (Ts * input + T * prev_output) / (T + Ts);
     }
 
     double Control::limit(const double x, const double lower, const double upper) {

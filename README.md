@@ -1,61 +1,43 @@
-# ModelDev
+# AGENTS.md
 
-## 导弹运动模型
+## Architecture Overview
+This is a C++ missile simulation framework using modular components:
+- **Missile** (TGC/TGCMissile.h): Main simulation class integrating subsystems
+- **Guidance** (TGC/Guidance.h): Computes line-of-sight and acceleration commands
+- **Control** (TGC/Control.h): PID control for rudder deflections and moments
+- **Engine** (TGC/Engine.h): Thrust and mass depletion modeling
+- **IMU** (TGC/IMU.h): Inertial measurement simulation
+- **Kinematics** (Util/Kinematics.h): 6DOF dynamics integration using RK4
+- **Aerodynamics** (Util/Aerodynamics.h): Force/moment coefficients via NRLMSISE atmosphere
 
-## 近程防空
+Data flows from target inputs → guidance → control → RK4 state update → IMU → file logging.
 
-| 序号 | 名称        | 发射方式   | 最大射程 | 高度范围（km） | 巡航速度(马赫) | 起飞质量 | 助推器质量 | 燃料质量 |
-|----|-----------|--------|------|----------|----------|------|-------|:----:|
-| 1  | PAC2(爱国者) | 车/船 垂发 |      |          |          |      |       |      |
+## Key Workflows
+- **Build**: Use CMake in `cmake-build-debug-visual-studio/`. Run `cmake --build . --config Debug` for MSVC or `make` on Linux.
+- **Test**: Execute `TGC_Test.exe` (links Missile lib) for simulation runs; outputs to `Results/TGC/`.
 
-## 中程防空
+  - On Windows (recommended) a reproducible configure/build sequence is:
+	```powershell
+	cmake -S . -B cmake-build-debug-visual-studio -G "Ninja" -DCMAKE_BUILD_TYPE=Debug
+	cmake --build cmake-build-debug-visual-studio --config Debug
+	```
+	The actual binaries and libraries are written to `_Build/out/<platform>/<configuration>/` (CMake sets `OutputPath` to `_Build/out`). For MSVC the resolved path is typically `_Build/out/windows/Debug/`.
+- **Debug**: Attach VS debugger to TGC_Test.exe; step through `Missile::update()` RK4 loop.
 
-| 序号 | 名称           | 发射方式     | 最大射程 | 高度范围（km） | 巡航速度(马赫) | 起飞质量 | 助推器质量 | 燃料质量 |
-|----|--------------|----------|------|----------|----------|------|-------|:----:|
-| 1  | PAC500(中程拦截) | 车/船 倾斜发射 |      |          |          |      |       |      |
+## Project Conventions
+- **Coordinates**: ECF (Earth-Centered Fixed) primary; convert via `CoordinateHelper` to LLA/NUE/body.
+- **Units**: Radians internally; getters return degrees (*57.3). Eigen vectors/matrices for math.
+- **Aero Models**: Custom lambda in `Missile` constructor (e.g., CN = 0.3 + 0.6*Ma²/(1+0.8*Ma⁴) + 4/sqrt(1+(Ma²-1)²)).
+- **File Structure**: Headers in `include/`, sources in `src/`, tests in `Test/`. Use `#pragma once` and region comments.
+- **Dependencies**: Eigen3 for linear algebra; NRLMSISE-00 for atmosphere; ylt for utilities.
+  - CMake feature flags used by this project (see top-level `CMakeLists.txt`): `-DIS_LXN_TEST=1` to enable test macros, `-DIS_LOG_PRINT=1` to enable extra log printing.
+  - The project supports building TGC as shared or static. See `include/TGC/TGCMissile.h` for the `DLL_EXPORT_IMPORT` macro and the `SharedTGC_Build` / `StaticTGC_Build` symbols used on Windows.
 
-## 远程防空
+## Integration Points
+- **MatlabHelper**: Aero coefficients for specific missiles (e.g., `AGM86C/aero.m`) computed externally and hardcoded in lambdas.
+ - **External Libs**: Link Eigen via `include/ThirdParty/eigen3/`; build shared libs (TGC.dll, Utils.dll) to `_Build/out/`.
+ - **Test runner**: `Test/TGC/CMakeLists.txt` creates the `TGC_Test` executable (see `Test/TGC/main.cpp` for a standard full-mission console runner).
+ - **Runtime outputs**: Simulation output files are written by `TGC::FileSaver` into `./Results/TGC/` (instantiated in `src/TGC/TGCMissile.cpp`).
 
-## 近程空空
-
-| 序号 | 名称        | 发射方式 | 最大射程 | 高度范围（km） | 巡航速度(马赫) | 起飞质量 | 助推器质量 | 燃料质量 |
-|----|-----------|------|------|----------|----------|------|-------|:----:|
-| 1  | AIM9(响尾蛇) | 飞机   |      |          |          | 85   |       |      |
-
-## 远程空空
-
-| 序号 | 名称      | 发射方式          | 最大射程 | 高度范围（km） | 巡航速度(马赫) | 起飞质量 | 助推器质量 | 燃料质量 |
-|----|---------|---------------|------|----------|----------|------|-------|:----:|
-| 1  | AIM120D | 飞机（1.6马赫初始速度） |      |          |          |      | 160   |      |
-
-## 中段反导
-
-## 目标运动模型
-
-## 巡航弹类
-
-| 序号 | 名称            | 发射方式              | 最大射程   | 高度范围（km） | 巡航速度(马赫) | 起飞质量   | 助推器质量 | 燃料质量  |
-|----|---------------|-------------------|--------|----------|----------|--------|-------|:-----:|
-| 1  | BGM(战斧)       | 车/船 垂发            | 2400km | 0-10km   | 0.7~0.9  | 1450kg | 50kg  | 200kg |
-| 2  | AGM86C        | B52轰炸机 空射(300m/s) | 1500km | 0-10km   | 0.7~0.9  | 1750kg | -     | 240kg |
-| 3  | HACM(高超音速巡航弹) | B52轰炸机 空射(300m/s) | 2700km | 10-20km  | 6~10     | 1450kg | -     | 370kg |
-
-## 弹道弹类
-
-| 序号 | 名称  | 射程范围          |
-|----|-----|---------------|
-| 1  | R11 | 150km~13000km |
-
-## 滑翔弹类
-
-| 序号 | 名称   | 发射方式 | 最大射程km | 高度范围km  | 滑翔速度ma | 起飞质量kg | 助推器质量kg | 燃料质量 |
-|----|------|------|--------|---------|--------|--------|---------|------|
-| 1  | LRHW | 陆射   | 1700   | 30~60km | 5~10   | 7100   | 6860    | -    |
-
-## 战术导弹
-
-## 飞机
-
-| 序号 | 名称  | 发射方式 | 最大射程 | 高度范围（km） | 巡航速度(马赫) | 起飞质量 | 助推器质量 | 燃料质量 |
-|----|-----|------|------|----------|----------|------|-------|:----:|
-| 1  | 战斗机 |      |      |          |          |      |       |      |
+Reference: `TGCMissile.cpp` update() for simulation loop; `CommonStructs.h` for data types.</content>
+<parameter name="filePath">F:\BUAA\1122\AircraftModelBase\ModelDev\ModelDev\AGENTS.md

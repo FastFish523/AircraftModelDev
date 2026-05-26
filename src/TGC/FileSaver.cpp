@@ -29,13 +29,12 @@ namespace ModelDevelop::TGC {
 
     namespace {
         void write_route_marker_row(FILE *fp_traj, const Eigen::Vector3d &routePointNue) {
-            fprintf(
-                fp_traj,
-                "-1.000000 %.6f %.6f %.6f nan nan nan nan nan nan nan nan nan nan nan nan nan nan nan nan nan nan nan nan nan nan nan nan nan nan nan nan nan nan nan nan nan nan nan nan nan\n",
-                routePointNue.x(),
-                routePointNue.y(),
-                routePointNue.z()
-            );
+            constexpr int columnCount = 45;
+            fprintf(fp_traj, "-1.000000 %.6f %.6f %.6f", routePointNue.x(), routePointNue.y(), routePointNue.z());
+            for (int i = 4; i < columnCount; ++i) {
+                fprintf(fp_traj, " nan");
+            }
+            fprintf(fp_traj, "\n");
         }
     }
 
@@ -66,7 +65,7 @@ namespace ModelDevelop::TGC {
         save_route_points(missile);
         fprintf(
             result_fp_traj(),
-            "%.6f %.6f %.6f %.6f %.6f %.6f %.6f %.6f %.6f %.6f %.6f %.6f %.6f %.6f %.6f %.6f %.6f %.6f %.6f %.6f %.6f %.6f %.6f %.6f %.6f %.6f %.6f %.6f %.6f %.6f %.6f %.6f %.6f %.6f %.6f %.6f %.6f %.6f %.6f %.6f %.6f\n",
+            "%.6f %.6f %.6f %.6f %.6f %.6f %.6f %.6f %.6f %.6f %.6f %.6f %.6f %.6f %.6f %.6f %.6f %.6f %.6f %.6f %.6f %.6f %.6f %.6f %.6f %.6f %.6f %.6f %.6f %.6f %.6f %.6f %.6f %.6f %.6f %.6f %.6f %.6f %.6f %.6f %.6f %.6f %.6f %.6f %d\n",
             missile->flyTime(),
             missile->positionLaunchNUE().x(),
             missile->positionLaunchNUE().y(),
@@ -76,9 +75,12 @@ namespace ModelDevelop::TGC {
             missile->attitudeEuler().y(),
             missile->attitudeEuler().z(),
             missile->velocityTheta(),
+            missile->thetaCmd(),
             missile->velocityPsi(),
             missile->alpha(),
             missile->beta(),
+            missile->alphaCmd(),
+            missile->betaCmd(),
             missile->accelerationBody().x(),
             missile->accelerationBody().y(),
             missile->accelerationBody().z(),
@@ -107,7 +109,8 @@ namespace ModelDevelop::TGC {
             missile->sigmaAzDot(),
             missile->tvcCommand().x(),
             missile->tvcCommand().y(),
-            missile->tvcCommand().z()
+            missile->tvcCommand().z(),
+            missile->phaseId()
         );
         save_boost_events(missile);
     }

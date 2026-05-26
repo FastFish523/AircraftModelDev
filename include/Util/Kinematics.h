@@ -51,7 +51,7 @@ class Dll_Export_Import Kinematics {
 // endregion
 
 // region Public Methods
-    D_State cal_d_state(State state, double mass,const Eigen::Matrix3d& inertia,const Eigen::Vector3d& P_body,const Eigen::Vector3d& M_body,const Eigen::Vector3d& rudder,double s,double l,double b);
+    D_State cal_d_state(const State& state, double mass,const Eigen::Matrix3d& inertia,const Eigen::Vector3d& P_body,const Eigen::Vector3d& M_body,const Eigen::Vector3d& rudder,double s,double l,double b);
 
 
 
