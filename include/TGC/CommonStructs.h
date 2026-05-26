@@ -37,13 +37,13 @@ namespace ModelDevelop::TGC {
     };
 
     struct DiveGuidanceConfig {
-        double entryDistance = 100000.0;
+        double entryDistance = 260000.0;
         double entryAltitude = 25000.0;
-        double midDistance = 55000.0;
+        double midDistance = 230000.0;
         double midAltitude = 15000.0;
-        double handoverDistance = 15000.0;
+        double handoverDistance = 200000.0;
         double handoverAltitude = 8000.0;
-        double terminalDistance = 5000.0;
+        double terminalDistance = 170000.0;
         double terminalAltitude = 2500.0;
         double terminalTime = 3.0;
         double minClosingVelocity = 1.0;

@@ -27,11 +27,11 @@
 
 namespace ModelDevelop::TGC {
     GCInfo Guidance::getMissionGCInfo(const double flyTime, const double P, const double Mass, const Eigen::Vector3d &targetPosEcf, const Eigen::Vector3d &targetVelEcf,
-                                      const State &state, const double maxLoad, const std::deque<Eigen::Vector3d> &waypoints, int &currentWpIndex) {
+                                      const State &state, const double maxLoad) {
         constexpr double safeSeparationTime = 0.4;
-        constexpr double seekerAcquireDistance = 20000.0;
-        constexpr double handoverEndDistance = 12000.0;
-        constexpr double seekerHalfFov = 60.0 / 57.3;
+        constexpr double postBoostClimbTime = 20.0;
+        constexpr double seekerAcquireDistance = 260000.0;
+        constexpr double handoverEndDistance = 260000.0;
         constexpr double climbThetaCmd = 18.0 / 57.3;
 
         GCInfo gc_info;
@@ -41,14 +41,11 @@ namespace ModelDevelop::TGC {
         const double psi = ModelDevelop::Utils::CoordinateHelper::getPsi(selfVel_nue);
         gc_info.theta_cmd = theta;
         const double target_dis = (targetPosEcf - state.posEcf).norm();
-        const bool hasRoute = !waypoints.empty() && currentWpIndex >= 0 && currentWpIndex < static_cast<int>(waypoints.size()) - 1;
         const DiveGuidanceConfig diveConfig{};
-        const bool inDiveEnvelope = target_dis <= diveConfig.entryDistance && lla.z() <= diveConfig.entryAltitude;
+        const bool inDiveEnvelope = target_dis <= diveConfig.entryDistance;
 
         const auto los_midcourse = getLOSInfo(targetPosEcf, targetVelEcf, state);
-        const auto los_terminal = _seeker.getLOSInfo(targetPosEcf, targetVelEcf, state);
-        const bool seekerInFov = std::abs(los_terminal.sigma_az_b) <= seekerHalfFov && std::abs(los_terminal.sigma_elv_b) <= seekerHalfFov;
-        //const bool seekerLocked = target_dis <= seekerAcquireDistance && seekerInFov;
+        const auto los_terminal = getLOSInfo(targetPosEcf, targetVelEcf, state);
         const bool seekerLocked = target_dis <= seekerAcquireDistance;
 
         Eigen::Vector3d acc_cmd_v = Eigen::Vector3d::Zero();
@@ -67,48 +64,31 @@ namespace ModelDevelop::TGC {
             gc_info.theta_cmd = boostInfo.theta_cmd;
             gc_info.pitch_cmd = boostInfo.pitch_cmd;
             gc_info.pitch_cmd_valid = boostInfo.pitch_cmd_valid;
-        } else if (P > 1.0e3) {
+        } else if (flyTime < Engine::boostTotalTime() + postBoostClimbTime) {
             gc_info.phase = GuidancePhase::Climb;
             gc_info.losInfo = los_midcourse;
 
-            double desired_h = 10000.0;
-            double lateral_acc = 0.0;
-            if (hasRoute) {
-                auto routeIndex = currentWpIndex;
-                const auto [routeAcc, routeHeight] = calculateL1Guidance(maxLoad, state.posEcf, state.velEcf, waypoints, routeIndex);
-                desired_h = std::max(routeHeight, desired_h);
-                lateral_acc = routeAcc;
-            } else {
-                const double heading_error = wrapAngle(los_midcourse.sigma_az - psi);
-                lateral_acc = 2.0 * selfVel_nue.norm() * selfVel_nue.norm() * std::sin(heading_error) / std::max(target_dis, 1000.0);
-            }
+            const double heading_error = wrapAngle(los_midcourse.sigma_az - psi);
+            const double lateral_acc = 2.0 * selfVel_nue.norm() * selfVel_nue.norm() * std::sin(heading_error) / std::max(target_dis, 1000.0);
 
             const double theta_error = climbThetaCmd - theta;
-            const double altitude_error = desired_h - lla.z();
             const double speed = selfVel_nue.norm();
             const double vy_cmd = speed * std::sin(climbThetaCmd);
-            acc_cmd_v.y() = 9.8 * std::cos(theta) + 0.015 * altitude_error + 1.8 * speed * theta_error - 0.45 * (selfVel_nue.y() - vy_cmd);
+            acc_cmd_v.y() = 9.8 * std::cos(theta)  + 1.8 * speed * theta_error - 0.45 * (selfVel_nue.y() - vy_cmd);
             acc_cmd_v.z() = lateral_acc;
             gc_info.theta_cmd = climbThetaCmd;
-        } else if (inDiveEnvelope) {
-            return getDiveGCInfo(flyTime, targetPosEcf, targetVelEcf, state, maxLoad, diveConfig);
         } else if (!seekerLocked) {
-            if (hasRoute) {
-                gc_info = getGCInfoRouteL1(state, maxLoad, waypoints, currentWpIndex);
-                gc_info.phase = GuidancePhase::Glide;
-                gc_info.losInfo = los_midcourse;
-                return gc_info;
-            }
             gc_info = getGCInfoAnalyticMidcourse(flyTime, targetPosEcf, targetVelEcf, state, Mass, maxLoad);
             return gc_info;
-        } else {
+        } else if (inDiveEnvelope) {
+            gc_info = getDiveGCInfo(flyTime, targetPosEcf, targetVelEcf, state, maxLoad, diveConfig);
+            return gc_info;
+        } /*else {
             const auto terminal_acc = guidance_pn(theta, los_terminal.sigma_az_dot, los_terminal.sigma_elv_dot, los_terminal.dis_dot);
             gc_info.losInfo = los_terminal;
 
             if (seekerLocked && target_dis > handoverEndDistance) {
-                auto routeInfo = hasRoute
-                                         ? getGCInfoRouteL1(state, maxLoad, waypoints, currentWpIndex)
-                                         : getGCInfoAnalyticMidcourse(flyTime, targetPosEcf, targetVelEcf, state, Mass, maxLoad);
+                auto routeInfo = getGCInfoAnalyticMidcourse(flyTime, targetPosEcf, targetVelEcf, state, Mass, maxLoad);
                 handoverRatio = computeBlendRatio(target_dis, seekerAcquireDistance, handoverEndDistance);
                 acc_cmd_v = (1.0 - handoverRatio) * routeInfo.acc_cmd_v + handoverRatio * terminal_acc;
                 gc_info.phase = GuidancePhase::Handover;
@@ -116,13 +96,13 @@ namespace ModelDevelop::TGC {
                 acc_cmd_v = terminal_acc;
                 gc_info.phase = GuidancePhase::Terminal;
             }
-        }
+        }*/
 
-        acc_cmd_v.y() = clamp(acc_cmd_v.y(), -9.8 * maxLoad, 9.8 * maxLoad);
+        /*acc_cmd_v.y() = clamp(acc_cmd_v.y(), -9.8 * maxLoad, 9.8 * maxLoad);
         acc_cmd_v.z() = clamp(acc_cmd_v.z(), -9.8 * maxLoad, 9.8 * maxLoad);
         gc_info.acc_cmd_v = acc_cmd_v;
         gc_info.handoverRatio = handoverRatio;
-        return gc_info;
+        return gc_info;*/
     }
 
     Guidance::BoostGuidanceInfo Guidance::calculateBoostGuidance(const double flyTime, const double P, const double Mass,
@@ -223,13 +203,11 @@ namespace ModelDevelop::TGC {
         const double horizontalDis = std::hypot(relPosNue.x(), relPosNue.z());
 
         const auto losMidcourse = getLOSInfo(targetPosEcf, targetVelEcf, state);
-        const auto losTerminal = _seeker.getLOSInfo(targetPosEcf, targetVelEcf, state);
-        constexpr double seekerHalfFov = 60.0 / 57.3;
-        const bool seekerInFov = std::abs(losTerminal.sigma_az_b) <= seekerHalfFov && std::abs(losTerminal.sigma_elv_b) <= seekerHalfFov;
+        const auto losTerminal = getLOSInfo(targetPosEcf, targetVelEcf, state);
         const double closingVelocity = -losTerminal.dis_dot;
         const bool targetClosing = closingVelocity > config.minClosingVelocity;
         const double timeToGo = targetClosing ? targetDis / closingVelocity : std::numeric_limits<double>::infinity();
-        const bool seekerLocked = seekerInFov && targetClosing && (targetDis <= config.handoverDistance || timeToGo <= config.terminalTime);
+        const bool seekerLocked = targetClosing && (targetDis <= config.handoverDistance || timeToGo <= config.terminalTime);
 
         double thetaCmdLimit = config.entryThetaCmd;
         GuidancePhase phase = GuidancePhase::DiveEntry;
@@ -348,108 +326,6 @@ namespace ModelDevelop::TGC {
         los_info.sigma_elv_b = std::atan2(rel_pos_body.y(), rel_pos_body.x());
         los_info.sigma_az_b = std::atan2(-rel_pos_body.z(), rel_pos_body.x());
         return los_info;
-    }
-
-    GCInfo Guidance::getGCInfoRouteL1(const State &state, const double maxLoad, const std::deque<Eigen::Vector3d> &waypoints, int &currentWpIndex) {
-        auto lla = ModelDevelop::Utils::CoordinateHelper::ecefToLla(state.posEcf);
-        const auto selfVel_nue = ModelDevelop::Utils::CoordinateHelper::ecefToNueVelocity(state.velEcf, lla.x(), lla.y());
-        const double theta = Utils::CoordinateHelper::getTheta(selfVel_nue);
-        Eigen::Vector3d acc_cmd_v = {0, 0, 0};
-        const double Vy = selfVel_nue.y();
-
-        auto [acc_cmd_vz, desired_h] = calculateL1Guidance(maxLoad, state.posEcf, state.velEcf, waypoints, currentWpIndex);
-        lastDesiredH = lastDesiredH + 0.001 * (desired_h - lastDesiredH);
-        acc_cmd_v.z() = acc_cmd_vz;
-        acc_cmd_v.y() = 9.8 * std::cos(theta) + 0.2 * (desired_h - lla.z()) - 2 * 4 * 0.2 * Vy;
-
-        if (acc_cmd_v.y() > 9.8 * maxLoad)
-            acc_cmd_v.y() = 9.8 * maxLoad;
-        if (acc_cmd_v.y() < -9.8 * maxLoad)
-            acc_cmd_v.y() = -9.8 * maxLoad;
-        if (acc_cmd_v.z() > 9.8 * maxLoad)
-            acc_cmd_v.z() = 9.8 * maxLoad;
-        if (acc_cmd_v.z() < -9.8 * maxLoad)
-            acc_cmd_v.z() = -9.8 * maxLoad;
-        GCInfo gc_info;
-        gc_info.acc_cmd_v = acc_cmd_v;
-        gc_info.theta_cmd = theta;
-        return gc_info;
-    }
-
-    std::pair<double, double> Guidance::calculateL1Guidance(const double maxLoad, const Eigen::Vector3d &currentPosEcf, const Eigen::Vector3d &currentVelEcf,
-                                                            const std::deque<Eigen::Vector3d> &waypoints, int &currentWpIndex) {
-        if (waypoints.empty() || currentWpIndex < 0 || currentWpIndex >= static_cast<int>(waypoints.size()) - 1) {
-            currentWpIndex = -1;
-            return {0.0, 0.0};
-        }
-
-        const auto &wp_start_lla = waypoints[currentWpIndex];
-        const auto &wp_end_lla = waypoints[currentWpIndex + 1];
-        Eigen::Vector3d wp_start_ecf = Utils::CoordinateHelper::llaToEcef(wp_start_lla);
-        Eigen::Vector3d wp_end_ecf = Utils::CoordinateHelper::llaToEcef(wp_end_lla);
-
-        Eigen::Vector3d pos_nue = Utils::CoordinateHelper::ecefToNuePosition(currentPosEcf, wp_start_lla.x(), wp_start_lla.y()) -
-                                  Utils::CoordinateHelper::ecefToNuePosition(wp_start_ecf, wp_start_lla.x(), wp_start_lla.y());
-        Eigen::Vector3d wp_start_nue(0, 0, 0);
-        Eigen::Vector3d wp_end_nue = Utils::CoordinateHelper::ecefToNuePosition(wp_end_ecf, wp_start_lla.x(), wp_start_lla.y()) -
-                                     Utils::CoordinateHelper::ecefToNuePosition(wp_start_ecf, wp_start_lla.x(), wp_start_lla.y());
-
-        Eigen::Vector3d vel_nue3 = Utils::CoordinateHelper::ecefToNueVelocity(currentVelEcf, wp_start_lla.x(), wp_start_lla.y());
-        Eigen::Vector2d vel_nue(vel_nue3.x(), vel_nue3.z());
-
-        double speed = vel_nue.norm();
-        double R_min = (speed * speed) / (maxLoad * 9.8);
-        double L1_distance = std::max(3.0 * R_min, 1000.0);
-
-        Eigen::Vector2d pos_2d(pos_nue[0], pos_nue[2]);
-        Eigen::Vector2d wp_start_2d(wp_start_nue[0], wp_start_nue[2]);
-        Eigen::Vector2d wp_end_2d(wp_end_nue[0], wp_end_nue[2]);
-
-        double acc = calculateL1GuidanceNUE(pos_2d, vel_nue, wp_start_2d, wp_end_2d, L1_distance);
-
-        if (currentWpIndex <= static_cast<int>(waypoints.size()) - 2) {
-            Eigen::Vector2d to_end = wp_end_2d - pos_2d;
-            double dist_to_end = to_end.norm();
-            if (dist_to_end < std::max(0.5 * L1_distance, 1000.0)) {
-                currentWpIndex++;
-                if (currentWpIndex >= static_cast<int>(waypoints.size()) - 1) {
-                    currentWpIndex = -1;
-                }
-            }
-        }
-
-        return {acc, wp_end_lla.z()};
-    }
-
-    double Guidance::calculateL1GuidanceNUE(const Eigen::Vector2d &pos_nue, const Eigen::Vector2d &vel_nue, const Eigen::Vector2d &wp_start, const Eigen::Vector2d &wp_end,
-                                            double L1_distance) {
-        Eigen::Vector2d segment = wp_end - wp_start;
-        double seg_length = segment.norm();
-        if (seg_length < 1e-6) {
-            return 0.0;
-        }
-
-        Eigen::Vector2d seg_unit = segment / seg_length;
-        Eigen::Vector2d rel_pos = pos_nue - wp_start;
-        double s = rel_pos.dot(seg_unit);
-        Eigen::Vector2d proj_point = wp_start + seg_unit * s;
-        double s_L1 = s + L1_distance;
-
-        Eigen::Vector2d L1_point = s_L1 > seg_length ? wp_end : wp_start + seg_unit * s_L1;
-        Eigen::Vector2d vec_to_L1 = L1_point - pos_nue;
-        double dist_to_L1 = vec_to_L1.norm();
-        if (dist_to_L1 < 1e-6) {
-            return 0.0;
-        }
-
-        double V = vel_nue.norm();
-        if (V < 1e-6) {
-            return 0.0;
-        }
-
-        double cross_y = vel_nue[0] * vec_to_L1[1] - vel_nue[1] * vec_to_L1[0];
-        double sin_eta = cross_y / (V * dist_to_L1);
-        return 2.0 * V * V * sin_eta / dist_to_L1;
     }
 
     Eigen::Vector3d Guidance::guidance_pn(const double theta, const double sigma_az_dot, const double sigma_elv_dot, const double dis_dot) {
@@ -637,7 +513,6 @@ namespace ModelDevelop::TGC {
     }
 
     void Guidance::reset() {
-        lastDesiredH = 0.0;
         boostInitialPsi = std::nullopt;
         lastBankSign = 1.0;
         _lastDiveThetaCmd = std::nullopt;
