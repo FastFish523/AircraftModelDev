@@ -4,6 +4,7 @@
 
 // region Include
 // region STL
+#include <cmath>
 // endregion
 // region ThirdParty
 // endregion
@@ -47,7 +48,10 @@ namespace ModelDevelop::TGC {
         if (Ma < 0.1) {
             ma = 0.1;
         }
-        double CN      = 0.3 + 0.6 * ma * ma / (1 + 0.8 * ma * ma * ma * ma) + 4.0 / sqrt(1 + (ma * ma - 1) * (ma * ma - 1));
+        // HTV-2 类高超声速滑翔体升力斜率估计。
+        // 必须与 TGCMissile.cpp 中的 CL = CN * alpha 保持一致；
+        // 提高 CN 后，同样法向过载需求对应的 alpha_cmd 会降低。
+        const double CN = 3.2 + 0.35 / std::sqrt(ma);
         const auto rho = ModelDevelop::Utils::Aerodynamics::calculateAtmosphereDensity(lla.z());
 
 

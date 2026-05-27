@@ -36,37 +36,122 @@ namespace ModelDevelop::TGC {
 // region Constructor
 
     Missile::Missile() {
+       /* // region 气动1
         _fileSaver = std::make_shared<FileSaver>("./Results/TGC/");
-        _s       = 0.223;   // m^2, assumed aerodynamic reference area
-        _l       = 6.55;    // m, assumed reference length
-        _b       = 6.55;    // m, temporary lateral reference length; should be refined
-        _mass    = 1000;    // kg, HTV-2-like glide vehicle mass
-        _inertia << 18.010, 0.0, 0.0,
-                    0.0, 1191.985, 0.0,
-                    0.0, 0.0, 1191.985;
+        _s       = 0.4839;  // m^2, effective aerodynamic reference area
+        _l       = 3.67;    // m, HTV-2-like reference length
+        _b       = 2.20;    // m, HTV-2-like lateral reference span
+        _mass    = 1000.0;  // kg, HTV-2-like glide vehicle mass
+
+        _inertia << 4.50e2, 0.0,    0.0,
+                    0.0,    1.50e3, 0.0,
+                    0.0,    0.0,    1.17e3;
         _kinematics._dynamics._aerodynamics.computeAeroCoefficientsCB =
-                [this](const double alpha, const double beta, const double dx, const double dy, const double dz, const double Ma, double &CD, double &CL, double &CZ, double &Cl,
-                       double &Cm, double &Cn) {
-                    // 1. 计算马赫数相关的法向力导数
-                    double ma = Ma;
-                    if (Ma < 0.1) {
-                        ma = 0.1;
-                    }
-                    double CN = 0.3 + 0.6 * ma * ma / (1 + 0.8 * ma * ma * ma * ma) + 4.0 / sqrt(1 + (ma * ma - 1) * (ma * ma - 1));
-                    // 2. 计算马赫数相关的轴向力参数
-                    const double CA0 = 0.03 + 0.0005 * ma;
-                    const double k   = 0.8 + 0.0005 * ma;
-                    // 3. 气动力系数
-                    CD = -(CA0 + k * (alpha * alpha + beta * beta));
-                    CL = CN * alpha;
-                    CZ = -CN * beta;
-                    // 4. 气动力矩系数
-                    constexpr double cg_cf       = 0.5;
-                    constexpr double rudder_rate = 1;
-                    Cl                           = -CN * dx * cg_cf * 0.001;
-                    Cm                           = -CL * cg_cf - CN * dz * cg_cf * rudder_rate;
-                    Cn                           = CZ * cg_cf - CN * dy * cg_cf * rudder_rate;
-                };
+        [this](const double alpha, const double beta,
+               const double dx, const double dy, const double dz,
+               const double Ma,
+               double &CD, double &CL, double &CZ,
+               double &Cl, double &Cm, double &Cn) {
+            constexpr double DEG_TO_RAD = 3.1415926 / 180.0;
+
+            const double ma = std::clamp(Ma, 0.1, 25.0);
+
+            // alpha, beta 在当前工程中是弧度
+            const double alpha_eff = std::clamp(alpha, -30.0 * DEG_TO_RAD, 30.0 * DEG_TO_RAD);
+            const double beta_eff  = std::clamp(beta,  -20.0 * DEG_TO_RAD, 20.0 * DEG_TO_RAD);
+
+            // HTV-2-like 典型滑翔配平迎角，约 8~12 deg
+            constexpr double alpha_trim = 10.0 * DEG_TO_RAD;
+
+            // 典型升力斜率：使 alpha = 10 deg 时 CL ≈ 0.41
+            constexpr double CL_ALPHA = 2.38;   // 1/rad
+
+            // 侧向力导数，先取与升力斜率同量级
+            constexpr double CY_BETA  = 2.00;   // 1/rad
+
+            // 阻力模型：在 alpha = 10 deg 时 CD ≈ 0.16
+            const double CD0 = 0.10 + 0.01 * std::tanh((ma - 6.0) / 4.0);
+            constexpr double K_ALPHA = 2.00;
+            constexpr double K_BETA  = 1.50;
+
+            const double CD_abs = CD0
+                                + K_ALPHA * alpha_eff * alpha_eff
+                                + K_BETA  * beta_eff  * beta_eff;
+
+            // 注意：当前工程中速度坐标系 x 方向沿速度方向，
+            // 阻力需要取负号，保持你原代码的符号约定
+            CD = -CD_abs;
+
+            // 升力和侧向力
+            CL = CL_ALPHA * alpha_eff;
+            CZ = -CY_BETA * beta_eff;
+
+            // 力矩系数：工程初值
+            // dx: 滚转舵/差动控制
+            // dy: 偏航控制
+            // dz: 俯仰控制
+            constexpr double CL_BETA = -0.08;
+            constexpr double CL_DX   = -0.40;
+
+            constexpr double CM_ALPHA = -1.20;
+            constexpr double CM_DZ    = -0.80;
+
+            constexpr double CN_BETA = -0.35;
+            constexpr double CN_DY   = -0.60;
+
+            Cl = CL_BETA * beta_eff + CL_DX * dx;
+            Cm = CM_ALPHA * (alpha_eff - alpha_trim) + CM_DZ * dz;
+            Cn = CN_BETA * beta_eff + CN_DY * dy;
+        };
+        // endregion*/
+
+        // region 气动2
+        _fileSaver = std::make_shared<FileSaver>("./Results/TGC/");
+        _s    = 0.5 * 3.67 * 2.2;   // m^2，HTV-2 类三角平面参考面积
+        _l    = 3.67;               // m，机体/气动参考长度
+        _b    = 2.2;                // m，平面展宽/横向参考长度
+        _mass = 1000.0;             // kg，HTV-2 类滑翔飞行器质量
+
+        // 工程估算惯量：按扁平升力体包络估算，长 3.67 m、展宽 2.2 m、厚度约 0.35 m。
+        // 参考文献未直接给出完整惯量张量，后续如有 CAD 或质量分布数据应替换。
+        _inertia << 4.15e2, 0.0,    0.0,
+                    0.0,    1.13e3, 0.0,
+                    0.0,    0.0,    1.53e3;
+
+        _kinematics._dynamics._aerodynamics.computeAeroCoefficientsCB =
+        [this](const double alpha, const double beta,
+               const double dx, const double dy, const double dz,
+               const double Ma,
+               double &CD, double &CL, double &CZ,
+               double &Cl, double &Cm, double &Cn) {
+            const double ma = std::max(Ma, 0.1);
+
+            // HTV-2 类/一般高超声速滑翔体初步气动模型。
+            // CN 为每弧度法向力导数，保留较弱马赫数修正，避免高马赫下导数过小。
+            const double CN = 3.2 + 0.35 / std::sqrt(ma);
+
+            // 基于平面参考面积的轴向阻力模型。
+            // 参数按 alpha = 8~12 deg 时 L/D 约为 2~3 的量级选取。
+            const double CA0 = 0.055 + 0.0008 * ma;
+            const double k   = 1.4;
+
+            // 气动力系数。当前动力学里 CD 使用负号表示阻力沿体轴负向。
+            CD = -(CA0 + k * (alpha * alpha + beta * beta));
+            CL = CN * alpha;
+            CZ = -CN * beta;
+
+            // 气动力矩系数。
+            // static_margin 表示气动中心相对质心的无量纲力臂；
+            // ctrl_eff 为俯仰/偏航控制面效率估计，roll_eff 为较弱滚转通道效率估计。
+            constexpr double static_margin = 0.20;
+            constexpr double ctrl_eff      = 0.60;
+            constexpr double roll_eff      = 0.04;
+
+            Cl = -CN * dx * roll_eff;
+            Cm = -CL * static_margin - CN * dz * static_margin * ctrl_eff;
+            Cn =  CZ * static_margin - CN * dy * static_margin * ctrl_eff;
+        };
+        // endregion
     }
 
     Missile::~Missile() = default;
@@ -200,7 +285,7 @@ namespace ModelDevelop::TGC {
         if (distance_deque.size() > 4) {
             distance_deque.pop_front();
         }
-        if (dis < 2000 && distance_deque.size() >= 4) {
+        if (dis < 200000 && distance_deque.size() >= 4) {
             bool increasing = false;
             for (auto it = distance_deque.begin(); it + 1 != distance_deque.end(); ++it) {
                 if (*it < *(it + 1)) {

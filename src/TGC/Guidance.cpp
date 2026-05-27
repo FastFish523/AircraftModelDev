@@ -83,26 +83,12 @@ namespace ModelDevelop::TGC {
         } else if (inDiveEnvelope) {
             gc_info = getDiveGCInfo(flyTime, targetPosEcf, targetVelEcf, state, maxLoad, diveConfig);
             return gc_info;
-        } /*else {
-            const auto terminal_acc = guidance_pn(theta, los_terminal.sigma_az_dot, los_terminal.sigma_elv_dot, los_terminal.dis_dot);
-            gc_info.losInfo = los_terminal;
-
-            if (seekerLocked && target_dis > handoverEndDistance) {
-                auto routeInfo = getGCInfoAnalyticMidcourse(flyTime, targetPosEcf, targetVelEcf, state, Mass, maxLoad);
-                handoverRatio = computeBlendRatio(target_dis, seekerAcquireDistance, handoverEndDistance);
-                acc_cmd_v = (1.0 - handoverRatio) * routeInfo.acc_cmd_v + handoverRatio * terminal_acc;
-                gc_info.phase = GuidancePhase::Handover;
-            } else {
-                acc_cmd_v = terminal_acc;
-                gc_info.phase = GuidancePhase::Terminal;
-            }
-        }*/
-
-        /*acc_cmd_v.y() = clamp(acc_cmd_v.y(), -9.8 * maxLoad, 9.8 * maxLoad);
+        }
+        acc_cmd_v.y() = clamp(acc_cmd_v.y(), -9.8 * maxLoad, 9.8 * maxLoad);
         acc_cmd_v.z() = clamp(acc_cmd_v.z(), -9.8 * maxLoad, 9.8 * maxLoad);
         gc_info.acc_cmd_v = acc_cmd_v;
         gc_info.handoverRatio = handoverRatio;
-        return gc_info;*/
+        return gc_info;
     }
 
     Guidance::BoostGuidanceInfo Guidance::calculateBoostGuidance(const double flyTime, const double P, const double Mass,
@@ -445,13 +431,13 @@ namespace ModelDevelop::TGC {
     }
 
     double Guidance::estimateLiftAcceleration(const State &state, const double mass, const double maxLoad) const {
-        constexpr double referenceArea = 0.223;
-        constexpr double maxAlpha = 20.0 / 57.3;
+        constexpr double referenceArea = 0.5 * 3.67 * 2.2;
+        constexpr double maxAlpha = 25.0 / 57.3;
         const auto lla = ModelDevelop::Utils::CoordinateHelper::ecefToLla(state.posEcf);
         const auto velNue = ModelDevelop::Utils::CoordinateHelper::ecefToNueVelocity(state.velEcf, lla.x(), lla.y());
         const double speed = velNue.norm();
         const double ma = std::max(speed / av, 0.1);
-        const double cn = 0.3 + 0.6 * ma * ma / (1.0 + 0.8 * ma * ma * ma * ma) + 4.0 / std::sqrt(1.0 + (ma * ma - 1.0) * (ma * ma - 1.0));
+        const double cn = 3.2 + 0.35 / std::sqrt(ma);
         const double rho = ModelDevelop::Utils::Aerodynamics::calculateAtmosphereDensity(lla.z());
         const double availableLift = 0.5 * rho * speed * speed * referenceArea * cn * maxAlpha / std::max(mass, 1.0);
         return clamp(availableLift, 9.80665, 9.80665 * maxLoad);
