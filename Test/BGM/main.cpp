@@ -17,7 +17,7 @@ int main()
     ModelDevelop::BGM::Missile missile;
     ModelDevelop::SEEKER::Seeker seeker;
     missile.init(0.005,missileLLA);
-    missile.setCruiseAltAndMH(250,0.7);
+    missile.setCruiseAltAndMH(1000,0.7);
     missile.setGetLOSInfoFunction( [&](
         const Eigen::Vector3d& _targetPosEcf,
         const Eigen::Vector3d& _targetVelEcf,
@@ -38,9 +38,8 @@ int main()
     missile.setTargetEcf(targetPosEcf,{0,0,0},false);
 
     std::deque<Eigen::Vector3d> routePoints{};
-    routePoints.push_back(Eigen::Vector3d(121.2,40.2,200));
-    routePoints.push_back(Eigen::Vector3d(121.5,40.1,200));
-    routePoints.push_back(Eigen::Vector3d(121.98,40,200));
+    routePoints.push_back(Eigen::Vector3d(121.8,40,1000));
+    routePoints.push_back(Eigen::Vector3d(121.9,40.01,1000));
     missile.setRoutePoints(routePoints);
 
     const auto targetPsi = ModelDevelop::Utils::CoordinateHelper::getPsi(targetPosNue)*57.3;
