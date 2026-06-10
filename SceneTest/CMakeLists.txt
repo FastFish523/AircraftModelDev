@@ -1,0 +1,8 @@
+add_executable(Scene_Interception_AIM120D_Air Interception/AIM120D_Aircraft.cpp)
+target_link_libraries(Scene_Interception_AIM120D_Air Aircraft AIM120D)
+
+add_executable(Scene_Interception_PAC2_Air Interception/PAC2_Aircraft.cpp)
+target_link_libraries(Scene_Interception_PAC2_Air Aircraft PAC500)
+
+add_executable(Scene_Theoretical_Air Theoretical/T_Aircraft.cpp)
+target_link_libraries(Scene_Theoretical_Air Aircraft TheoreticalModel)

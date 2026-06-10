@@ -1,0 +1,208 @@
+//
+// Created by Administrator on 2026/2/28.
+//
+
+// region Include
+// region STL
+// endregion
+// region ThirdParty
+// endregion
+// region Self
+#include "Aircraft/Control.h"
+#include "Aerodynamics.h"
+#include "CoordinateHelper.h"
+// endregion
+// endregion
+
+// region Define
+#define PRETTY_FILE_NAME "ModelDevelop/Aircraft/Aircraft"
+// endregion
+
+// region Using NameSpace
+
+// endregion
+
+namespace ModelDevelop::Aircraft{
+    // region Static Attributes Init
+    // endregion
+
+    // region USING/FRIEND
+    // endregion
+
+    // region Constructor
+    // endregion
+
+    // region Public Methods
+    std::pair<Eigen::Vector3d, Eigen::Vector3d> Control::P6dof_Control(
+        const double& step, const Eigen::Vector3d& acc_cmd_v,
+        const State& state, const double& totalMass,
+        const Eigen::Vector3d& p_body,
+        const ImuInfo& imu_info,
+        const double& s,
+        const ManeuveringModeType& maneuveringType){
+        auto lla = ModelDevelop::Utils::CoordinateHelper::ecefToLla(state.posEcf);
+        const auto velocity_nue = ModelDevelop::Utils::CoordinateHelper::ecefToNueVelocity(
+            state.velEcf, lla.x(), lla.y());
+        // const auto theta = ModelDevelop::Utils::CoordinateHelper::getTheta(velocity_nue);
+
+        // region 得标称弹道临时用
+        // constexpr double K1 = 4;
+        const double Ma = velocity_nue.norm() / 340.0;
+        double ma = Ma;
+        if (Ma < 0.1){
+            ma = 0.1;
+        }
+        const double CN = 0.3 + 0.6 * ma * ma / (1 + 0.8 * ma * ma * ma * ma) + 4.0 / sqrt(
+            1 + (ma * ma - 1) * (ma * ma - 1));
+        const auto rho = ModelDevelop::Utils::Aerodynamics::calculateAtmosphereDensity(lla.z());
+
+
+        const double P = p_body.norm();
+        const double ka = CN * 0.5 * rho * velocity_nue.squaredNorm() * s;
+        const double m_a_alpha = acc_cmd_v.y() * totalMass;
+        double alpha_c = 0.0; // 初始猜测
+        const double kb = -CN * 0.5 * rho * velocity_nue.squaredNorm() * s;
+        const double m_a_beta = acc_cmd_v.z() * totalMass;
+        double beta_c = 0.0; // 初始猜测
+
+        for (int i = 0; i < 5; i++){
+            // 最多迭代20次
+            const double f = P * sin(alpha_c) + ka * alpha_c - m_a_alpha; // 函数值
+            const double df = P * cos(alpha_c) + ka; // 导数值
+            alpha_c = alpha_c - f / df; // 牛顿迭代
+        }
+        alpha_cmd = alpha_c;
+
+        for (int i = 0; i < 5; i++){
+            // 最多迭代20次
+            const double f = -P * cos(alpha_cmd) * sin(beta_c) + kb * beta_c - m_a_beta; // 函数值
+            const double df = -P * cos(alpha_cmd) * cos(beta_c) + kb; // 导数值
+            beta_c = beta_c - f / df; // 牛顿迭代
+        }
+        beta_cmd = beta_c;
+
+
+        alpha_cmd = limit(alpha_cmd, -45 / 57.3, 45 / 57.3);
+        beta_cmd = limit(beta_cmd, -45 / 57.3, 45 / 57.3);
+
+        // endregion
+        /*!
+         *x 滚转
+         *y 偏航
+         *z 俯仰
+         */
+        Eigen::Vector3d rudder;
+        double alpha, beta;
+        ModelDevelop::Utils::CoordinateHelper::calculateAngleOfAttack(velocity_nue, state.qbn, alpha, beta);
+        const auto acc_cmd_body = ModelDevelop::Utils::CoordinateHelper::velocityToBodyAcceleration(
+            acc_cmd_v, alpha, beta);
+        const double wx = imu_info.imu_w_xyz_body.x();
+        const double wy = imu_info.imu_w_xyz_body.y();
+        const double wz = imu_info.imu_w_xyz_body.z();
+        switch (maneuveringType){
+            default:
+            case ManeuveringModeType::LevelFlight:
+            case ManeuveringModeType::UpAndDown:
+            case ManeuveringModeType::L:
+            case ManeuveringModeType::Circle:
+            case ManeuveringModeType::SLevel:
+            case ManeuveringModeType::SVertical: {
+                ex = acc_cmd_v.x() - imu_info.imu_ypr.z();
+                ey = acc_cmd_body.z() - imu_info.imu_acc_body.z();
+                ez = acc_cmd_body.y() - imu_info.imu_acc_body.y();
+                iex += (pre_ex + ex) * 0.5 * step;
+                iey += (pre_ey + ey) * 0.5 * step;
+                iez += (pre_ez + ez) * 0.5 * step;
+                pre_ex = ex;
+                pre_ey = ey;
+                pre_ez = ez;
+                rudder.z() = -alpha_cmd + 0.5 * wz + 1 * (-0.0001 * ez - 0.005 * iez);
+                rudder.y() = -beta_cmd + 0.5 * wy + 1 * (+0.0001 * ey + 0.005 * iey);
+                rudder.x() = 3 * wx - 10.0 * ex - 2 * iex;
+                isCompleted = true;
+                break;
+            }
+            case ManeuveringModeType::Somersault: {
+                ez = m_angular_rate_control.z() / 57.3 - wz; //
+                iez += (pre_ez + ez) * 0.5 * step;
+                pre_ez = ez;
+                rudder.z() = -5 * ez - 1 * iez;
+                rudder.y() = 0;
+                rudder.x() = 3 * wx;
+            }
+            case ManeuveringModeType::SplitS: {
+                if (getManeuveringStage == nullptr){
+                    std::cout << "getManeuveringStage == nullptr" << std::endl;
+                    break;
+                }
+                switch (getManeuveringStage()){
+                    case ManeuveringStage::STAGE1: {
+                        // std::cout << "斜半滚倒转机动->STAGE1" << std::endl;
+                        ex = 10 / 57.3 - wx;
+                        pre_ex = ex;
+                        rudder.y() = 0;
+                        rudder.x() = -1 * ex;
+                        rudder.z() = wz;
+                        break;
+                    }
+                    case ManeuveringStage::STAGE2: {
+                        // std::cout << "斜半滚倒转机动->STAGE2" << std::endl;
+                        ex = 0 / 57.3 - wx;
+                        pre_ex = ex;
+                        rudder.y() = 0;
+                        rudder.x() = -1 * ex;
+                        rudder.z() = -30 / 57.3 + wz;
+                        break;
+                    }
+                    default: break;
+                        // rudder.y() = 0;
+                        // rudder.x() = -1 * ex;
+                        // rudder.z() = -(5/57.3-att.y()/57.3)+wz;
+                }
+            }
+        }
+
+
+        // rudder.z() = -alpha_cmd + 0.5 * wz + 1 * (-0.0001 * ez - 0.005 * iez);
+
+
+        rudder.z() = limit(rudder.z(), -45 / 57.3, 45 / 57.3);
+        rudder.y() = limit(rudder.y(), -45 / 57.3, 45 / 57.3);
+        rudder.x() = limit(rudder.x(), -45 / 57.3, 45 / 57.3);
+
+        last_dx = rudder.x();
+        last_dy = rudder.y();
+        last_dz = rudder.z();
+
+
+        Eigen::Vector3d m_b;
+        m_b.z() = 0;
+        m_b.y() = 0;
+        m_b.x() = 0;
+
+        return {rudder, m_b};
+    }
+
+    double Control::firstOrderFilter(const double input, const double prev_output){
+        constexpr double Ts = 0.005;
+        constexpr double T = 0.005;
+        return (Ts * input + T * prev_output) / (T + Ts);
+    }
+
+    double Control::limit(const double x, const double lower, const double upper){
+        return x < lower ? lower : (x > upper ? upper : x);
+    }
+
+    void Control::setAngularRateControl(const Eigen::Vector3d& angular_rate_control){
+        m_angular_rate_control = angular_rate_control;
+    }
+
+    // endregion
+
+    // region Get/Set选择器
+    // endregion
+
+    // region Private Methods
+    // endregion
+}
+#undef PRETTY_FILE_NAME
