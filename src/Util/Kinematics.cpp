@@ -31,7 +31,7 @@ namespace ModelDevelop::Utils {
 // endregion
 
 // region Public Methods
-    D_State Kinematics::cal_d_state(const State& state, const double mass,const Eigen::Matrix3d& inertia, const Eigen::Vector3d& P_body,const Eigen::Vector3d& M_body,const Eigen::Vector3d& rudder,const double s,const double l,const double b) {
+    D_State Kinematics::cal_d_state(State state, const double mass,const Eigen::Matrix3d& inertia, const Eigen::Vector3d& P_body,const Eigen::Vector3d& M_body,const Eigen::Vector3d& rudder,const double s,const double l,const double b) {
         D_State d_state;
         //pos
         d_state.d_posEcf = state.velEcf;

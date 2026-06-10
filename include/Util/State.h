@@ -8,8 +8,6 @@
 #include"Eigen/Dense"
 
 struct State{
-    EIGEN_MAKE_ALIGNED_OPERATOR_NEW
-
     Eigen::Vector3d posEcf = Eigen::Vector3d::Zero();
     Eigen::Vector3d velEcf = Eigen::Vector3d::Zero();
     Eigen::Quaterniond qbn = Eigen::Quaterniond::Identity();
@@ -18,8 +16,6 @@ struct State{
 };
 
 struct D_State{
-    EIGEN_MAKE_ALIGNED_OPERATOR_NEW
-
     Eigen::Vector3d d_posEcf = Eigen::Vector3d::Zero();
     Eigen::Vector3d d_velEcf = Eigen::Vector3d::Zero();
     Eigen::Quaterniond d_qbn = Eigen::Quaterniond::Identity();
