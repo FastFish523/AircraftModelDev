@@ -20,6 +20,8 @@ target_link_libraries(HACMTest HACM)
 add_executable(HXDTest HXD/main.cpp)
 target_link_libraries(HXDTest HXD3530)
 
+add_subdirectory(HTV2)
+
 add_executable(LRHWTest LRHW/main.cpp)
 target_link_libraries(LRHWTest LRHW)
 

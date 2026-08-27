@@ -144,7 +144,7 @@ namespace ModelDevelop::BGM {
                 const auto gcInfo = _guidance.getGCInfoRouteL1( _state, _maxLoad,_routePoints,_currentRouteId);
                 losInfo = gcInfo.losInfo;
                 acc_cmd_v = gcInfo.acc_cmd_v;
-                if(flyTime()<2.6+5) {
+                if(flyTime()<2.6+15) {
                     const auto gcInfo = _guidance.getGCInfo(flyTime(), _p_body.norm(), _totalMass, _targetPosEcf.value(), _targetVelEcf, _state, _maxLoad);
                     losInfo = gcInfo.losInfo;
                     acc_cmd_v = gcInfo.acc_cmd_v;

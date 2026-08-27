@@ -46,9 +46,9 @@ namespace ModelDevelop::BGM {
         {
             acc_cmd_v.y() = 0;
             acc_cmd_v.z() = 0;
-        } else if (flyTime < 2.6 + 5) // 策略 无控建立速度
+        } else if (flyTime < 2.6 + 15) // 策略 无控建立速度
         {
-            acc_cmd_v.y() = (0 - theta) * 120;
+            acc_cmd_v.y() = 9.8 * std::cos(theta) + ((-10) / 57.3 - theta) * 50;
             acc_cmd_v.z() = 0;
         } else {
             if (target_dis > 50000) //交班距离
@@ -57,20 +57,20 @@ namespace ModelDevelop::BGM {
                 losInfo       = getLOSInfo(targetPosEcf, targetVelEcf, state);
                 acc_cmd_v     = guidance_pn(theta, losInfo.sigma_az_dot, losInfo.sigma_elv_dot, losInfo.dis_dot);
                 acc_cmd_v.y() = acc_cmd_v.y() + 2.5 * (losInfo.sigma_elv - (-20) / 57.3) * selfVel_nue.norm() / (target_dis / selfVel_nue.norm());
-                std::cout << "11111111111 elv: " << losInfo.sigma_elv_b * 57.3 << ";  az: " << losInfo.sigma_az_b * 57.3 << " dis: " << target_dis << std::endl;
+                std::cout << "midgc: elv: " << losInfo.sigma_elv_b * 57.3 << ";  az: " << losInfo.sigma_az_b * 57.3 << " dis: " << target_dis << std::endl;
             } else if (target_dis > 30000) //末制导开始距离
             {
                 // 配合导引头锁定
                 losInfo       = getLOSInfo(targetPosEcf, targetVelEcf, state);
                 acc_cmd_v     = guidance_pn(theta, losInfo.sigma_az_dot, losInfo.sigma_elv_dot, losInfo.dis_dot);
                 acc_cmd_v.y() = acc_cmd_v.y() + 8 * (losInfo.sigma_elv_b - (-0) / 57.3) * selfVel_nue.norm() / (target_dis / selfVel_nue.norm());
-                std::cout << "2222222222 elv: " << losInfo.sigma_elv_b * 57.3 << ";  az: " << losInfo.sigma_az_b * 57.3 << " dis: " << target_dis << std::endl;
+                std::cout << "handover elv: " << losInfo.sigma_elv_b * 57.3 << ";  az: " << losInfo.sigma_az_b * 57.3 << " dis: " << target_dis << std::endl;
             } else //末制导
             {
                 // 末制导指令
                 losInfo   = _seeker.getLOSInfo(targetPosEcf, targetVelEcf, state);
                 acc_cmd_v = guidance_pn(theta, losInfo.sigma_az_dot, losInfo.sigma_elv_dot, losInfo.dis_dot);
-                std::cout << "33333333333 elv: " << losInfo.sigma_elv_b * 57.3 << ";  az: " << losInfo.sigma_az_b * 57.3 << " dis: " << target_dis << std::endl;
+                std::cout << "termgc elv: " << losInfo.sigma_elv_b * 57.3 << ";  az: " << losInfo.sigma_az_b * 57.3 << " dis: " << target_dis << std::endl;
             }
         }
 
@@ -142,7 +142,7 @@ namespace ModelDevelop::BGM {
         auto [acc_cmd_vz,desired_h] = calculateL1Guidance(maxLoad, state.posEcf, state.velEcf, waypoints, currentWpIndex);
         lastDesiredH                = lastDesiredH + 0.001 * (desired_h - lastDesiredH);
         acc_cmd_v.z()               = acc_cmd_vz;
-        acc_cmd_v.y()               = 9.8 * cos(theta) + 0.2 * (lastDesiredH - lla.z()) - 2 * 4 * 0.2 * Vy;
+        acc_cmd_v.y()               = 9.8 * cos(theta) + 0.1 * (lastDesiredH - lla.z()) - 2 * 4 * 0.2 * Vy;
 
         if (acc_cmd_v.y() > 9.8 * maxLoad)
             acc_cmd_v.y() = 9.8 * maxLoad;

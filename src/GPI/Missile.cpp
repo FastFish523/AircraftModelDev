@@ -137,10 +137,10 @@ namespace ModelDevelop::GPI {
 
         const auto dis = targetDis();
         distance_deque.emplace_back(dis);
-        if (distance_deque.size() > 4) {
+        if (distance_deque.size() >3) {
             distance_deque.pop_front();
         }
-        if (dis<100&&distance_deque.size() >= 4) {
+        if (dis<100&&distance_deque.size() >= 3) {
             bool success = true;
             for (auto it = distance_deque.begin(); it + 1 != distance_deque.end(); ++it) {
                 if (*it > *(it + 1)) {
@@ -149,7 +149,8 @@ namespace ModelDevelop::GPI {
                 }
             }
             if (success || lla().z() <= 0) {
-                const auto terminal_dis = distance_deque.at(1);
+            //if (lla().z() <= 0) {
+                const auto terminal_dis = distance_deque.at(0);
                 return terminal_dis;
             }
         }

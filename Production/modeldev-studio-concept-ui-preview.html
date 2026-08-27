@@ -1,0 +1,2438 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="referrer" content="no-referrer">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'unsafe-inline' 'unsafe-eval' 'wasm-unsafe-eval' blob: data: https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://esm.sh https://fonts.bunny.net https://fonts.googleapis.com https://fonts.gstatic.com https://unpkg.com; style-src 'unsafe-inline' blob: data: https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://esm.sh https://fonts.bunny.net https://fonts.googleapis.com https://fonts.gstatic.com https://unpkg.com; img-src blob: data: https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://esm.sh https://fonts.bunny.net https://fonts.googleapis.com https://fonts.gstatic.com https://unpkg.com; font-src blob: data: https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://esm.sh https://fonts.bunny.net https://fonts.googleapis.com https://fonts.gstatic.com https://unpkg.com; media-src blob: data: https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://esm.sh https://fonts.bunny.net https://fonts.googleapis.com https://fonts.gstatic.com https://unpkg.com; worker-src blob:; connect-src blob: data:; frame-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'">
+<title>Modeldev Studio Concept Ui</title>
+<style>:root{color-scheme:light dark;background:light-dark(rgb(255 255 255), rgb(24 24 24))}html,body{margin:0}body{box-sizing:border-box;padding:1rem;background:inherit}iframe{display:block;width:100%;height:calc(100vh - 2rem);margin:0 auto;border:0}</style>
+</head>
+<body>
+<iframe sandbox="allow-scripts" referrerpolicy="no-referrer" title="Modeldev Studio Concept Ui" srcdoc="&lt;!doctype html&gt;
+&lt;html lang=&quot;en&quot;&gt;
+&lt;head&gt;
+&lt;meta charset=&quot;utf-8&quot;&gt;
+&lt;meta name=&quot;viewport&quot; content=&quot;width=device-width, initial-scale=1&quot;&gt;
+&lt;meta name=&quot;referrer&quot; content=&quot;no-referrer&quot;&gt;
+&lt;meta http-equiv=&quot;Content-Security-Policy&quot; content=&quot;default-src &#x27;none&#x27;; script-src &#x27;unsafe-inline&#x27; &#x27;unsafe-eval&#x27; &#x27;wasm-unsafe-eval&#x27; blob: data: https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://esm.sh https://fonts.bunny.net https://fonts.googleapis.com https://fonts.gstatic.com https://unpkg.com; style-src &#x27;unsafe-inline&#x27; blob: data: https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://esm.sh https://fonts.bunny.net https://fonts.googleapis.com https://fonts.gstatic.com https://unpkg.com; img-src blob: data: https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://esm.sh https://fonts.bunny.net https://fonts.googleapis.com https://fonts.gstatic.com https://unpkg.com; font-src blob: data: https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://esm.sh https://fonts.bunny.net https://fonts.googleapis.com https://fonts.gstatic.com https://unpkg.com; media-src blob: data: https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://esm.sh https://fonts.bunny.net https://fonts.googleapis.com https://fonts.gstatic.com https://unpkg.com; worker-src blob:; connect-src blob: data:; frame-src &#x27;none&#x27;; object-src &#x27;none&#x27;; base-uri &#x27;none&#x27;; form-action &#x27;none&#x27;&quot;&gt;
+&lt;title&gt;Modeldev Studio Concept Ui&lt;/title&gt;
+&lt;style&gt;:root {
+  color-scheme: light dark;
+  background-color: var(
+    --background,
+    var(--color-background-primary, light-dark(rgb(255 255 255), rgb(24 24 24)))
+  ) !important;
+
+  /* Agent-facing contract; keep in sync with SKILL.md. */
+  --background: var(
+    --color-background-primary,
+    light-dark(rgb(255 255 255), rgb(24 24 24))
+  );
+  --foreground: var(
+    --color-text-primary,
+    light-dark(rgb(26 28 31), rgb(255 255 255))
+  );
+  --card: color-mix(in oklab, var(--foreground) 5%, var(--background));
+  --card-foreground: var(
+    --color-text-primary,
+    light-dark(rgb(26 28 31), rgb(255 255 255))
+  );
+  --popover: var(
+    --color-background-secondary,
+    light-dark(rgb(255 255 255), rgb(45 45 45))
+  );
+  --popover-foreground: var(
+    --color-text-primary,
+    light-dark(rgb(26 28 31), rgb(255 255 255))
+  );
+  --primary: var(
+    --color-text-info,
+    light-dark(rgb(51 156 255), rgb(131 195 255))
+  );
+  --primary-foreground: var(
+    --color-text-inverse,
+    light-dark(rgb(255 255 255), rgb(13 13 13))
+  );
+  --secondary: var(
+    --color-background-secondary,
+    light-dark(rgb(255 255 255 / 96%), rgb(54 54 54 / 96%))
+  );
+  --secondary-foreground: var(
+    --color-text-primary,
+    light-dark(rgb(26 28 31), rgb(255 255 255))
+  );
+  --muted: color-mix(in srgb, var(--foreground) 10%, transparent);
+  --muted-foreground: var(
+    --color-text-secondary,
+    light-dark(rgb(26 28 31 / 49.4%), rgb(255 255 255 / 49.8%))
+  );
+  --accent: var(
+    --color-background-info,
+    light-dark(rgb(229 242 255), rgb(13 39 63))
+  );
+  --accent-foreground: var(
+    --color-text-info,
+    light-dark(rgb(51 156 255), rgb(131 195 255))
+  );
+  --destructive: var(
+    --color-text-warning,
+    light-dark(rgb(226 85 7), rgb(255 133 73))
+  );
+  --border: var(
+    --color-border-secondary,
+    light-dark(rgb(26 28 31 / 8%), rgb(255 255 255 / 8.2%))
+  );
+  --input: var(
+    --color-border-primary,
+    light-dark(
+      rgb(26 28 31 / 11.8%),
+      color-mix(in oklab, rgb(0 0 0) 10%, transparent)
+    )
+  );
+  --ring: var(
+    --color-ring-primary,
+    light-dark(rgb(51 156 255), rgb(131 195 255 / 76%))
+  );
+  --font-size-base: var(--font-text-md-size, 14px);
+  --blue: light-dark(rgb(51 156 255), rgb(51 156 255));
+  --orange: light-dark(rgb(226 85 7), rgb(251 106 34));
+  --green: light-dark(rgb(0 162 64), rgb(64 201 119));
+  --red: light-dark(rgb(224 46 42), rgb(255 103 100));
+  --purple: light-dark(rgb(146 79 247), rgb(173 123 249));
+  --yellow: light-dark(rgb(255 195 0), rgb(255 210 64));
+  --viz-series-1: var(--primary);
+  --viz-series-2: light-dark(rgb(243 136 59), rgb(245 154 86));
+  --viz-series-3: light-dark(rgb(93 201 119), rgb(116 213 139));
+  --viz-series-4: light-dark(rgb(235 119 177), rgb(240 143 192));
+  --viz-series-5: light-dark(rgb(155 121 236), rgb(170 145 239));
+  --viz-series-6: light-dark(rgb(58 185 177), rgb(90 203 194));
+
+  /* Internal implementation variables; not part of the agent contract. */
+  --font-sans: -apple-system, system-ui, &quot;Segoe UI&quot;, sans-serif;
+  --font-mono:
+    ui-monospace, SFMono-Regular, &quot;SF Mono&quot;, Menlo, Consolas, &quot;Liberation Mono&quot;,
+    monospace;
+  --font-size-normal: max(11px, var(--font-size-base));
+  --font-size-tooltip: calc(var(--font-size-base) - 1px);
+  --font-size-small: max(11px, calc(var(--font-size-base) - 2px));
+  --font-size-h1: calc(var(--font-size-normal) * 1.7142857143);
+  --font-size-h2: calc(var(--font-size-normal) * 1.4285714286);
+  --font-size-h3: calc(var(--font-size-normal) * 1.2857142857);
+  --font-weight-normal: 430;
+  --font-weight-medium: 500;
+  --line-height-normal: calc(var(--font-size-normal) * 1.5);
+  --line-height-tooltip: calc(var(--font-size-tooltip) * 1.4285714286);
+  --line-height-small: calc(var(--font-size-small) + 4px);
+  --radius: var(--border-radius-lg, 12.5px);
+  --radius-sm: calc(var(--radius) * 0.6);
+  --radius-md: calc(var(--radius) * 0.8);
+  --radius-lg: var(--radius);
+  --radius-2xl: calc(var(--radius) * 1.6);
+  --radius-full: 9999px;
+  --shadow-sm: 0 1px 2px -1px rgb(0 0 0 / 8%);
+  --checkmark-image: url(&quot;data:image/svg+xml,%3Csvg xmlns=&#x27;http://www.w3.org/2000/svg&#x27; viewBox=&#x27;0 0 17 17&#x27;%3E%3Cpath d=&#x27;M12.8961 3.64101C13.1297 3.41418 13.4984 3.37523 13.7779 3.56581C14.0571 3.75635 14.1554 4.11331 14.0299 4.41347L13.9615 4.53847L7.71151 13.7045C7.59411 13.8767 7.4063 13.9877 7.19881 14.0072C6.99136 14.0267 6.78564 13.9533 6.63826 13.806L2.88826 10.056L2.79842 9.9457C2.6192 9.67407 2.64927 9.30496 2.88826 9.06581C3.12738 8.82669 3.49647 8.79676 3.76815 8.97597L3.8785 9.06581L7.03084 12.2182L12.8053 3.74941L12.8961 3.64101Z&#x27;/%3E%3C/svg%3E&quot;);
+
+  /* Legacy aliases; not part of the current agent contract. */
+  --viz-bg: transparent;
+  --viz-panel: var(--card);
+  --viz-border: var(--border);
+  --viz-text: var(--foreground);
+  --viz-muted: var(--muted-foreground);
+  --viz-accent: var(--primary);
+  --viz-accent-text: var(--primary-foreground);
+  --viz-accent-bg: var(--accent);
+  --viz-font-size: var(--font-size-base);
+  --viz-warning: var(--destructive);
+}
+
+:root[data-theme=&quot;light&quot;] {
+  color-scheme: light;
+}
+
+:root[data-theme=&quot;dark&quot;] {
+  color-scheme: dark;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html &gt; body {
+  /* Preserve MCP aliases for older inline renderers without creating :root cycles. */
+  --color-background-primary: var(
+    --background,
+    light-dark(rgb(255 255 255), rgb(24 24 24))
+  );
+  --color-text-primary: var(
+    --foreground,
+    light-dark(rgb(26 28 31), rgb(255 255 255))
+  );
+  --color-border-secondary: var(
+    --border,
+    light-dark(rgb(26 28 31 / 8%), rgb(255 255 255 / 8.2%))
+  );
+
+  margin: 0;
+  padding: 5px;
+  color: var(--foreground);
+  background: transparent !important;
+  font-family: var(--font-sans) !important;
+  font-size: var(--font-size-normal);
+  font-weight: var(--font-weight-normal);
+  line-height: var(--line-height-normal);
+}
+
+a {
+  color: color-mix(in srgb, var(--viz-accent) 80%, var(--viz-text) 20%);
+  cursor: pointer;
+  font-weight: var(--font-weight-medium, 500);
+  text-decoration: none;
+  text-underline-offset: 2px;
+}
+
+a:is(:hover, :focus-visible) {
+  text-decoration-line: underline;
+  text-decoration-style: dashed;
+  text-decoration-thickness: 0.5px;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+p {
+  margin-block: 0;
+}
+
+h1 {
+  font-size: var(--font-size-h1);
+  font-weight: var(--font-weight-medium);
+  line-height: 1.25;
+}
+
+h2 {
+  font-size: var(--font-size-h2);
+  font-weight: var(--font-weight-medium);
+  line-height: 1.25;
+}
+
+h3,
+h4,
+h5,
+h6 {
+  font-size: var(--font-size-h3);
+  font-weight: var(--font-weight-medium);
+  line-height: 1.3;
+}
+
+b,
+strong,
+th {
+  font-weight: var(--font-weight-medium);
+}
+
+code:not(pre code) {
+  display: inline;
+  padding: 1px 6px;
+  border-radius: var(--radius-sm);
+  corner-shape: superellipse(1.5);
+  background: var(--muted);
+  font-family: var(--font-mono);
+  font-size: 0.92em;
+  overflow-wrap: anywhere;
+  -webkit-box-decoration-break: clone;
+  box-decoration-break: clone;
+  word-break: break-word;
+}
+
+.table-responsive {
+  width: 100%;
+  overflow-x: auto;
+  scrollbar-width: thin;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  color: var(--foreground);
+  font: inherit;
+  text-align: start;
+}
+
+.table :is(th, td) {
+  padding-block: 10px;
+  padding-inline: 0 24px;
+  overflow-wrap: anywhere;
+  border-bottom: 1px solid var(--border);
+  text-align: start;
+  vertical-align: top;
+}
+
+.table-responsive &gt; .table :is(th, td) {
+  overflow-wrap: break-word;
+}
+
+.table :is(th, td):last-child {
+  padding-inline-end: 0;
+}
+
+.table :is(caption, thead th) {
+  font-weight: 600;
+}
+
+.table thead th {
+  padding-block: 8px;
+  border-bottom-color: color-mix(in srgb, var(--foreground) 16%, transparent);
+}
+
+.table tbody tr:last-child :is(th, td) {
+  border-bottom: 0;
+}
+
+.table.table-sm :is(th, td) {
+  padding-block: 6px;
+}
+
+.table.table-sm :is(th, td):not(:last-child) {
+  padding-inline-end: 16px;
+}
+
+.table :is(.text-end, [align=&quot;right&quot;]) {
+  text-align: end;
+  font-variant-numeric: tabular-nums;
+}
+
+.table :is(.text-center, [align=&quot;center&quot;]) {
+  text-align: center;
+}
+
+.table .text-nowrap {
+  white-space: nowrap;
+}
+
+#widget {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  width: 100%;
+  padding: 0;
+  background: transparent !important;
+}
+
+.card {
+  min-width: 0;
+  padding: 12px;
+  overflow: hidden;
+  overflow-wrap: break-word;
+  border-radius: var(--radius-2xl);
+  corner-shape: superellipse(1.5);
+  color: var(--card-foreground);
+  background: var(--card);
+}
+
+#widget &gt; :not(.card, .progress) {
+  width: 100% !important;
+  max-width: none !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+.tooltip {
+  position: fixed;
+  z-index: 50;
+  top: 0;
+  left: 0;
+  width: max-content;
+  max-width: min(
+    20rem,
+    var(--tooltip-available-width, calc(100vw - 10px)),
+    calc(100vw - 10px)
+  );
+  max-height: min(
+    var(--tooltip-available-height, calc(100vh - 10px)),
+    calc(100vh - 10px)
+  );
+  padding: 4px 8px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  corner-shape: superellipse(1.5);
+  color: var(--popover-foreground);
+  background: var(--popover);
+  box-shadow: none;
+  font-size: var(--font-size-tooltip);
+  line-height: var(--line-height-tooltip);
+  overflow-wrap: break-word;
+  white-space: normal;
+  pointer-events: none;
+  user-select: none;
+}
+
+.viz-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(max(180px, 24%), 1fr));
+  gap: 10px;
+}
+
+.viz-stat {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.viz-stat-value {
+  font-size: var(--font-size-h2);
+  font-weight: var(--font-weight-medium);
+  line-height: 1.25;
+}
+
+.viz-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+}
+
+.progress {
+  display: flex;
+  height: 6px;
+  margin-block: calc((var(--line-height-normal, 1.5em) - 6px) / 2);
+  overflow: hidden;
+  border: 0;
+  border-radius: var(--radius-full);
+  background: var(--muted);
+}
+
+.progress-bar {
+  height: 100%;
+  flex-shrink: 0;
+  border: 0;
+  background: var(--viz-series-1);
+}
+
+.viz-badge {
+  padding: 3px 8px;
+  border-radius: var(--radius-full);
+  color: var(--accent-foreground);
+  background: var(--accent);
+  font-weight: var(--font-weight-medium);
+}
+
+small,
+.text-small,
+.viz-badge {
+  font-size: var(--font-size-small);
+  line-height: var(--line-height-small);
+}
+
+.text-muted {
+  color: var(--muted-foreground);
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.viz-controls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+
+.viz-controls &gt; .form-label {
+  display: grid;
+  min-width: min(100%, 260px);
+  flex: 1 1 280px;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: baseline;
+  gap: 2px 12px;
+  margin-bottom: 0;
+}
+
+.viz-controls &gt; .form-label &gt; :is(.form-control, .form-range, .form-select) {
+  grid-column: 1 / -1;
+}
+
+.btn,
+.form-check-input,
+.form-control,
+.form-range,
+.form-select {
+  font: inherit;
+}
+
+.btn {
+  appearance: button;
+  display: inline-flex;
+  inline-size: fit-content;
+  max-inline-size: 100%;
+  min-height: 28px;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  margin: 0;
+  padding: 0 8px;
+  -webkit-app-region: no-drag;
+  border: 1px solid var(--input);
+  border-radius: var(--radius-lg);
+  corner-shape: superellipse(1.5);
+  color: var(--secondary-foreground);
+  background: var(--secondary);
+  cursor: var(--cursor-interaction, pointer);
+  text-align: center;
+  text-decoration: none;
+  white-space: nowrap;
+  user-select: none;
+  -webkit-font-smoothing: antialiased;
+}
+
+.btn:is(.btn-block, .viz-tile) {
+  inline-size: 100%;
+}
+
+.btn.viz-tile {
+  min-width: 0;
+  overflow-wrap: anywhere;
+  white-space: normal;
+}
+
+a.btn {
+  cursor: pointer;
+  text-decoration: none;
+}
+
+.btn:not(:disabled):hover {
+  background: color-mix(in srgb, var(--foreground) 6%, var(--secondary));
+}
+
+.btn-primary {
+  border-color: transparent;
+  color: var(--primary-foreground);
+  background: var(--foreground);
+  background-clip: padding-box;
+}
+
+.btn-primary .text-muted {
+  color: color-mix(in srgb, var(--primary-foreground) 50%, transparent);
+}
+
+.btn-primary:not(:disabled):hover {
+  background: color-mix(in srgb, var(--foreground) 80%, transparent);
+  background-clip: padding-box;
+}
+
+.btn-ghost {
+  border-color: transparent;
+  color: var(--muted-foreground);
+  background: transparent;
+}
+
+.btn-ghost:not(:disabled):hover {
+  color: var(--foreground);
+  background: color-mix(in srgb, var(--foreground) 6%, var(--secondary));
+}
+
+.btn:disabled {
+  cursor: not-allowed;
+  opacity: 0.4;
+}
+
+[data-lucide] {
+  stroke-width: 1.6;
+}
+
+.form-label {
+  display: block;
+  margin-bottom: 6px;
+  color: var(--foreground);
+}
+
+.form-control {
+  display: block;
+  width: 100%;
+  min-height: 28px;
+  padding: 0 8px;
+  outline: none;
+  border: 1px solid var(--input);
+  border-radius: var(--radius-lg);
+  corner-shape: superellipse(1.5);
+  color: var(--foreground);
+  background: var(--secondary);
+}
+
+.form-control::placeholder {
+  color: var(--muted-foreground);
+}
+
+.form-control[type=&quot;file&quot;] {
+  padding: 0;
+  overflow: hidden;
+  cursor: var(--cursor-interaction, pointer);
+}
+
+.form-control[type=&quot;file&quot;]::file-selector-button {
+  min-height: 26px;
+  margin-right: 8px;
+  padding: 0 8px;
+  border: 0;
+  border-right: 1px solid var(--input);
+  color: var(--secondary-foreground);
+  background: var(--secondary);
+  cursor: inherit;
+  font: inherit;
+}
+
+.form-control[type=&quot;file&quot;]:not(:disabled):hover::file-selector-button {
+  background: color-mix(in srgb, var(--foreground) 6%, var(--secondary));
+}
+
+.form-control-color[type=&quot;color&quot;] {
+  width: 40px;
+  height: 28px;
+  padding: 3px;
+  cursor: var(--cursor-interaction, pointer);
+}
+
+.form-control-color[type=&quot;color&quot;]::-webkit-color-swatch-wrapper {
+  padding: 0;
+}
+
+.form-control-color[type=&quot;color&quot;]::-webkit-color-swatch {
+  border: 0;
+  border-radius: calc(var(--radius-lg) - 4px);
+  corner-shape: superellipse(1.5);
+}
+
+textarea.form-control {
+  height: auto;
+  min-height: 72px;
+  padding: 8px 10px;
+  resize: vertical;
+}
+
+.form-control:focus-visible {
+  border-color: var(--ring);
+  box-shadow: inset 0 0 0 1px var(--ring);
+}
+
+.form-control:disabled,
+.form-select:disabled {
+  cursor: not-allowed;
+  opacity: 0.4;
+}
+
+.form-select {
+  appearance: none;
+  display: block;
+  width: 100%;
+  min-height: 28px;
+  margin: 0;
+  padding: 0 32px 0 8px;
+  outline: none;
+  border: 1px solid var(--input);
+  border-radius: var(--radius-lg);
+  corner-shape: superellipse(1.5);
+  color: var(--foreground);
+  background-color: var(--secondary);
+  background-image:
+    linear-gradient(45deg, transparent 50%, var(--muted-foreground) 50%),
+    linear-gradient(135deg, var(--muted-foreground) 50%, transparent 50%);
+  background-position:
+    calc(100% - 14px) 50%,
+    calc(100% - 10px) 50%;
+  background-repeat: no-repeat;
+  background-size: 4px 4px;
+  cursor: var(--cursor-interaction, default);
+}
+
+.form-select:not(:disabled):hover {
+  background-color: color-mix(in srgb, var(--foreground) 6%, var(--secondary));
+}
+
+.form-select:focus-visible {
+  border-color: var(--ring);
+  box-shadow: inset 0 0 0 1px var(--ring);
+}
+
+.form-check {
+  display: flex;
+  min-height: 20px;
+  align-items: center;
+  gap: 6px;
+}
+
+.form-check-input {
+  appearance: none;
+  width: 14px;
+  height: 14px;
+  flex: 0 0 auto;
+  margin: 0;
+  border: 1px solid var(--input);
+  color: var(--primary-foreground);
+  background-color: transparent;
+  cursor: var(--cursor-interaction, default);
+  transition:
+    background-color 150ms,
+    border-color 150ms,
+    box-shadow 150ms;
+}
+
+.form-check:not(.form-switch) .form-check-input[type=&quot;checkbox&quot;] {
+  border-color: var(--input);
+  border-radius: var(--radius-sm);
+  corner-shape: superellipse(1.5);
+  background-color: var(--secondary);
+  box-shadow: var(--shadow-sm);
+}
+
+.form-check:not(.form-switch)
+  .form-check-input:not(:disabled):not(:checked):hover {
+  background-color: var(--card);
+}
+
+.form-check:not(.form-switch) .form-check-input[type=&quot;checkbox&quot;]:checked {
+  border-color: var(--primary);
+  background-color: var(--primary);
+}
+
+.form-check:not(.form-switch)
+  .form-check-input[type=&quot;checkbox&quot;]:checked::before {
+  display: block;
+  width: 100%;
+  height: 100%;
+  background: var(--primary-foreground);
+  content: &quot;&quot;;
+  mask: var(--checkmark-image) center / 12px 12px no-repeat;
+}
+
+.form-check-input[type=&quot;radio&quot;] {
+  width: 14px;
+  height: 14px;
+  border-radius: var(--radius-full);
+}
+
+.form-check-input[type=&quot;radio&quot;]:checked {
+  border: 2px solid var(--primary);
+  background:
+    radial-gradient(circle, var(--primary-foreground) 0 2.5px, transparent 3px),
+    var(--primary);
+}
+
+.form-check:not(.form-switch) .form-check-input:focus-visible {
+  outline: 2px solid var(--ring);
+  outline-offset: 2px;
+}
+
+.form-check:not(.form-switch) .form-check-input:disabled {
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+.form-check:not(.form-switch) .form-check-input:disabled + .form-check-label {
+  cursor: not-allowed;
+}
+
+.form-switch .form-check-input:disabled,
+.form-switch .form-check-input:disabled + .form-check-label {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.form-check-label {
+  color: var(--foreground);
+  cursor: var(--cursor-interaction, default);
+}
+
+.form-switch .form-check-input {
+  position: relative;
+  width: 32px;
+  height: 20px;
+  border: 0;
+  border-radius: var(--radius-full);
+  background: var(--muted);
+  box-shadow: none;
+  transition: background-color 200ms cubic-bezier(0, 0, 0.2, 1);
+}
+
+.form-switch .form-check-input::before {
+  position: absolute;
+  top: 50%;
+  left: 0;
+  width: 16px;
+  height: 16px;
+  box-sizing: border-box;
+  border: 1px solid light-dark(var(--primary-foreground), var(--foreground));
+  border-radius: var(--radius-full);
+  background: light-dark(var(--primary-foreground), var(--foreground));
+  box-shadow: var(--shadow-sm);
+  content: &quot;&quot;;
+  transform: translate(2px, -50%);
+  transition: transform 200ms cubic-bezier(0, 0, 0.2, 1);
+}
+
+.form-switch .form-check-input:checked {
+  background: var(--primary);
+}
+
+.form-switch .form-check-input:checked::before {
+  transform: translate(14px, -50%);
+}
+
+.form-switch .form-check-input:focus-visible {
+  box-shadow: 0 0 0 2px var(--ring);
+}
+
+.form-range {
+  appearance: none;
+  display: block;
+  width: 100%;
+  height: 28px;
+  flex: 1;
+  margin: 0;
+  padding: 0;
+  outline: none;
+  border: 0;
+  accent-color: var(--primary);
+  background: linear-gradient(
+      color-mix(in srgb, var(--foreground) 7%, transparent),
+      color-mix(in srgb, var(--foreground) 7%, transparent)
+    )
+    center / 100% 2px no-repeat;
+}
+
+.form-range::-webkit-slider-runnable-track {
+  height: 28px;
+  background: transparent;
+}
+
+.form-range::-webkit-slider-thumb {
+  appearance: none;
+  width: 20px;
+  height: 20px;
+  margin-top: 4px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-full);
+  background: light-dark(var(--primary-foreground), var(--foreground));
+}
+
+.form-range:focus-visible::-webkit-slider-thumb {
+  border-color: var(--ring);
+  box-shadow: inset 0 0 0 1px var(--ring);
+}
+
+.form-range::-moz-range-track {
+  height: 28px;
+  background: transparent;
+}
+
+.form-range::-moz-range-thumb {
+  width: 20px;
+  height: 20px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-full);
+  background: light-dark(var(--primary-foreground), var(--foreground));
+}
+
+.form-range:focus-visible::-moz-range-thumb {
+  border-color: var(--ring);
+  box-shadow: inset 0 0 0 1px var(--ring);
+}
+
+.form-range:disabled {
+  cursor: not-allowed;
+  opacity: 0.4;
+}
+
+.btn:not(.btn-primary, .viz-tile):is(
+  [aria-pressed=&quot;true&quot;],
+  [aria-selected=&quot;true&quot;],
+  .is-selected
+) {
+  border-color: var(--primary);
+  color: var(--primary-foreground);
+  background: var(--primary);
+}
+
+.btn.viz-tile:is([aria-pressed=&quot;true&quot;], [aria-selected=&quot;true&quot;], .is-selected) {
+  border-color: var(--primary);
+  box-shadow: inset 0 0 0 1px var(--primary);
+}
+
+.btn:focus-visible {
+  outline: 2px solid var(--ring);
+  outline-offset: 2px;
+}
+
+svg {
+  display: block;
+  max-width: 100%;
+  height: auto;
+}
+
+#widget &gt; svg {
+  width: 100%;
+}
+
+/* Model-authored chart rules can otherwise stretch icons after these styles load. */
+svg.lucide {
+  display: block;
+  width: 16px !important;
+  height: 16px !important;
+  flex: none;
+  margin: 0 !important;
+  stroke-width: 1.6;
+}
+
+.text-warning,
+.text-destructive {
+  color: var(--destructive);
+}
+
+html&gt;body{padding:0}&lt;/style&gt;
+&lt;/head&gt;
+&lt;body&gt;
+&lt;main id=&quot;modeldev-studio-concept-ui&quot; aria-label=&quot;ModelDev Studio 功能界面与操作原型&quot;&gt;
+  &lt;style&gt;
+    #modeldev-studio-concept-ui {
+      --mds-page: light-dark(#eef3f7, #0b1117);
+      --mds-app: light-dark(#f8fafc, #111922);
+      --mds-panel: light-dark(#ffffff, #18232e);
+      --mds-panel-2: light-dark(#f3f7fa, #202c37);
+      --mds-ink: light-dark(#183047, #e8f0f6);
+      --mds-soft-ink: light-dark(#5f7385, #a9bac8);
+      --mds-line: light-dark(#d4dfe8, #334352);
+      --mds-navy: light-dark(#12324d, #102a41);
+      --mds-navy-ink: #f4f8fb;
+      --mds-blue: light-dark(#2777b8, #69aee4);
+      --mds-blue-soft: light-dark(#e5f1fa, #19354b);
+      --mds-cyan: light-dark(#2aa4b4, #57c2cf);
+      --mds-green: light-dark(#23845a, #5bc28d);
+      --mds-green-soft: light-dark(#e5f4ec, #173b2d);
+      --mds-gold: light-dark(#c68d25, #e6b958);
+      --mds-gold-soft: light-dark(#fbf1dc, #44361c);
+      --mds-red: light-dark(#bd4848, #ec7777);
+      --mds-red-soft: light-dark(#fbeaea, #492424);
+      --mds-focus: light-dark(#d88f16, #f4c45e);
+      color-scheme: light dark;
+      color: var(--mds-ink);
+      background: transparent;
+      font-family: &quot;Segoe UI&quot;, &quot;Microsoft YaHei&quot;, system-ui, sans-serif;
+    }
+    #modeldev-studio-concept-ui * { box-sizing: border-box; }
+    #modeldev-studio-concept-ui button,
+    #modeldev-studio-concept-ui input,
+    #modeldev-studio-concept-ui select { font: inherit; }
+    #modeldev-studio-concept-ui h1,
+    #modeldev-studio-concept-ui h2,
+    #modeldev-studio-concept-ui h3,
+    #modeldev-studio-concept-ui p { margin-top: 0; }
+    #modeldev-studio-concept-ui h1,
+    #modeldev-studio-concept-ui h2,
+    #modeldev-studio-concept-ui h3,
+    #modeldev-studio-concept-ui strong,
+    #modeldev-studio-concept-ui b { font-weight: 500; }
+    #modeldev-studio-concept-ui .mds-app {
+      overflow: hidden;
+      border: 1px solid var(--mds-line);
+      border-radius: 18px;
+      background: var(--mds-app);
+      box-shadow: 0 18px 54px color-mix(in srgb, var(--mds-navy) 18%, transparent);
+    }
+    #modeldev-studio-concept-ui .mds-topbar {
+      display: grid;
+      grid-template-columns: auto minmax(0, 1fr) auto;
+      align-items: center;
+      gap: 18px;
+      padding: 14px 18px;
+      color: var(--mds-navy-ink);
+      background: linear-gradient(105deg, var(--mds-navy), color-mix(in srgb, var(--mds-navy) 76%, var(--mds-cyan)));
+    }
+    #modeldev-studio-concept-ui .mds-brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      white-space: nowrap;
+    }
+    #modeldev-studio-concept-ui .mds-brand-mark {
+      display: grid;
+      place-items: center;
+      width: 34px;
+      height: 34px;
+      border-radius: 9px;
+      color: var(--mds-navy);
+      background: var(--mds-gold);
+    }
+    #modeldev-studio-concept-ui .mds-title-block h1 { margin-bottom: 2px; }
+    #modeldev-studio-concept-ui .mds-title-block small { color: color-mix(in srgb, var(--mds-navy-ink) 72%, transparent); }
+    #modeldev-studio-concept-ui .mds-tour-tools { display: flex; align-items: center; gap: 8px; }
+    #modeldev-studio-concept-ui .mds-top-button,
+    #modeldev-studio-concept-ui .mds-action,
+    #modeldev-studio-concept-ui .mds-nav-button,
+    #modeldev-studio-concept-ui .mds-step,
+    #modeldev-studio-concept-ui .mds-tab,
+    #modeldev-studio-concept-ui .mds-icon-action {
+      border: 1px solid var(--mds-line);
+      color: var(--mds-ink);
+      background: var(--mds-panel);
+      cursor: pointer;
+    }
+    #modeldev-studio-concept-ui .mds-top-button {
+      padding: 7px 10px;
+      border-color: color-mix(in srgb, var(--mds-navy-ink) 30%, transparent);
+      border-radius: 8px;
+      color: var(--mds-navy-ink);
+      background: color-mix(in srgb, var(--mds-navy-ink) 10%, transparent);
+    }
+    #modeldev-studio-concept-ui .mds-app-body {
+      display: grid;
+      grid-template-columns: 218px minmax(0, 1fr);
+      background: var(--mds-page);
+    }
+    #modeldev-studio-concept-ui .mds-sidebar {
+      padding: 14px 12px;
+      border-right: 1px solid var(--mds-line);
+      background: var(--mds-panel);
+    }
+    #modeldev-studio-concept-ui .mds-sidebar &gt; small {
+      display: block;
+      margin: 3px 8px 10px;
+      color: var(--mds-soft-ink);
+    }
+    #modeldev-studio-concept-ui .mds-nav {
+      display: grid;
+      gap: 5px;
+    }
+    #modeldev-studio-concept-ui .mds-nav-button {
+      display: grid;
+      grid-template-columns: 22px 1fr auto;
+      align-items: center;
+      gap: 9px;
+      width: 100%;
+      padding: 9px 10px;
+      border-color: transparent;
+      border-radius: 8px;
+      text-align: left;
+      background: transparent;
+    }
+    #modeldev-studio-concept-ui .mds-nav-button:hover { background: var(--mds-panel-2); }
+    #modeldev-studio-concept-ui .mds-nav-button[aria-selected=&quot;true&quot;] {
+      color: var(--mds-blue);
+      background: var(--mds-blue-soft);
+    }
+    #modeldev-studio-concept-ui .mds-nav-index { color: var(--mds-soft-ink); }
+    #modeldev-studio-concept-ui .mds-side-note {
+      margin-top: 16px;
+      padding: 12px;
+      border-top: 1px solid var(--mds-line);
+      color: var(--mds-soft-ink);
+    }
+    #modeldev-studio-concept-ui .mds-workspace { min-width: 0; }
+    #modeldev-studio-concept-ui .mds-workspace-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      padding: 13px 18px;
+      border-bottom: 1px solid var(--mds-line);
+      background: var(--mds-panel);
+    }
+    #modeldev-studio-concept-ui .mds-breadcrumb { color: var(--mds-soft-ink); }
+    #modeldev-studio-concept-ui .mds-current-title { color: var(--mds-ink); }
+    #modeldev-studio-concept-ui .mds-workspace-actions { display: flex; gap: 8px; }
+    #modeldev-studio-concept-ui .mds-screen { padding: 16px; }
+    #modeldev-studio-concept-ui .mds-screen[hidden] { display: none; }
+    #modeldev-studio-concept-ui .mds-screen-layout {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 270px;
+      gap: 14px;
+      align-items: start;
+    }
+    #modeldev-studio-concept-ui .mds-screen-canvas,
+    #modeldev-studio-concept-ui .mds-guide {
+      border: 1px solid var(--mds-line);
+      border-radius: 12px;
+      background: var(--mds-panel);
+    }
+    #modeldev-studio-concept-ui .mds-screen-canvas { min-width: 0; overflow: hidden; }
+    #modeldev-studio-concept-ui .mds-screen-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+      padding: 14px 16px;
+      border-bottom: 1px solid var(--mds-line);
+    }
+    #modeldev-studio-concept-ui .mds-screen-header h2 { margin-bottom: 3px; }
+    #modeldev-studio-concept-ui .mds-screen-header small { color: var(--mds-soft-ink); }
+    #modeldev-studio-concept-ui .mds-actions { display: flex; flex-wrap: wrap; gap: 7px; }
+    #modeldev-studio-concept-ui .mds-action {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 7px 10px;
+      border-radius: 7px;
+    }
+    #modeldev-studio-concept-ui .mds-action-primary {
+      border-color: var(--mds-blue);
+      color: var(--mds-navy-ink);
+      background: var(--mds-blue);
+    }
+    #modeldev-studio-concept-ui .mds-action-danger { color: var(--mds-red); }
+    #modeldev-studio-concept-ui .mds-action-success { color: var(--mds-green); }
+    #modeldev-studio-concept-ui .mds-guide { padding: 15px; }
+    #modeldev-studio-concept-ui .mds-guide-head {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      margin-bottom: 10px;
+    }
+    #modeldev-studio-concept-ui .mds-guide h3 { margin-bottom: 3px; }
+    #modeldev-studio-concept-ui .mds-guide small { color: var(--mds-soft-ink); }
+    #modeldev-studio-concept-ui .mds-guide-list { display: grid; gap: 8px; }
+    #modeldev-studio-concept-ui .mds-step {
+      display: grid;
+      grid-template-columns: 26px 1fr;
+      gap: 8px;
+      width: 100%;
+      padding: 9px;
+      border-color: transparent;
+      border-radius: 8px;
+      text-align: left;
+      background: var(--mds-panel-2);
+    }
+    #modeldev-studio-concept-ui .mds-step[aria-pressed=&quot;true&quot;] {
+      border-color: var(--mds-focus);
+      background: var(--mds-gold-soft);
+    }
+    #modeldev-studio-concept-ui .mds-step-number {
+      display: grid;
+      place-items: center;
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      color: var(--mds-navy-ink);
+      background: var(--mds-blue);
+    }
+    #modeldev-studio-concept-ui .mds-guide-result {
+      margin-top: 12px;
+      padding: 10px;
+      border-left: 3px solid var(--mds-green);
+      background: var(--mds-green-soft);
+      color: var(--mds-ink);
+    }
+    #modeldev-studio-concept-ui .mds-hotspot { transition: box-shadow .18s ease, background .18s ease; }
+    #modeldev-studio-concept-ui .mds-hotspot.is-guided {
+      position: relative;
+      z-index: 1;
+      box-shadow: 0 0 0 3px var(--mds-focus), 0 8px 24px color-mix(in srgb, var(--mds-focus) 25%, transparent);
+    }
+    #modeldev-studio-concept-ui .mds-pane-title {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      padding: 10px 12px;
+      border-bottom: 1px solid var(--mds-line);
+      color: var(--mds-soft-ink);
+    }
+    #modeldev-studio-concept-ui .mds-tree,
+    #modeldev-studio-concept-ui .mds-list,
+    #modeldev-studio-concept-ui .mds-form,
+    #modeldev-studio-concept-ui .mds-content-pad { padding: 12px; }
+    #modeldev-studio-concept-ui .mds-tree-row,
+    #modeldev-studio-concept-ui .mds-list-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 7px 8px;
+      border-radius: 6px;
+    }
+    #modeldev-studio-concept-ui .mds-tree-button {
+      width: 100%;
+      border-color: transparent;
+      color: var(--mds-ink);
+      text-align: left;
+      background: transparent;
+    }
+    #modeldev-studio-concept-ui .mds-tree-button:hover { background: var(--mds-panel-2); }
+    #modeldev-studio-concept-ui .mds-tree-row.is-active,
+    #modeldev-studio-concept-ui .mds-list-row.is-active { color: var(--mds-blue); background: var(--mds-blue-soft); }
+    #modeldev-studio-concept-ui .mds-tree-button[aria-pressed=&quot;true&quot;] { color: var(--mds-blue); background: var(--mds-blue-soft); }
+    #modeldev-studio-concept-ui .mds-model-category-button {
+      width: 100%;
+      border-color: transparent;
+      color: var(--mds-ink);
+      text-align: left;
+      background: transparent;
+    }
+    #modeldev-studio-concept-ui .mds-model-category-button small { margin-left: auto; }
+    #modeldev-studio-concept-ui .mds-model-category-button:hover { background: var(--mds-panel-2); }
+    #modeldev-studio-concept-ui .mds-model-category-button[aria-pressed=&quot;true&quot;] { color: var(--mds-blue); background: var(--mds-blue-soft); }
+    #modeldev-studio-concept-ui .mds-tree-indent { padding-left: 24px; }
+    #modeldev-studio-concept-ui .mds-project-grid { display: grid; grid-template-columns: 185px minmax(0, 1fr) 220px; }
+    #modeldev-studio-concept-ui .mds-project-grid &gt; section + section { border-left: 1px solid var(--mds-line); }
+    #modeldev-studio-concept-ui .mds-table-wrap { overflow-x: auto; }
+    #modeldev-studio-concept-ui .mds-table { width: 100%; border-collapse: collapse; }
+    #modeldev-studio-concept-ui .mds-table th,
+    #modeldev-studio-concept-ui .mds-table td {
+      padding: 8px 9px;
+      border-bottom: 1px solid var(--mds-line);
+      text-align: left;
+      vertical-align: top;
+    }
+    #modeldev-studio-concept-ui .mds-table th { color: var(--mds-soft-ink); background: var(--mds-panel-2); }
+    #modeldev-studio-concept-ui .mds-scene-link {
+      padding: 0;
+      border-color: transparent;
+      color: var(--mds-ink);
+      text-align: left;
+      background: transparent;
+    }
+    #modeldev-studio-concept-ui .mds-scene-link:hover { color: var(--mds-blue); }
+    #modeldev-studio-concept-ui .mds-status {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 3px 7px;
+      border-radius: 999px;
+      color: var(--mds-green);
+      background: var(--mds-green-soft);
+      white-space: nowrap;
+    }
+    #modeldev-studio-concept-ui .mds-status::before {
+      content: &quot;&quot;;
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: currentColor;
+    }
+    #modeldev-studio-concept-ui .mds-status-warn { color: var(--mds-gold); background: var(--mds-gold-soft); }
+    #modeldev-studio-concept-ui .mds-status-error { color: var(--mds-red); background: var(--mds-red-soft); }
+    #modeldev-studio-concept-ui .mds-kv { display: grid; grid-template-columns: 94px 1fr; gap: 8px 10px; }
+    #modeldev-studio-concept-ui .mds-kv dt { color: var(--mds-soft-ink); }
+    #modeldev-studio-concept-ui .mds-kv dd { margin: 0; }
+    #modeldev-studio-concept-ui .mds-model-grid { display: grid; grid-template-columns: 190px minmax(0, 1fr); }
+    #modeldev-studio-concept-ui .mds-model-grid &gt; section + section { border-left: 1px solid var(--mds-line); }
+    #modeldev-studio-concept-ui .mds-model-detail { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; padding: 12px; }
+    #modeldev-studio-concept-ui .mds-detail-block {
+      padding: 11px;
+      border: 1px solid var(--mds-line);
+      border-radius: 8px;
+      background: var(--mds-panel-2);
+    }
+    #modeldev-studio-concept-ui .mds-detail-block h3 { margin-bottom: 8px; }
+    #modeldev-studio-concept-ui .mds-chip-row { display: flex; flex-wrap: wrap; gap: 6px; }
+    #modeldev-studio-concept-ui .mds-chip {
+      padding: 3px 7px;
+      border-radius: 999px;
+      color: var(--mds-blue);
+      background: var(--mds-blue-soft);
+    }
+    #modeldev-studio-concept-ui .mds-editor-grid { display: grid; grid-template-columns: minmax(0, 1fr) 230px; }
+    #modeldev-studio-concept-ui .mds-editor-grid &gt; section + section { border-left: 1px solid var(--mds-line); }
+    #modeldev-studio-concept-ui .mds-form-row { display: grid; grid-template-columns: 150px 1fr; gap: 12px; align-items: center; margin-bottom: 10px; }
+    #modeldev-studio-concept-ui .mds-form-row label { color: var(--mds-soft-ink); }
+    #modeldev-studio-concept-ui .mds-input,
+    #modeldev-studio-concept-ui .mds-select {
+      width: 100%;
+      padding: 7px 9px;
+      border: 1px solid var(--mds-line);
+      border-radius: 6px;
+      color: var(--mds-ink);
+      background: var(--mds-panel);
+    }
+    #modeldev-studio-concept-ui .mds-code {
+      margin: 0;
+      padding: 12px;
+      overflow-x: auto;
+      color: light-dark(#dceaf4, #dceaf4);
+      background: #0e1c29;
+      font-family: Consolas, monospace;
+      white-space: pre-wrap;
+    }
+    #modeldev-studio-concept-ui .mds-validation-list { display: grid; gap: 8px; padding: 12px; }
+    #modeldev-studio-concept-ui .mds-validation-item {
+      padding: 8px;
+      border-left: 3px solid var(--mds-green);
+      background: var(--mds-green-soft);
+    }
+    #modeldev-studio-concept-ui .mds-runtime { padding: 12px; }
+    #modeldev-studio-concept-ui .mds-pipeline {
+      display: grid;
+      grid-template-columns: repeat(8, minmax(70px, 1fr));
+      gap: 6px;
+      margin-bottom: 12px;
+    }
+    #modeldev-studio-concept-ui .mds-stage {
+      padding: 8px 6px;
+      border-top: 4px solid var(--mds-stage-color, var(--mds-blue));
+      border-radius: 6px;
+      background: var(--mds-panel-2);
+      text-align: center;
+    }
+    #modeldev-studio-concept-ui .mds-runtime-grid { display: grid; grid-template-columns: minmax(0, 1fr) 210px; gap: 12px; }
+    #modeldev-studio-concept-ui .mds-plot {
+      padding: 10px;
+      border: 1px solid var(--mds-line);
+      border-radius: 8px;
+      background: var(--mds-panel-2);
+    }
+    #modeldev-studio-concept-ui .mds-plot svg { display: block; width: 100%; height: auto; }
+    #modeldev-studio-concept-ui .mds-metrics { display: grid; gap: 8px; }
+    #modeldev-studio-concept-ui .mds-metric {
+      padding: 10px;
+      border: 1px solid var(--mds-line);
+      border-radius: 8px;
+      background: var(--mds-panel-2);
+    }
+    #modeldev-studio-concept-ui .mds-metric small { display: block; color: var(--mds-soft-ink); }
+    #modeldev-studio-concept-ui .mds-event-strip { display: grid; grid-template-columns: repeat(5, 1fr); gap: 6px; margin-top: 12px; }
+    #modeldev-studio-concept-ui .mds-event {
+      padding: 7px;
+      border-top: 3px solid var(--mds-blue);
+      background: var(--mds-panel-2);
+    }
+    #modeldev-studio-concept-ui .mds-results-grid { display: grid; grid-template-columns: 165px minmax(0, 1fr); }
+    #modeldev-studio-concept-ui .mds-results-grid &gt; section + section { border-left: 1px solid var(--mds-line); }
+    #modeldev-studio-concept-ui .mds-series { padding: 12px; }
+    #modeldev-studio-concept-ui .mds-check { display: flex; align-items: center; gap: 8px; margin: 8px 0; }
+    #modeldev-studio-concept-ui .mds-analysis { padding: 12px; }
+    #modeldev-studio-concept-ui .mds-batch-grid,
+    #modeldev-studio-concept-ui .mds-compare-grid,
+    #modeldev-studio-concept-ui .mds-diagnostic-grid,
+    #modeldev-studio-concept-ui .mds-plugin-grid,
+    #modeldev-studio-concept-ui .mds-export-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(250px, .8fr);
+      gap: 12px;
+      padding: 12px;
+    }
+    #modeldev-studio-concept-ui .mds-subpane {
+      border: 1px solid var(--mds-line);
+      border-radius: 8px;
+      overflow: hidden;
+      background: var(--mds-panel);
+    }
+    #modeldev-studio-concept-ui .mds-progress {
+      height: 9px;
+      border-radius: 99px;
+      overflow: hidden;
+      background: color-mix(in srgb, var(--mds-soft-ink) 20%, transparent);
+    }
+    #modeldev-studio-concept-ui .mds-progress &gt; span {
+      display: block;
+      height: 100%;
+      background: var(--mds-blue);
+      transition: width .25s ease;
+    }
+    #modeldev-studio-concept-ui .mds-gate {
+      padding: 12px;
+      border-left: 4px solid var(--mds-gold);
+      background: var(--mds-gold-soft);
+    }
+    #modeldev-studio-concept-ui .mds-gate.is-passed { border-color: var(--mds-green); background: var(--mds-green-soft); }
+    #modeldev-studio-concept-ui .mds-log-row {
+      display: grid;
+      grid-template-columns: 80px 88px 1fr;
+      gap: 8px;
+      padding: 7px 9px;
+      border-bottom: 1px solid var(--mds-line);
+      font-family: Consolas, monospace;
+    }
+    #modeldev-studio-concept-ui .mds-log-row.is-error { color: var(--mds-red); background: var(--mds-red-soft); }
+    #modeldev-studio-concept-ui .mds-manifest { min-height: 250px; }
+    #modeldev-studio-concept-ui .mds-export-checks { display: grid; gap: 8px; padding: 12px; }
+    #modeldev-studio-concept-ui .mds-export-check {
+      display: grid;
+      grid-template-columns: 22px 1fr auto;
+      gap: 8px;
+      align-items: center;
+      padding-bottom: 8px;
+      border-bottom: 1px solid var(--mds-line);
+    }
+    #modeldev-studio-concept-ui .mds-footer {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 10px 16px;
+      border-top: 1px solid var(--mds-line);
+      color: var(--mds-soft-ink);
+      background: var(--mds-panel);
+    }
+    @media (max-width: 980px) {
+      #modeldev-studio-concept-ui .mds-app-body { grid-template-columns: 1fr; }
+      #modeldev-studio-concept-ui .mds-sidebar { border-right: 0; border-bottom: 1px solid var(--mds-line); }
+      #modeldev-studio-concept-ui .mds-nav { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      #modeldev-studio-concept-ui .mds-side-note { display: none; }
+      #modeldev-studio-concept-ui .mds-screen-layout { grid-template-columns: 1fr; }
+    }
+    @media (max-width: 720px) {
+      #modeldev-studio-concept-ui .mds-topbar { grid-template-columns: 1fr auto; }
+      #modeldev-studio-concept-ui .mds-title-block { grid-column: 1 / -1; grid-row: 2; }
+      #modeldev-studio-concept-ui .mds-project-grid,
+      #modeldev-studio-concept-ui .mds-model-grid,
+      #modeldev-studio-concept-ui .mds-editor-grid,
+      #modeldev-studio-concept-ui .mds-results-grid,
+      #modeldev-studio-concept-ui .mds-runtime-grid,
+      #modeldev-studio-concept-ui .mds-batch-grid,
+      #modeldev-studio-concept-ui .mds-compare-grid,
+      #modeldev-studio-concept-ui .mds-diagnostic-grid,
+      #modeldev-studio-concept-ui .mds-plugin-grid,
+      #modeldev-studio-concept-ui .mds-export-grid { grid-template-columns: 1fr; }
+      #modeldev-studio-concept-ui .mds-project-grid &gt; section + section,
+      #modeldev-studio-concept-ui .mds-model-grid &gt; section + section,
+      #modeldev-studio-concept-ui .mds-editor-grid &gt; section + section,
+      #modeldev-studio-concept-ui .mds-results-grid &gt; section + section { border-left: 0; border-top: 1px solid var(--mds-line); }
+      #modeldev-studio-concept-ui .mds-pipeline { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      #modeldev-studio-concept-ui .mds-event-strip { grid-template-columns: 1fr; }
+      #modeldev-studio-concept-ui .mds-model-detail { grid-template-columns: 1fr; }
+      #modeldev-studio-concept-ui .mds-workspace-head,
+      #modeldev-studio-concept-ui .mds-screen-header { align-items: flex-start; flex-direction: column; }
+    }
+    @media (max-width: 420px) {
+      #modeldev-studio-concept-ui .mds-nav { grid-template-columns: 1fr; }
+      #modeldev-studio-concept-ui .mds-tour-tools { flex-wrap: wrap; justify-content: flex-end; }
+      #modeldev-studio-concept-ui .mds-form-row { grid-template-columns: 1fr; gap: 4px; }
+      #modeldev-studio-concept-ui .mds-kv { grid-template-columns: 1fr; }
+    }
+  &lt;/style&gt;
+
+  &lt;div class=&quot;mds-app&quot;&gt;
+    &lt;header class=&quot;mds-topbar&quot;&gt;
+      &lt;div class=&quot;mds-brand&quot;&gt;
+        &lt;span class=&quot;mds-brand-mark&quot;&gt;&lt;i data-lucide=&quot;orbit&quot; aria-hidden=&quot;true&quot;&gt;&lt;/i&gt;&lt;/span&gt;
+        &lt;strong&gt;MODELDEV STUDIO&lt;/strong&gt;
+      &lt;/div&gt;
+      &lt;div class=&quot;mds-title-block&quot;&gt;
+        &lt;h1 id=&quot;mds-feature-title&quot;&gt;项目与场景&lt;/h1&gt;
+        &lt;small&gt;从场景配置到验证发布的统一仿真工作台&lt;/small&gt;
+      &lt;/div&gt;
+      &lt;div class=&quot;mds-tour-tools&quot;&gt;
+        &lt;button type=&quot;button&quot; class=&quot;mds-top-button&quot; id=&quot;mds-prev-feature&quot;&gt;&lt;i data-lucide=&quot;chevron-left&quot; aria-hidden=&quot;true&quot;&gt;&lt;/i&gt; 上一功能&lt;/button&gt;
+        &lt;span id=&quot;mds-feature-count&quot; aria-live=&quot;polite&quot;&gt;1 / 10&lt;/span&gt;
+        &lt;button type=&quot;button&quot; class=&quot;mds-top-button&quot; id=&quot;mds-next-feature&quot;&gt;下一功能 &lt;i data-lucide=&quot;chevron-right&quot; aria-hidden=&quot;true&quot;&gt;&lt;/i&gt;&lt;/button&gt;
+      &lt;/div&gt;
+    &lt;/header&gt;
+
+    &lt;div class=&quot;mds-app-body&quot;&gt;
+      &lt;aside class=&quot;mds-sidebar&quot; aria-label=&quot;Studio 功能导航&quot;&gt;
+        &lt;small&gt;功能地图&lt;/small&gt;
+        &lt;nav class=&quot;mds-nav&quot;&gt;
+          &lt;button type=&quot;button&quot; class=&quot;mds-nav-button&quot; data-screen-id=&quot;projects&quot; aria-selected=&quot;true&quot;&gt;&lt;i data-lucide=&quot;folder-tree&quot; aria-hidden=&quot;true&quot;&gt;&lt;/i&gt;&lt;span&gt;项目与场景&lt;/span&gt;&lt;small class=&quot;mds-nav-index&quot;&gt;01&lt;/small&gt;&lt;/button&gt;
+          &lt;button type=&quot;button&quot; class=&quot;mds-nav-button&quot; data-screen-id=&quot;models&quot; aria-selected=&quot;false&quot;&gt;&lt;i data-lucide=&quot;boxes&quot; aria-hidden=&quot;true&quot;&gt;&lt;/i&gt;&lt;span&gt;模型库&lt;/span&gt;&lt;small class=&quot;mds-nav-index&quot;&gt;02&lt;/small&gt;&lt;/button&gt;
+          &lt;button type=&quot;button&quot; class=&quot;mds-nav-button&quot; data-screen-id=&quot;editor&quot; aria-selected=&quot;false&quot;&gt;&lt;i data-lucide=&quot;file-check-2&quot; aria-hidden=&quot;true&quot;&gt;&lt;/i&gt;&lt;span&gt;配置与校验&lt;/span&gt;&lt;small class=&quot;mds-nav-index&quot;&gt;03&lt;/small&gt;&lt;/button&gt;
+          &lt;button type=&quot;button&quot; class=&quot;mds-nav-button&quot; data-screen-id=&quot;run&quot; aria-selected=&quot;false&quot;&gt;&lt;i data-lucide=&quot;activity&quot; aria-hidden=&quot;true&quot;&gt;&lt;/i&gt;&lt;span&gt;运行监控&lt;/span&gt;&lt;small class=&quot;mds-nav-index&quot;&gt;04&lt;/small&gt;&lt;/button&gt;
+          &lt;button type=&quot;button&quot; class=&quot;mds-nav-button&quot; data-screen-id=&quot;results&quot; aria-selected=&quot;false&quot;&gt;&lt;i data-lucide=&quot;chart-no-axes-combined&quot; aria-hidden=&quot;true&quot;&gt;&lt;/i&gt;&lt;span&gt;结果分析&lt;/span&gt;&lt;small class=&quot;mds-nav-index&quot;&gt;05&lt;/small&gt;&lt;/button&gt;
+          &lt;button type=&quot;button&quot; class=&quot;mds-nav-button&quot; data-screen-id=&quot;batch&quot; aria-selected=&quot;false&quot;&gt;&lt;i data-lucide=&quot;workflow&quot; aria-hidden=&quot;true&quot;&gt;&lt;/i&gt;&lt;span&gt;批处理实验&lt;/span&gt;&lt;small class=&quot;mds-nav-index&quot;&gt;06&lt;/small&gt;&lt;/button&gt;
+          &lt;button type=&quot;button&quot; class=&quot;mds-nav-button&quot; data-screen-id=&quot;compare&quot; aria-selected=&quot;false&quot;&gt;&lt;i data-lucide=&quot;git-compare-arrows&quot; aria-hidden=&quot;true&quot;&gt;&lt;/i&gt;&lt;span&gt;基线比较&lt;/span&gt;&lt;small class=&quot;mds-nav-index&quot;&gt;07&lt;/small&gt;&lt;/button&gt;
+          &lt;button type=&quot;button&quot; class=&quot;mds-nav-button&quot; data-screen-id=&quot;diagnostics&quot; aria-selected=&quot;false&quot;&gt;&lt;i data-lucide=&quot;stethoscope&quot; aria-hidden=&quot;true&quot;&gt;&lt;/i&gt;&lt;span&gt;诊断与快照&lt;/span&gt;&lt;small class=&quot;mds-nav-index&quot;&gt;08&lt;/small&gt;&lt;/button&gt;
+          &lt;button type=&quot;button&quot; class=&quot;mds-nav-button&quot; data-screen-id=&quot;plugins&quot; aria-selected=&quot;false&quot;&gt;&lt;i data-lucide=&quot;plug&quot; aria-hidden=&quot;true&quot;&gt;&lt;/i&gt;&lt;span&gt;插件管理&lt;/span&gt;&lt;small class=&quot;mds-nav-index&quot;&gt;09&lt;/small&gt;&lt;/button&gt;
+          &lt;button type=&quot;button&quot; class=&quot;mds-nav-button&quot; data-screen-id=&quot;export&quot; aria-selected=&quot;false&quot;&gt;&lt;i data-lucide=&quot;package-check&quot; aria-hidden=&quot;true&quot;&gt;&lt;/i&gt;&lt;span&gt;导出与发布&lt;/span&gt;&lt;small class=&quot;mds-nav-index&quot;&gt;10&lt;/small&gt;&lt;/button&gt;
+        &lt;/nav&gt;
+        &lt;div class=&quot;mds-side-note&quot;&gt;
+          &lt;small&gt;设计原则&lt;/small&gt;
+          &lt;p&gt;同一套 Schema、Registry、Run API 与 Result 数据集驱动 CLI、SDK 和 Studio。&lt;/p&gt;
+        &lt;/div&gt;
+      &lt;/aside&gt;
+
+      &lt;section class=&quot;mds-workspace&quot;&gt;
+        &lt;div class=&quot;mds-workspace-head&quot;&gt;
+          &lt;div class=&quot;mds-breadcrumb&quot;&gt;ModelDev / HXD 项目 / &lt;strong class=&quot;mds-current-title&quot;&gt;项目与场景&lt;/strong&gt;&lt;/div&gt;
+          &lt;div class=&quot;mds-workspace-actions&quot;&gt;
+            &lt;button type=&quot;button&quot; class=&quot;mds-action&quot;&gt;&lt;i data-lucide=&quot;save&quot; aria-hidden=&quot;true&quot;&gt;&lt;/i&gt; 保存工作区&lt;/button&gt;
+            &lt;button type=&quot;button&quot; class=&quot;mds-action mds-action-primary&quot;&gt;&lt;i data-lucide=&quot;play&quot; aria-hidden=&quot;true&quot;&gt;&lt;/i&gt; 快速运行&lt;/button&gt;
+          &lt;/div&gt;
+        &lt;/div&gt;
+
+        &lt;section class=&quot;mds-screen&quot; data-screen=&quot;projects&quot; data-title=&quot;项目与场景&quot;&gt;
+          &lt;div class=&quot;mds-screen-layout&quot;&gt;
+            &lt;article class=&quot;mds-screen-canvas&quot;&gt;
+              &lt;header class=&quot;mds-screen-header&quot;&gt;
+                &lt;div&gt;&lt;h2&gt;项目与场景工作台&lt;/h2&gt;&lt;small&gt;组织任务、资源引用、版本与最近运行&lt;/small&gt;&lt;/div&gt;
+                &lt;div class=&quot;mds-actions&quot;&gt;&lt;button type=&quot;button&quot; class=&quot;mds-action&quot;&gt;&lt;i data-lucide=&quot;folder-plus&quot; aria-hidden=&quot;true&quot;&gt;&lt;/i&gt; 新建项目&lt;/button&gt;&lt;button type=&quot;button&quot; class=&quot;mds-action mds-action-primary mds-hotspot&quot; data-hotspot=&quot;project-create&quot;&gt;&lt;i data-lucide=&quot;file-plus-2&quot; aria-hidden=&quot;true&quot;&gt;&lt;/i&gt; 新建场景&lt;/button&gt;&lt;/div&gt;
+              &lt;/header&gt;
+              &lt;div class=&quot;mds-project-grid&quot;&gt;
+                &lt;section class=&quot;mds-hotspot&quot; data-hotspot=&quot;project-tree&quot;&gt;
+                  &lt;div class=&quot;mds-pane-title&quot;&gt;&lt;span&gt;资源树&lt;/span&gt;&lt;i data-lucide=&quot;more-horizontal&quot; aria-hidden=&quot;true&quot;&gt;&lt;/i&gt;&lt;/div&gt;
+                  &lt;div class=&quot;mds-tree&quot;&gt;
+                    &lt;button type=&quot;button&quot; class=&quot;mds-tree-row mds-tree-button&quot; data-project-folder=&quot;all&quot; aria-pressed=&quot;false&quot;&gt;&lt;i data-lucide=&quot;folder-open&quot; aria-hidden=&quot;true&quot;&gt;&lt;/i&gt;&lt;strong&gt;HXD 项目&lt;/strong&gt;&lt;/button&gt;
+                    &lt;button type=&quot;button&quot; class=&quot;mds-tree-row mds-tree-indent mds-tree-button&quot; data-project-folder=&quot;intercept&quot; aria-pressed=&quot;true&quot;&gt;&lt;i data-lucide=&quot;crosshair&quot; aria-hidden=&quot;true&quot;&gt;&lt;/i&gt;拦截任务&lt;/button&gt;
+                    &lt;button type=&quot;button&quot; class=&quot;mds-tree-row mds-tree-indent mds-tree-button&quot; data-project-folder=&quot;route&quot; aria-pressed=&quot;false&quot;&gt;&lt;i data-lucide=&quot;route&quot; aria-hidden=&quot;true&quot;&gt;&lt;/i&gt;航路任务&lt;/button&gt;
+                    &lt;button type=&quot;button&quot; class=&quot;mds-tree-row mds-tree-indent mds-tree-button&quot; data-project-folder=&quot;sensitivity&quot; aria-pressed=&quot;false&quot;&gt;&lt;i data-lucide=&quot;flask-conical&quot; aria-hidden=&quot;true&quot;&gt;&lt;/i&gt;敏感性实验&lt;/button&gt;
+                    &lt;button type=&quot;button&quot; class=&quot;mds-tree-row mds-tree-button&quot; data-project-folder=&quot;archive&quot; aria-pressed=&quot;false&quot;&gt;&lt;i data-lucide=&quot;archive&quot; aria-hidden=&quot;true&quot;&gt;&lt;/i&gt;归档任务&lt;/button&gt;
+                  &lt;/div&gt;
+                &lt;/section&gt;
+                &lt;section class=&quot;mds-hotspot&quot; data-hotspot=&quot;project-scenarios&quot;&gt;
+                  &lt;div class=&quot;mds-pane-title&quot;&gt;&lt;span id=&quot;mds-project-list-title&quot;&gt;拦截任务 · 场景列表&lt;/span&gt;&lt;small id=&quot;mds-project-list-count&quot; aria-live=&quot;polite&quot;&gt;3 个场景&lt;/small&gt;&lt;/div&gt;
+                  &lt;div class=&quot;mds-table-wrap&quot;&gt;
+                    &lt;table class=&quot;mds-table&quot;&gt;
+                      &lt;thead&gt;&lt;tr&gt;&lt;th&gt;场景&lt;/th&gt;&lt;th&gt;版本&lt;/th&gt;&lt;th&gt;状态&lt;/th&gt;&lt;th&gt;最近运行&lt;/th&gt;&lt;/tr&gt;&lt;/thead&gt;
+                      &lt;tbody id=&quot;mds-project-scene-rows&quot;&gt;
+                      &lt;/tbody&gt;
+                    &lt;/table&gt;
+                  &lt;/div&gt;
+                &lt;/section&gt;
+                &lt;section class=&quot;mds-hotspot&quot; data-hotspot=&quot;project-detail&quot;&gt;
+                  &lt;div class=&quot;mds-pane-title&quot;&gt;&lt;span id=&quot;mds-project-detail-title&quot;&gt;场景摘要&lt;/span&gt;&lt;span id=&quot;mds-project-detail-status&quot; class=&quot;mds-status&quot;&gt;可运行&lt;/span&gt;&lt;/div&gt;
+                  &lt;div class=&quot;mds-content-pad&quot; aria-live=&quot;polite&quot;&gt;
+                    &lt;dl class=&quot;mds-kv&quot; id=&quot;mds-project-detail-fields&quot;&gt;&lt;/dl&gt;
+                  &lt;/div&gt;
+                &lt;/section&gt;
+              &lt;/div&gt;
+            &lt;/article&gt;
+            &lt;aside class=&quot;mds-guide&quot;&gt;
+              &lt;div class=&quot;mds-guide-head&quot;&gt;&lt;div&gt;&lt;h3&gt;如何操作&lt;/h3&gt;&lt;small&gt;建立一个可复现任务&lt;/small&gt;&lt;/div&gt;&lt;small&gt;4 步&lt;/small&gt;&lt;/div&gt;
+              &lt;div class=&quot;mds-guide-list&quot;&gt;
+                &lt;button type=&quot;button&quot; class=&quot;mds-step&quot; data-target=&quot;project-tree&quot; aria-pressed=&quot;true&quot;&gt;&lt;span class=&quot;mds-step-number&quot;&gt;1&lt;/span&gt;&lt;span&gt;点击资源树中的项目或任务目录，主界面同步显示目录内容。&lt;/span&gt;&lt;/button&gt;
+                &lt;button type=&quot;button&quot; class=&quot;mds-step&quot; data-target=&quot;project-create&quot; aria-pressed=&quot;false&quot;&gt;&lt;span class=&quot;mds-step-number&quot;&gt;2&lt;/span&gt;&lt;span&gt;点击“新建场景”，从模板或空白配置开始。&lt;/span&gt;&lt;/button&gt;
+                &lt;button type=&quot;button&quot; class=&quot;mds-step&quot; data-target=&quot;project-scenarios&quot; aria-pressed=&quot;false&quot;&gt;&lt;span class=&quot;mds-step-number&quot;&gt;3&lt;/span&gt;&lt;span&gt;用场景列表管理版本、复制和最近运行。&lt;/span&gt;&lt;/button&gt;
+                &lt;button type=&quot;button&quot; class=&quot;mds-step&quot; data-target=&quot;project-detail&quot; aria-pressed=&quot;false&quot;&gt;&lt;span class=&quot;mds-step-number&quot;&gt;4&lt;/span&gt;&lt;span&gt;确认模型组合、步长和随机种子后进入编辑。&lt;/span&gt;&lt;/button&gt;
+              &lt;/div&gt;
+              &lt;div class=&quot;mds-guide-result&quot;&gt;&lt;strong&gt;产出&lt;/strong&gt;&lt;br&gt;一个带版本号、引用完整且可追溯的 Scenario。&lt;/div&gt;
+            &lt;/aside&gt;
+          &lt;/div&gt;
+        &lt;/section&gt;
+
+        &lt;section class=&quot;mds-screen&quot; data-screen=&quot;models&quot; data-title=&quot;模型库&quot; hidden&gt;
+          &lt;div class=&quot;mds-screen-layout&quot;&gt;
+            &lt;article class=&quot;mds-screen-canvas&quot;&gt;
+              &lt;header class=&quot;mds-screen-header&quot;&gt;
+                &lt;div&gt;&lt;h2&gt;模型库与能力目录&lt;/h2&gt;&lt;small&gt;按稳定名称和语义版本选择可组合模型&lt;/small&gt;&lt;/div&gt;
+                &lt;div class=&quot;mds-actions&quot;&gt;&lt;button type=&quot;button&quot; class=&quot;mds-action&quot;&gt;&lt;i data-lucide=&quot;refresh-cw&quot; aria-hidden=&quot;true&quot;&gt;&lt;/i&gt; 刷新注册表&lt;/button&gt;&lt;button type=&quot;button&quot; class=&quot;mds-action mds-action-primary&quot;&gt;&lt;i data-lucide=&quot;plus&quot; aria-hidden=&quot;true&quot;&gt;&lt;/i&gt; 注册模型&lt;/button&gt;&lt;/div&gt;
+              &lt;/header&gt;
+              &lt;div class=&quot;mds-model-grid&quot;&gt;
+                &lt;section class=&quot;mds-hotspot&quot; data-hotspot=&quot;model-category&quot;&gt;
+                  &lt;div class=&quot;mds-pane-title&quot;&gt;&lt;span&gt;模型类别&lt;/span&gt;&lt;small&gt;6 类 · 25 模型&lt;/small&gt;&lt;/div&gt;
+                  &lt;div class=&quot;mds-list&quot;&gt;
+                    &lt;button type=&quot;button&quot; class=&quot;mds-list-row mds-model-category-button&quot; data-model-category=&quot;vehicle&quot; aria-pressed=&quot;true&quot;&gt;&lt;i data-lucide=&quot;rocket&quot; aria-hidden=&quot;true&quot;&gt;&lt;/i&gt;飞行器 &lt;small&gt;4&lt;/small&gt;&lt;/button&gt;
+                    &lt;button type=&quot;button&quot; class=&quot;mds-list-row mds-model-category-button&quot; data-model-category=&quot;environment&quot; aria-pressed=&quot;false&quot;&gt;&lt;i data-lucide=&quot;wind&quot; aria-hidden=&quot;true&quot;&gt;&lt;/i&gt;环境 &lt;small&gt;3&lt;/small&gt;&lt;/button&gt;
+                    &lt;button type=&quot;button&quot; class=&quot;mds-list-row mds-model-category-button&quot; data-model-category=&quot;guidance&quot; aria-pressed=&quot;false&quot;&gt;&lt;i data-lucide=&quot;navigation&quot; aria-hidden=&quot;true&quot;&gt;&lt;/i&gt;制导 &lt;small&gt;5&lt;/small&gt;&lt;/button&gt;
+                    &lt;button type=&quot;button&quot; class=&quot;mds-list-row mds-model-category-button&quot; data-model-category=&quot;control&quot; aria-pressed=&quot;false&quot;&gt;&lt;i data-lucide=&quot;sliders-horizontal&quot; aria-hidden=&quot;true&quot;&gt;&lt;/i&gt;控制 &lt;small&gt;3&lt;/small&gt;&lt;/button&gt;
+                    &lt;button type=&quot;button&quot; class=&quot;mds-list-row mds-model-category-button&quot; data-model-category=&quot;sensor&quot; aria-pressed=&quot;false&quot;&gt;&lt;i data-lucide=&quot;radio&quot; aria-hidden=&quot;true&quot;&gt;&lt;/i&gt;传感器 &lt;small&gt;6&lt;/small&gt;&lt;/button&gt;
+                    &lt;button type=&quot;button&quot; class=&quot;mds-list-row mds-model-category-button&quot; data-model-category=&quot;recorder&quot; aria-pressed=&quot;false&quot;&gt;&lt;i data-lucide=&quot;database&quot; aria-hidden=&quot;true&quot;&gt;&lt;/i&gt;记录器 &lt;small&gt;4&lt;/small&gt;&lt;/button&gt;
+                  &lt;/div&gt;
+                &lt;/section&gt;
+                &lt;section aria-live=&quot;polite&quot;&gt;
+                  &lt;div class=&quot;mds-pane-title mds-hotspot&quot; data-hotspot=&quot;model-version&quot;&gt;&lt;span id=&quot;mds-model-name&quot;&gt;TGC Reference&lt;/span&gt;&lt;span id=&quot;mds-model-version&quot; class=&quot;mds-status&quot;&gt;1.0.0 已验证&lt;/span&gt;&lt;/div&gt;
+                  &lt;div class=&quot;mds-model-detail&quot;&gt;
+                    &lt;div class=&quot;mds-detail-block mds-hotspot&quot; data-hotspot=&quot;model-capability&quot;&gt;
+                      &lt;h3&gt;能力与适用域&lt;/h3&gt;
+                      &lt;dl class=&quot;mds-kv&quot; id=&quot;mds-model-capabilities&quot;&gt;&lt;/dl&gt;
+                    &lt;/div&gt;
+                    &lt;div class=&quot;mds-detail-block mds-hotspot&quot; data-hotspot=&quot;model-contracts&quot;&gt;
+                      &lt;h3&gt;提供的契约&lt;/h3&gt;
+                      &lt;div class=&quot;mds-chip-row&quot; id=&quot;mds-model-contract-list&quot;&gt;&lt;/div&gt;
+                      &lt;p&gt;&lt;small id=&quot;mds-model-dependencies&quot;&gt;&lt;/small&gt;&lt;/p&gt;
+                    &lt;/div&gt;
+                    &lt;div class=&quot;mds-detail-block&quot;&gt;
+                      &lt;h3&gt;参数模板&lt;/h3&gt;
+                      &lt;p id=&quot;mds-model-templates&quot;&gt;&lt;/p&gt;
+                    &lt;/div&gt;
+                    &lt;div class=&quot;mds-detail-block&quot;&gt;
+                      &lt;h3&gt;验证证据&lt;/h3&gt;
+                      &lt;p id=&quot;mds-model-evidence&quot;&gt;&lt;/p&gt;
+                    &lt;/div&gt;
+                  &lt;/div&gt;
+                &lt;/section&gt;
+              &lt;/div&gt;
+            &lt;/article&gt;
+            &lt;aside class=&quot;mds-guide&quot;&gt;
+              &lt;div class=&quot;mds-guide-head&quot;&gt;&lt;div&gt;&lt;h3&gt;如何操作&lt;/h3&gt;&lt;small&gt;选择并引用一个模型&lt;/small&gt;&lt;/div&gt;&lt;small&gt;4 步&lt;/small&gt;&lt;/div&gt;
+              &lt;div class=&quot;mds-guide-list&quot;&gt;
+                &lt;button type=&quot;button&quot; class=&quot;mds-step&quot; data-target=&quot;model-category&quot; aria-pressed=&quot;true&quot;&gt;&lt;span class=&quot;mds-step-number&quot;&gt;1&lt;/span&gt;&lt;span&gt;点击模型类别，查看该目录下默认模型的能力、契约与验证信息。&lt;/span&gt;&lt;/button&gt;
+                &lt;button type=&quot;button&quot; class=&quot;mds-step&quot; data-target=&quot;model-version&quot; aria-pressed=&quot;false&quot;&gt;&lt;span class=&quot;mds-step-number&quot;&gt;2&lt;/span&gt;&lt;span&gt;选择稳定名称与语义版本，不引用本地文件路径。&lt;/span&gt;&lt;/button&gt;
+                &lt;button type=&quot;button&quot; class=&quot;mds-step&quot; data-target=&quot;model-capability&quot; aria-pressed=&quot;false&quot;&gt;&lt;span class=&quot;mds-step-number&quot;&gt;3&lt;/span&gt;&lt;span&gt;检查高度、速度、坐标系与线程能力是否覆盖任务。&lt;/span&gt;&lt;/button&gt;
+                &lt;button type=&quot;button&quot; class=&quot;mds-step&quot; data-target=&quot;model-contracts&quot; aria-pressed=&quot;false&quot;&gt;&lt;span class=&quot;mds-step-number&quot;&gt;4&lt;/span&gt;&lt;span&gt;确认契约和依赖版本，再添加到场景。&lt;/span&gt;&lt;/button&gt;
+              &lt;/div&gt;
+              &lt;div class=&quot;mds-guide-result&quot;&gt;&lt;strong&gt;产出&lt;/strong&gt;&lt;br&gt;场景保存的是 name@version 引用及解析后的锁定版本。&lt;/div&gt;
+            &lt;/aside&gt;
+          &lt;/div&gt;
+        &lt;/section&gt;
+
+        &lt;section class=&quot;mds-screen&quot; data-screen=&quot;editor&quot; data-title=&quot;配置与校验&quot; hidden&gt;
+          &lt;div class=&quot;mds-screen-layout&quot;&gt;
+            &lt;article class=&quot;mds-screen-canvas&quot;&gt;
+              &lt;header class=&quot;mds-screen-header&quot;&gt;
+                &lt;div&gt;&lt;h2&gt;Schema 驱动的场景编辑器&lt;/h2&gt;&lt;small&gt;字段展示单位、来源、范围和校验错误&lt;/small&gt;&lt;/div&gt;
+                &lt;div class=&quot;mds-actions&quot;&gt;&lt;button type=&quot;button&quot; class=&quot;mds-action&quot;&gt;查看 YAML&lt;/button&gt;&lt;button type=&quot;button&quot; class=&quot;mds-action mds-action-primary mds-hotspot&quot; data-hotspot=&quot;editor-validate&quot; id=&quot;mds-validate&quot;&gt;&lt;i data-lucide=&quot;shield-check&quot; aria-hidden=&quot;true&quot;&gt;&lt;/i&gt; 校验场景&lt;/button&gt;&lt;/div&gt;
+              &lt;/header&gt;
+              &lt;div class=&quot;mds-editor-grid&quot;&gt;
+                &lt;section&gt;
+                  &lt;div class=&quot;mds-form mds-hotspot&quot; data-hotspot=&quot;editor-fields&quot;&gt;
+                    &lt;div class=&quot;mds-form-row&quot;&gt;&lt;label for=&quot;mds-vehicle&quot;&gt;飞行器模型&lt;/label&gt;&lt;select id=&quot;mds-vehicle&quot; class=&quot;mds-select&quot;&gt;&lt;option&gt;TGC Reference @ 1.0.0&lt;/option&gt;&lt;/select&gt;&lt;/div&gt;
+                    &lt;div class=&quot;mds-form-row&quot;&gt;&lt;label for=&quot;mds-environment&quot;&gt;环境模型&lt;/label&gt;&lt;select id=&quot;mds-environment&quot; class=&quot;mds-select&quot;&gt;&lt;option&gt;NRLMSISE-00 @ 1.0.0&lt;/option&gt;&lt;/select&gt;&lt;/div&gt;
+                    &lt;div class=&quot;mds-form-row&quot;&gt;&lt;label for=&quot;mds-launch&quot;&gt;发射点 LLA&lt;/label&gt;&lt;input id=&quot;mds-launch&quot; class=&quot;mds-input&quot; value=&quot;120.0°, 40.0°, 10 m&quot;&gt;&lt;/div&gt;
+                    &lt;div class=&quot;mds-form-row&quot;&gt;&lt;label for=&quot;mds-target&quot;&gt;目标点 LLA&lt;/label&gt;&lt;input id=&quot;mds-target&quot; class=&quot;mds-input&quot; value=&quot;119.5°, 40.4°, 100 m&quot;&gt;&lt;/div&gt;
+                    &lt;div class=&quot;mds-form-row&quot;&gt;&lt;label for=&quot;mds-dt&quot;&gt;仿真步长&lt;/label&gt;&lt;input id=&quot;mds-dt&quot; class=&quot;mds-input&quot; value=&quot;0.01 s&quot;&gt;&lt;/div&gt;
+                    &lt;div class=&quot;mds-form-row&quot;&gt;&lt;label for=&quot;mds-seed&quot;&gt;随机种子&lt;/label&gt;&lt;input id=&quot;mds-seed&quot; class=&quot;mds-input&quot; value=&quot;20260823&quot;&gt;&lt;/div&gt;
+                    &lt;div class=&quot;mds-form-row&quot;&gt;&lt;label for=&quot;mds-recorder&quot;&gt;轨迹记录&lt;/label&gt;&lt;select id=&quot;mds-recorder&quot; class=&quot;mds-select&quot;&gt;&lt;option&gt;Parquet · 20 Hz · 核心字段&lt;/option&gt;&lt;/select&gt;&lt;/div&gt;
+                  &lt;/div&gt;
+                  &lt;pre class=&quot;mds-code mds-hotspot&quot; data-hotspot=&quot;editor-source&quot;&gt;&lt;code&gt;scenario_version: modeldev.scenario/v1
+vehicle: {model: tgc.reference@1.0.0}
+run: {dt_s: 0.01, random_seed: 20260823}
+recorders: [{type: trajectory, format: parquet, rate_hz: 20}]&lt;/code&gt;&lt;/pre&gt;
+                &lt;/section&gt;
+                &lt;section class=&quot;mds-hotspot&quot; data-hotspot=&quot;editor-validation&quot;&gt;
+                  &lt;div class=&quot;mds-pane-title&quot;&gt;&lt;span&gt;实时校验&lt;/span&gt;&lt;span class=&quot;mds-status&quot; id=&quot;mds-validation-status&quot;&gt;7 项通过&lt;/span&gt;&lt;/div&gt;
+                  &lt;div class=&quot;mds-validation-list&quot; id=&quot;mds-validation-list&quot; aria-live=&quot;polite&quot;&gt;
+                    &lt;div class=&quot;mds-validation-item&quot;&gt;Schema v1：字段完整&lt;/div&gt;
+                    &lt;div class=&quot;mds-validation-item&quot;&gt;模型依赖：版本兼容&lt;/div&gt;
+                    &lt;div class=&quot;mds-validation-item&quot;&gt;单位与坐标：显式有效&lt;/div&gt;
+                    &lt;div class=&quot;mds-validation-item&quot;&gt;Seeker FOV：大于零&lt;/div&gt;
+                    &lt;div class=&quot;mds-validation-item&quot;&gt;Recorder：字段与频率有效&lt;/div&gt;
+                  &lt;/div&gt;
+                &lt;/section&gt;
+              &lt;/div&gt;
+            &lt;/article&gt;
+            &lt;aside class=&quot;mds-guide&quot;&gt;
+              &lt;div class=&quot;mds-guide-head&quot;&gt;&lt;div&gt;&lt;h3&gt;如何操作&lt;/h3&gt;&lt;small&gt;把配置错误挡在启动前&lt;/small&gt;&lt;/div&gt;&lt;small&gt;4 步&lt;/small&gt;&lt;/div&gt;
+              &lt;div class=&quot;mds-guide-list&quot;&gt;
+                &lt;button type=&quot;button&quot; class=&quot;mds-step&quot; data-target=&quot;editor-fields&quot; aria-pressed=&quot;true&quot;&gt;&lt;span class=&quot;mds-step-number&quot;&gt;1&lt;/span&gt;&lt;span&gt;按 Schema 填写模型、初始状态、时间和输出策略。&lt;/span&gt;&lt;/button&gt;
+                &lt;button type=&quot;button&quot; class=&quot;mds-step&quot; data-target=&quot;editor-source&quot; aria-pressed=&quot;false&quot;&gt;&lt;span class=&quot;mds-step-number&quot;&gt;2&lt;/span&gt;&lt;span&gt;需要代码评审时切换到 canonical YAML。&lt;/span&gt;&lt;/button&gt;
+                &lt;button type=&quot;button&quot; class=&quot;mds-step&quot; data-target=&quot;editor-validate&quot; aria-pressed=&quot;false&quot;&gt;&lt;span class=&quot;mds-step-number&quot;&gt;3&lt;/span&gt;&lt;span&gt;点击“校验场景”，执行类型、范围、互斥和能力检查。&lt;/span&gt;&lt;/button&gt;
+                &lt;button type=&quot;button&quot; class=&quot;mds-step&quot; data-target=&quot;editor-validation&quot; aria-pressed=&quot;false&quot;&gt;&lt;span class=&quot;mds-step-number&quot;&gt;4&lt;/span&gt;&lt;span&gt;修复右侧错误，全部通过后才允许运行。&lt;/span&gt;&lt;/button&gt;
+              &lt;/div&gt;
+              &lt;div class=&quot;mds-guide-result&quot;&gt;&lt;strong&gt;产出&lt;/strong&gt;&lt;br&gt;canonical config、配置哈希和已解析模型锁文件。&lt;/div&gt;
+            &lt;/aside&gt;
+          &lt;/div&gt;
+        &lt;/section&gt;
+
+        &lt;section class=&quot;mds-screen&quot; data-screen=&quot;run&quot; data-title=&quot;运行监控&quot; hidden&gt;
+          &lt;div class=&quot;mds-screen-layout&quot;&gt;
+            &lt;article class=&quot;mds-screen-canvas&quot;&gt;
+              &lt;header class=&quot;mds-screen-header&quot;&gt;
+                &lt;div&gt;&lt;h2&gt;任务运行与事件监控&lt;/h2&gt;&lt;small&gt;显示阶段、仿真时钟、诊断、取消和快照&lt;/small&gt;&lt;/div&gt;
+                &lt;div class=&quot;mds-actions mds-hotspot&quot; data-hotspot=&quot;run-controls&quot;&gt;&lt;button type=&quot;button&quot; class=&quot;mds-action mds-action-primary&quot; id=&quot;mds-run-toggle&quot;&gt;&lt;i data-lucide=&quot;pause&quot; aria-hidden=&quot;true&quot;&gt;&lt;/i&gt; 暂停&lt;/button&gt;&lt;button type=&quot;button&quot; class=&quot;mds-action&quot; id=&quot;mds-snapshot&quot;&gt;&lt;i data-lucide=&quot;camera&quot; aria-hidden=&quot;true&quot;&gt;&lt;/i&gt; 快照&lt;/button&gt;&lt;button type=&quot;button&quot; class=&quot;mds-action mds-action-danger&quot;&gt;&lt;i data-lucide=&quot;square&quot; aria-hidden=&quot;true&quot;&gt;&lt;/i&gt; 停止&lt;/button&gt;&lt;/div&gt;
+              &lt;/header&gt;
+              &lt;div class=&quot;mds-runtime&quot;&gt;
+                &lt;div class=&quot;mds-pipeline mds-hotspot&quot; data-hotspot=&quot;run-pipeline&quot;&gt;
+                  &lt;div class=&quot;mds-stage&quot; style=&quot;--mds-stage-color:var(--mds-cyan)&quot;&gt;环境 / 目标&lt;/div&gt;&lt;div class=&quot;mds-stage&quot; style=&quot;--mds-stage-color:var(--mds-cyan)&quot;&gt;传感器&lt;/div&gt;&lt;div class=&quot;mds-stage&quot;&gt;导航&lt;/div&gt;&lt;div class=&quot;mds-stage&quot;&gt;制导&lt;/div&gt;&lt;div class=&quot;mds-stage&quot;&gt;控制 / 分配&lt;/div&gt;&lt;div class=&quot;mds-stage&quot; style=&quot;--mds-stage-color:var(--mds-gold)&quot;&gt;执行 / 推进&lt;/div&gt;&lt;div class=&quot;mds-stage&quot; style=&quot;--mds-stage-color:var(--mds-green)&quot;&gt;气动 / 动力学&lt;/div&gt;&lt;div class=&quot;mds-stage&quot; style=&quot;--mds-stage-color:var(--mds-red)&quot;&gt;积分 / 事件&lt;/div&gt;
+                &lt;/div&gt;
+                &lt;div class=&quot;mds-runtime-grid&quot;&gt;
+                  &lt;div class=&quot;mds-plot mds-hotspot&quot; data-hotspot=&quot;run-trajectory&quot;&gt;
+                    &lt;svg viewBox=&quot;0 0 620 300&quot; role=&quot;img&quot; aria-labelledby=&quot;mds-run-plot-title mds-run-plot-desc&quot;&gt;
+                      &lt;title id=&quot;mds-run-plot-title&quot;&gt;任务实时弹道&lt;/title&gt;&lt;desc id=&quot;mds-run-plot-desc&quot;&gt;青色曲线表示实时弹道，黄色点表示当前状态，红色点表示目标。&lt;/desc&gt;
+                      &lt;g stroke=&quot;var(--mds-line)&quot; fill=&quot;none&quot;&gt;&lt;path d=&quot;M55 250H585&quot;/&gt;&lt;path d=&quot;M55 40V250&quot;/&gt;&lt;path d=&quot;M170 40V250&quot;/&gt;&lt;path d=&quot;M285 40V250&quot;/&gt;&lt;path d=&quot;M400 40V250&quot;/&gt;&lt;path d=&quot;M515 40V250&quot;/&gt;&lt;/g&gt;
+                      &lt;path d=&quot;M62 246 C145 196 214 80 327 84 C410 87 468 137 528 220&quot; fill=&quot;none&quot; stroke=&quot;var(--mds-cyan)&quot; stroke-width=&quot;4&quot;/&gt;
+                      &lt;path d=&quot;M62 246 C130 205 190 115 255 92&quot; fill=&quot;none&quot; stroke=&quot;var(--mds-gold)&quot; stroke-width=&quot;6&quot;/&gt;
+                      &lt;circle cx=&quot;255&quot; cy=&quot;92&quot; r=&quot;8&quot; fill=&quot;var(--mds-gold)&quot;/&gt;&lt;circle cx=&quot;528&quot; cy=&quot;220&quot; r=&quot;8&quot; fill=&quot;var(--mds-red)&quot;/&gt;
+                      &lt;g fill=&quot;var(--mds-soft-ink)&quot;&gt;&lt;text x=&quot;55&quot; y=&quot;278&quot;&gt;发射&lt;/text&gt;&lt;text x=&quot;238&quot; y=&quot;68&quot;&gt;t = 188.2 s · Glide&lt;/text&gt;&lt;text x=&quot;500&quot; y=&quot;246&quot;&gt;目标&lt;/text&gt;&lt;/g&gt;
+                    &lt;/svg&gt;
+                  &lt;/div&gt;
+                  &lt;div class=&quot;mds-metrics mds-hotspot&quot; data-hotspot=&quot;run-metrics&quot;&gt;
+                    &lt;div class=&quot;mds-metric&quot;&gt;&lt;small&gt;运行状态&lt;/small&gt;&lt;strong id=&quot;mds-run-state&quot;&gt;Running&lt;/strong&gt;&lt;/div&gt;
+                    &lt;div class=&quot;mds-metric&quot;&gt;&lt;small&gt;仿真时间&lt;/small&gt;&lt;strong&gt;188.20 s&lt;/strong&gt;&lt;/div&gt;
+                    &lt;div class=&quot;mds-metric&quot;&gt;&lt;small&gt;当前阶段&lt;/small&gt;&lt;strong&gt;Glide&lt;/strong&gt;&lt;/div&gt;
+                    &lt;div class=&quot;mds-metric&quot;&gt;&lt;small&gt;最小预测脱靶&lt;/small&gt;&lt;strong&gt;94.8 m&lt;/strong&gt;&lt;/div&gt;
+                    &lt;div class=&quot;mds-metric&quot;&gt;&lt;small&gt;诊断&lt;/small&gt;&lt;strong&gt;0 错误 · 2 警告&lt;/strong&gt;&lt;/div&gt;
+                  &lt;/div&gt;
+                &lt;/div&gt;
+                &lt;div class=&quot;mds-event-strip mds-hotspot&quot; data-hotspot=&quot;run-events&quot;&gt;
+                  &lt;div class=&quot;mds-event&quot;&gt;&lt;small&gt;0.0 s&lt;/small&gt;&lt;br&gt;点火&lt;/div&gt;&lt;div class=&quot;mds-event&quot;&gt;&lt;small&gt;56.0 s&lt;/small&gt;&lt;br&gt;一级分离&lt;/div&gt;&lt;div class=&quot;mds-event&quot;&gt;&lt;small&gt;117.0 s&lt;/small&gt;&lt;br&gt;二级分离&lt;/div&gt;&lt;div class=&quot;mds-event&quot;&gt;&lt;small&gt;188.2 s&lt;/small&gt;&lt;br&gt;进入滑翔&lt;/div&gt;&lt;div class=&quot;mds-event&quot;&gt;&lt;small&gt;待发生&lt;/small&gt;&lt;br&gt;末制导&lt;/div&gt;
+                &lt;/div&gt;
+              &lt;/div&gt;
+            &lt;/article&gt;
+            &lt;aside class=&quot;mds-guide&quot;&gt;
+              &lt;div class=&quot;mds-guide-head&quot;&gt;&lt;div&gt;&lt;h3&gt;如何操作&lt;/h3&gt;&lt;small&gt;可观测、可控制地运行&lt;/small&gt;&lt;/div&gt;&lt;small&gt;4 步&lt;/small&gt;&lt;/div&gt;
+              &lt;div class=&quot;mds-guide-list&quot;&gt;
+                &lt;button type=&quot;button&quot; class=&quot;mds-step&quot; data-target=&quot;run-controls&quot; aria-pressed=&quot;true&quot;&gt;&lt;span class=&quot;mds-step-number&quot;&gt;1&lt;/span&gt;&lt;span&gt;启动后可暂停、生成快照或请求安全停止。&lt;/span&gt;&lt;/button&gt;
+                &lt;button type=&quot;button&quot; class=&quot;mds-step&quot; data-target=&quot;run-pipeline&quot; aria-pressed=&quot;false&quot;&gt;&lt;span class=&quot;mds-step-number&quot;&gt;2&lt;/span&gt;&lt;span&gt;观察单步流水线和不同采样频率的模块状态。&lt;/span&gt;&lt;/button&gt;
+                &lt;button type=&quot;button&quot; class=&quot;mds-step&quot; data-target=&quot;run-trajectory&quot; aria-pressed=&quot;false&quot;&gt;&lt;span class=&quot;mds-step-number&quot;&gt;3&lt;/span&gt;&lt;span&gt;查看弹道、当前状态和阶段切换位置。&lt;/span&gt;&lt;/button&gt;
+                &lt;button type=&quot;button&quot; class=&quot;mds-step&quot; data-target=&quot;run-events&quot; aria-pressed=&quot;false&quot;&gt;&lt;span class=&quot;mds-step-number&quot;&gt;4&lt;/span&gt;&lt;span&gt;用事件时间线定位点火、分离、锁定和终止。&lt;/span&gt;&lt;/button&gt;
+              &lt;/div&gt;
+              &lt;div class=&quot;mds-guide-result&quot; id=&quot;mds-snapshot-result&quot;&gt;&lt;strong&gt;运行约束&lt;/strong&gt;&lt;br&gt;暂停和停止通过 Kernel 生命周期执行，不强杀进程。&lt;/div&gt;
+            &lt;/aside&gt;
+          &lt;/div&gt;
+        &lt;/section&gt;
+
+        &lt;section class=&quot;mds-screen&quot; data-screen=&quot;results&quot; data-title=&quot;结果分析&quot; hidden&gt;
+          &lt;div class=&quot;mds-screen-layout&quot;&gt;
+            &lt;article class=&quot;mds-screen-canvas&quot;&gt;
+              &lt;header class=&quot;mds-screen-header&quot;&gt;
+                &lt;div&gt;&lt;h2&gt;结果浏览器&lt;/h2&gt;&lt;small&gt;轨迹、时序、事件、元数据和摘要共享一个 Result 数据集&lt;/small&gt;&lt;/div&gt;
+                &lt;div class=&quot;mds-actions&quot;&gt;&lt;button type=&quot;button&quot; class=&quot;mds-action&quot;&gt;添加视图&lt;/button&gt;&lt;button type=&quot;button&quot; class=&quot;mds-action mds-action-primary&quot;&gt;导出当前图&lt;/button&gt;&lt;/div&gt;
+              &lt;/header&gt;
+              &lt;div class=&quot;mds-results-grid&quot;&gt;
+                &lt;section class=&quot;mds-series mds-hotspot&quot; data-hotspot=&quot;result-series&quot;&gt;
+                  &lt;strong&gt;数据系列&lt;/strong&gt;
+                  &lt;label class=&quot;mds-check&quot;&gt;&lt;input type=&quot;checkbox&quot; id=&quot;mds-series-alt&quot; checked&gt; 高度&lt;/label&gt;
+                  &lt;label class=&quot;mds-check&quot;&gt;&lt;input type=&quot;checkbox&quot; id=&quot;mds-series-speed&quot; checked&gt; 速度&lt;/label&gt;
+                  &lt;label class=&quot;mds-check&quot;&gt;&lt;input type=&quot;checkbox&quot; checked&gt; 质量&lt;/label&gt;
+                  &lt;label class=&quot;mds-check&quot;&gt;&lt;input type=&quot;checkbox&quot;&gt; 攻角&lt;/label&gt;
+                  &lt;label class=&quot;mds-check&quot;&gt;&lt;input type=&quot;checkbox&quot;&gt; 过载&lt;/label&gt;
+                  &lt;hr&gt;
+                  &lt;small&gt;事件叠加&lt;/small&gt;
+                  &lt;label class=&quot;mds-check&quot;&gt;&lt;input type=&quot;checkbox&quot; checked&gt; 阶段切换&lt;/label&gt;
+                  &lt;label class=&quot;mds-check&quot;&gt;&lt;input type=&quot;checkbox&quot; checked&gt; 警告&lt;/label&gt;
+                &lt;/section&gt;
+                &lt;section class=&quot;mds-analysis&quot;&gt;
+                  &lt;div class=&quot;mds-plot mds-hotspot&quot; data-hotspot=&quot;result-plot&quot;&gt;
+                    &lt;svg viewBox=&quot;0 0 690 310&quot; role=&quot;img&quot; aria-labelledby=&quot;mds-result-title mds-result-desc&quot;&gt;
+                      &lt;title id=&quot;mds-result-title&quot;&gt;高度与速度时序&lt;/title&gt;&lt;desc id=&quot;mds-result-desc&quot;&gt;蓝线表示高度，青线表示速度，竖向标记表示阶段事件。&lt;/desc&gt;
+                      &lt;g stroke=&quot;var(--mds-line)&quot; fill=&quot;none&quot;&gt;&lt;path d=&quot;M60 260H655&quot;/&gt;&lt;path d=&quot;M60 42V260&quot;/&gt;&lt;path d=&quot;M60 205H655&quot;/&gt;&lt;path d=&quot;M60 150H655&quot;/&gt;&lt;path d=&quot;M60 95H655&quot;/&gt;&lt;/g&gt;
+                      &lt;g stroke=&quot;var(--mds-gold)&quot; stroke-width=&quot;2&quot;&gt;&lt;path d=&quot;M145 42V260&quot;/&gt;&lt;path d=&quot;M245 42V260&quot;/&gt;&lt;path d=&quot;M355 42V260&quot;/&gt;&lt;/g&gt;
+                      &lt;path id=&quot;mds-alt-line&quot; d=&quot;M60 256 C160 238 215 142 310 91 C405 42 505 75 655 226&quot; fill=&quot;none&quot; stroke=&quot;var(--mds-blue)&quot; stroke-width=&quot;4&quot;/&gt;
+                      &lt;path id=&quot;mds-speed-line&quot; d=&quot;M60 242 C140 182 250 91 355 104 C465 116 555 151 655 195&quot; fill=&quot;none&quot; stroke=&quot;var(--mds-cyan)&quot; stroke-width=&quot;4&quot;/&gt;
+                      &lt;g fill=&quot;var(--mds-soft-ink)&quot;&gt;&lt;text x=&quot;60&quot; y=&quot;288&quot;&gt;0 s&lt;/text&gt;&lt;text x=&quot;610&quot; y=&quot;288&quot;&gt;412 s&lt;/text&gt;&lt;text x=&quot;70&quot; y=&quot;62&quot;&gt;高度 km / 速度 m·s⁻¹&lt;/text&gt;&lt;/g&gt;
+                    &lt;/svg&gt;
+                  &lt;/div&gt;
+                  &lt;div class=&quot;mds-table-wrap mds-hotspot&quot; data-hotspot=&quot;result-summary&quot;&gt;
+                    &lt;table class=&quot;mds-table&quot;&gt;&lt;thead&gt;&lt;tr&gt;&lt;th&gt;摘要量&lt;/th&gt;&lt;th&gt;值&lt;/th&gt;&lt;th&gt;位置 / 时刻&lt;/th&gt;&lt;/tr&gt;&lt;/thead&gt;&lt;tbody&gt;&lt;tr&gt;&lt;td&gt;最小脱靶量&lt;/td&gt;&lt;td&gt;87.6 m&lt;/td&gt;&lt;td&gt;412.35 s&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;最大高度&lt;/td&gt;&lt;td&gt;31.8 km&lt;/td&gt;&lt;td&gt;202.41 s&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;峰值过载&lt;/td&gt;&lt;td&gt;14.2 g&lt;/td&gt;&lt;td&gt;391.20 s&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;终止原因&lt;/td&gt;&lt;td&gt;Target proximity&lt;/td&gt;&lt;td&gt;Terminal&lt;/td&gt;&lt;/tr&gt;&lt;/tbody&gt;&lt;/table&gt;
+                  &lt;/div&gt;
+                &lt;/section&gt;
+              &lt;/div&gt;
+            &lt;/article&gt;
+            &lt;aside class=&quot;mds-guide&quot;&gt;
+              &lt;div class=&quot;mds-guide-head&quot;&gt;&lt;div&gt;&lt;h3&gt;如何操作&lt;/h3&gt;&lt;small&gt;从结果集形成判断&lt;/small&gt;&lt;/div&gt;&lt;small&gt;3 步&lt;/small&gt;&lt;/div&gt;
+              &lt;div class=&quot;mds-guide-list&quot;&gt;
+                &lt;button type=&quot;button&quot; class=&quot;mds-step&quot; data-target=&quot;result-series&quot; aria-pressed=&quot;true&quot;&gt;&lt;span class=&quot;mds-step-number&quot;&gt;1&lt;/span&gt;&lt;span&gt;选择字段、单位与事件叠加；复选框会联动图线。&lt;/span&gt;&lt;/button&gt;
+                &lt;button type=&quot;button&quot; class=&quot;mds-step&quot; data-target=&quot;result-plot&quot; aria-pressed=&quot;false&quot;&gt;&lt;span class=&quot;mds-step-number&quot;&gt;2&lt;/span&gt;&lt;span&gt;缩放或放置光标，读取同一时刻的多变量状态。&lt;/span&gt;&lt;/button&gt;
+                &lt;button type=&quot;button&quot; class=&quot;mds-step&quot; data-target=&quot;result-summary&quot; aria-pressed=&quot;false&quot;&gt;&lt;span class=&quot;mds-step-number&quot;&gt;3&lt;/span&gt;&lt;span&gt;核对脱靶量、飞行时间、峰值与终止原因。&lt;/span&gt;&lt;/button&gt;
+              &lt;/div&gt;
+              &lt;div class=&quot;mds-guide-result&quot;&gt;&lt;strong&gt;产出&lt;/strong&gt;&lt;br&gt;保存的分析视图、图片或带元数据的数据子集。&lt;/div&gt;
+            &lt;/aside&gt;
+          &lt;/div&gt;
+        &lt;/section&gt;
+
+        &lt;section class=&quot;mds-screen&quot; data-screen=&quot;batch&quot; data-title=&quot;批处理实验&quot; hidden&gt;
+          &lt;div class=&quot;mds-screen-layout&quot;&gt;
+            &lt;article class=&quot;mds-screen-canvas&quot;&gt;
+              &lt;header class=&quot;mds-screen-header&quot;&gt;
+                &lt;div&gt;&lt;h2&gt;参数扫描与蒙特卡洛实验&lt;/h2&gt;&lt;small&gt;稳定派生 case seed，可恢复、可并行、可聚合&lt;/small&gt;&lt;/div&gt;
+                &lt;div class=&quot;mds-actions&quot;&gt;&lt;button type=&quot;button&quot; class=&quot;mds-action&quot;&gt;保存实验&lt;/button&gt;&lt;button type=&quot;button&quot; class=&quot;mds-action mds-action-primary mds-hotspot&quot; data-hotspot=&quot;batch-start&quot; id=&quot;mds-batch-start&quot;&gt;&lt;i data-lucide=&quot;play&quot; aria-hidden=&quot;true&quot;&gt;&lt;/i&gt; 启动 240 个 Case&lt;/button&gt;&lt;/div&gt;
+              &lt;/header&gt;
+              &lt;div class=&quot;mds-batch-grid&quot;&gt;
+                &lt;section class=&quot;mds-subpane mds-hotspot&quot; data-hotspot=&quot;batch-params&quot;&gt;
+                  &lt;div class=&quot;mds-pane-title&quot;&gt;&lt;span&gt;实验定义&lt;/span&gt;&lt;span class=&quot;mds-status&quot;&gt;有效&lt;/span&gt;&lt;/div&gt;
+                  &lt;div class=&quot;mds-form&quot;&gt;
+                    &lt;div class=&quot;mds-form-row&quot;&gt;&lt;label&gt;基准场景&lt;/label&gt;&lt;span&gt;HXD_Intercept_001 @ v7&lt;/span&gt;&lt;/div&gt;
+                    &lt;div class=&quot;mds-form-row&quot;&gt;&lt;label&gt;风速&lt;/label&gt;&lt;span&gt;0, 5, 10, 15 m/s&lt;/span&gt;&lt;/div&gt;
+                    &lt;div class=&quot;mds-form-row&quot;&gt;&lt;label&gt;目标机动&lt;/label&gt;&lt;span&gt;0.0–2.0 g · 5 点&lt;/span&gt;&lt;/div&gt;
+                    &lt;div class=&quot;mds-form-row&quot;&gt;&lt;label&gt;随机重复&lt;/label&gt;&lt;span&gt;12 / 组合&lt;/span&gt;&lt;/div&gt;
+                    &lt;div class=&quot;mds-form-row&quot;&gt;&lt;label&gt;并发 Worker&lt;/label&gt;&lt;span&gt;8&lt;/span&gt;&lt;/div&gt;
+                    &lt;div class=&quot;mds-form-row&quot;&gt;&lt;label&gt;聚合指标&lt;/label&gt;&lt;span&gt;脱靶量、飞行时间、成功率&lt;/span&gt;&lt;/div&gt;
+                  &lt;/div&gt;
+                &lt;/section&gt;
+                &lt;section class=&quot;mds-subpane mds-hotspot&quot; data-hotspot=&quot;batch-queue&quot;&gt;
+                  &lt;div class=&quot;mds-pane-title&quot;&gt;&lt;span&gt;执行队列&lt;/span&gt;&lt;span id=&quot;mds-batch-state&quot;&gt;未启动&lt;/span&gt;&lt;/div&gt;
+                  &lt;div class=&quot;mds-content-pad&quot;&gt;
+                    &lt;div class=&quot;mds-progress&quot; role=&quot;progressbar&quot; aria-label=&quot;批处理进度&quot; aria-valuemin=&quot;0&quot; aria-valuemax=&quot;100&quot; aria-valuenow=&quot;0&quot;&gt;&lt;span id=&quot;mds-batch-progress&quot; style=&quot;width:0%&quot;&gt;&lt;/span&gt;&lt;/div&gt;
+                    &lt;p id=&quot;mds-batch-label&quot; aria-live=&quot;polite&quot;&gt;0 / 240 完成&lt;/p&gt;
+                    &lt;table class=&quot;mds-table&quot;&gt;&lt;tbody&gt;&lt;tr&gt;&lt;td&gt;成功&lt;/td&gt;&lt;td id=&quot;mds-batch-ok&quot;&gt;0&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;失败&lt;/td&gt;&lt;td&gt;0&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;等待&lt;/td&gt;&lt;td id=&quot;mds-batch-wait&quot;&gt;240&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;预计剩余&lt;/td&gt;&lt;td id=&quot;mds-batch-eta&quot;&gt;—&lt;/td&gt;&lt;/tr&gt;&lt;/tbody&gt;&lt;/table&gt;
+                  &lt;/div&gt;
+                &lt;/section&gt;
+                &lt;section class=&quot;mds-subpane mds-hotspot&quot; data-hotspot=&quot;batch-aggregate&quot;&gt;
+                  &lt;div class=&quot;mds-pane-title&quot;&gt;&lt;span&gt;聚合预览&lt;/span&gt;&lt;small&gt;Case 完成后增量更新&lt;/small&gt;&lt;/div&gt;
+                  &lt;div class=&quot;mds-content-pad&quot;&gt;&lt;p&gt;成功率：&lt;strong&gt;—&lt;/strong&gt;&lt;/p&gt;&lt;p&gt;P50 脱靶量：&lt;strong&gt;—&lt;/strong&gt;&lt;/p&gt;&lt;p&gt;P95 脱靶量：&lt;strong&gt;—&lt;/strong&gt;&lt;/p&gt;&lt;p&gt;异常 Case：&lt;strong&gt;—&lt;/strong&gt;&lt;/p&gt;&lt;/div&gt;
+                &lt;/section&gt;
+                &lt;section class=&quot;mds-subpane&quot;&gt;&lt;div class=&quot;mds-pane-title&quot;&gt;&lt;span&gt;恢复策略&lt;/span&gt;&lt;/div&gt;&lt;div class=&quot;mds-content-pad&quot;&gt;失败 Case 保留配置、诊断和最后快照；Resume 只运行未完成或明确允许重试的 Case。&lt;/div&gt;&lt;/section&gt;
+              &lt;/div&gt;
+            &lt;/article&gt;
+            &lt;aside class=&quot;mds-guide&quot;&gt;
+              &lt;div class=&quot;mds-guide-head&quot;&gt;&lt;div&gt;&lt;h3&gt;如何操作&lt;/h3&gt;&lt;small&gt;创建可重放的实验&lt;/small&gt;&lt;/div&gt;&lt;small&gt;4 步&lt;/small&gt;&lt;/div&gt;
+              &lt;div class=&quot;mds-guide-list&quot;&gt;
+                &lt;button type=&quot;button&quot; class=&quot;mds-step&quot; data-target=&quot;batch-params&quot; aria-pressed=&quot;true&quot;&gt;&lt;span class=&quot;mds-step-number&quot;&gt;1&lt;/span&gt;&lt;span&gt;选择基准场景并定义扫描、分布或重复次数。&lt;/span&gt;&lt;/button&gt;
+                &lt;button type=&quot;button&quot; class=&quot;mds-step&quot; data-target=&quot;batch-start&quot; aria-pressed=&quot;false&quot;&gt;&lt;span class=&quot;mds-step-number&quot;&gt;2&lt;/span&gt;&lt;span&gt;确认 Case 数和并行度后启动。&lt;/span&gt;&lt;/button&gt;
+                &lt;button type=&quot;button&quot; class=&quot;mds-step&quot; data-target=&quot;batch-queue&quot; aria-pressed=&quot;false&quot;&gt;&lt;span class=&quot;mds-step-number&quot;&gt;3&lt;/span&gt;&lt;span&gt;观察队列、失败与预计剩余时间，可安全取消或恢复。&lt;/span&gt;&lt;/button&gt;
+                &lt;button type=&quot;button&quot; class=&quot;mds-step&quot; data-target=&quot;batch-aggregate&quot; aria-pressed=&quot;false&quot;&gt;&lt;span class=&quot;mds-step-number&quot;&gt;4&lt;/span&gt;&lt;span&gt;按参数维度聚合成功率、分位数和异常 Case。&lt;/span&gt;&lt;/button&gt;
+              &lt;/div&gt;
+              &lt;div class=&quot;mds-guide-result&quot;&gt;&lt;strong&gt;产出&lt;/strong&gt;&lt;br&gt;实验定义、独立 Case 数据集和不可变聚合结果。&lt;/div&gt;
+            &lt;/aside&gt;
+          &lt;/div&gt;
+        &lt;/section&gt;
+
+        &lt;section class=&quot;mds-screen&quot; data-screen=&quot;compare&quot; data-title=&quot;基线比较&quot; hidden&gt;
+          &lt;div class=&quot;mds-screen-layout&quot;&gt;
+            &lt;article class=&quot;mds-screen-canvas&quot;&gt;
+              &lt;header class=&quot;mds-screen-header&quot;&gt;
+                &lt;div&gt;&lt;h2&gt;黄金基线与候选结果比较&lt;/h2&gt;&lt;small&gt;离散事件、连续状态和最终摘要使用不同容差&lt;/small&gt;&lt;/div&gt;
+                &lt;div class=&quot;mds-actions&quot;&gt;&lt;button type=&quot;button&quot; class=&quot;mds-action&quot;&gt;编辑容差配置&lt;/button&gt;&lt;button type=&quot;button&quot; class=&quot;mds-action mds-action-primary mds-hotspot&quot; data-hotspot=&quot;compare-run&quot; id=&quot;mds-compare-run&quot;&gt;&lt;i data-lucide=&quot;git-compare-arrows&quot; aria-hidden=&quot;true&quot;&gt;&lt;/i&gt; 执行比较&lt;/button&gt;&lt;/div&gt;
+              &lt;/header&gt;
+              &lt;div class=&quot;mds-compare-grid&quot;&gt;
+                &lt;section class=&quot;mds-subpane&quot;&gt;
+                  &lt;div class=&quot;mds-pane-title mds-hotspot&quot; data-hotspot=&quot;compare-select&quot;&gt;&lt;span&gt;运行选择&lt;/span&gt;&lt;span&gt;trajectory-v1&lt;/span&gt;&lt;/div&gt;
+                  &lt;div class=&quot;mds-form&quot;&gt;&lt;div class=&quot;mds-form-row&quot;&gt;&lt;label&gt;基线&lt;/label&gt;&lt;span&gt;baseline/HXD_001 · 0.7.0&lt;/span&gt;&lt;/div&gt;&lt;div class=&quot;mds-form-row&quot;&gt;&lt;label&gt;候选&lt;/label&gt;&lt;span&gt;candidate/HXD_001 · 0.8.0-rc1&lt;/span&gt;&lt;/div&gt;&lt;div class=&quot;mds-form-row&quot;&gt;&lt;label&gt;窗口&lt;/label&gt;&lt;span&gt;阶段边界 ±0.20 s&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;
+                  &lt;div class=&quot;mds-plot mds-hotspot&quot; data-hotspot=&quot;compare-overlay&quot;&gt;
+                    &lt;svg viewBox=&quot;0 0 620 240&quot; role=&quot;img&quot; aria-labelledby=&quot;mds-compare-title mds-compare-desc&quot;&gt;&lt;title id=&quot;mds-compare-title&quot;&gt;基线与候选轨迹叠加&lt;/title&gt;&lt;desc id=&quot;mds-compare-desc&quot;&gt;蓝色实线是基线，青色虚线是候选，二者在容差内接近。&lt;/desc&gt;&lt;g stroke=&quot;var(--mds-line)&quot; fill=&quot;none&quot;&gt;&lt;path d=&quot;M45 200H585&quot;/&gt;&lt;path d=&quot;M45 35V200&quot;/&gt;&lt;path d=&quot;M45 145H585&quot;/&gt;&lt;path d=&quot;M45 90H585&quot;/&gt;&lt;/g&gt;&lt;path d=&quot;M45 198 C150 183 216 73 330 63 C440 55 505 112 585 185&quot; fill=&quot;none&quot; stroke=&quot;var(--mds-blue)&quot; stroke-width=&quot;4&quot;/&gt;&lt;path d=&quot;M45 196 C148 180 220 75 332 67 C438 59 508 116 585 182&quot; fill=&quot;none&quot; stroke=&quot;var(--mds-cyan)&quot; stroke-width=&quot;4&quot; stroke-dasharray=&quot;9 6&quot;/&gt;&lt;/svg&gt;
+                  &lt;/div&gt;
+                &lt;/section&gt;
+                &lt;section class=&quot;mds-subpane mds-hotspot&quot; data-hotspot=&quot;compare-gate&quot;&gt;
+                  &lt;div class=&quot;mds-pane-title&quot;&gt;&lt;span&gt;差异与门禁&lt;/span&gt;&lt;span id=&quot;mds-compare-status&quot; class=&quot;mds-status mds-status-warn&quot;&gt;待比较&lt;/span&gt;&lt;/div&gt;
+                  &lt;div class=&quot;mds-content-pad&quot;&gt;
+                    &lt;table class=&quot;mds-table&quot;&gt;&lt;thead&gt;&lt;tr&gt;&lt;th&gt;检查&lt;/th&gt;&lt;th&gt;容差&lt;/th&gt;&lt;th&gt;结果&lt;/th&gt;&lt;/tr&gt;&lt;/thead&gt;&lt;tbody&gt;&lt;tr&gt;&lt;td&gt;阶段事件&lt;/td&gt;&lt;td&gt;±0.20 s&lt;/td&gt;&lt;td&gt;—&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;位置&lt;/td&gt;&lt;td&gt;5 m&lt;/td&gt;&lt;td&gt;—&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;速度&lt;/td&gt;&lt;td&gt;0.5 m/s&lt;/td&gt;&lt;td&gt;—&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;姿态&lt;/td&gt;&lt;td&gt;0.05°&lt;/td&gt;&lt;td&gt;—&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;脱靶量&lt;/td&gt;&lt;td&gt;2 m&lt;/td&gt;&lt;td&gt;—&lt;/td&gt;&lt;/tr&gt;&lt;/tbody&gt;&lt;/table&gt;
+                    &lt;div class=&quot;mds-gate&quot; id=&quot;mds-release-gate&quot; aria-live=&quot;polite&quot;&gt;&lt;strong&gt;发布门禁：未评估&lt;/strong&gt;&lt;br&gt;运行比较后生成字段级差异和批准结论。&lt;/div&gt;
+                  &lt;/div&gt;
+                &lt;/section&gt;
+              &lt;/div&gt;
+            &lt;/article&gt;
+            &lt;aside class=&quot;mds-guide&quot;&gt;
+              &lt;div class=&quot;mds-guide-head&quot;&gt;&lt;div&gt;&lt;h3&gt;如何操作&lt;/h3&gt;&lt;small&gt;保护数值行为&lt;/small&gt;&lt;/div&gt;&lt;small&gt;4 步&lt;/small&gt;&lt;/div&gt;
+              &lt;div class=&quot;mds-guide-list&quot;&gt;
+                &lt;button type=&quot;button&quot; class=&quot;mds-step&quot; data-target=&quot;compare-select&quot; aria-pressed=&quot;true&quot;&gt;&lt;span class=&quot;mds-step-number&quot;&gt;1&lt;/span&gt;&lt;span&gt;选择黄金基线、候选运行和比较 Profile。&lt;/span&gt;&lt;/button&gt;
+                &lt;button type=&quot;button&quot; class=&quot;mds-step&quot; data-target=&quot;compare-run&quot; aria-pressed=&quot;false&quot;&gt;&lt;span class=&quot;mds-step-number&quot;&gt;2&lt;/span&gt;&lt;span&gt;执行事件、连续状态、导控量和摘要比较。&lt;/span&gt;&lt;/button&gt;
+                &lt;button type=&quot;button&quot; class=&quot;mds-step&quot; data-target=&quot;compare-overlay&quot; aria-pressed=&quot;false&quot;&gt;&lt;span class=&quot;mds-step-number&quot;&gt;3&lt;/span&gt;&lt;span&gt;查看轨迹叠加与阶段窗口内的偏差。&lt;/span&gt;&lt;/button&gt;
+                &lt;button type=&quot;button&quot; class=&quot;mds-step&quot; data-target=&quot;compare-gate&quot; aria-pressed=&quot;false&quot;&gt;&lt;span class=&quot;mds-step-number&quot;&gt;4&lt;/span&gt;&lt;span&gt;所有阈值通过后，门禁才允许候选进入发布。&lt;/span&gt;&lt;/button&gt;
+              &lt;/div&gt;
+              &lt;div class=&quot;mds-guide-result&quot;&gt;&lt;strong&gt;产出&lt;/strong&gt;&lt;br&gt;机器可读差异、V&amp;amp;V 记录和门禁结论。&lt;/div&gt;
+            &lt;/aside&gt;
+          &lt;/div&gt;
+        &lt;/section&gt;
+
+        &lt;section class=&quot;mds-screen&quot; data-screen=&quot;diagnostics&quot; data-title=&quot;诊断与快照&quot; hidden&gt;
+          &lt;div class=&quot;mds-screen-layout&quot;&gt;
+            &lt;article class=&quot;mds-screen-canvas&quot;&gt;
+              &lt;header class=&quot;mds-screen-header&quot;&gt;
+                &lt;div&gt;&lt;h2&gt;结构化诊断与状态快照&lt;/h2&gt;&lt;small&gt;错误包含模块、代码、上下文、建议动作和恢复点&lt;/small&gt;&lt;/div&gt;
+                &lt;div class=&quot;mds-actions&quot;&gt;&lt;button type=&quot;button&quot; class=&quot;mds-action&quot;&gt;导出诊断包&lt;/button&gt;&lt;button type=&quot;button&quot; class=&quot;mds-action mds-action-primary&quot;&gt;从快照复现&lt;/button&gt;&lt;/div&gt;
+              &lt;/header&gt;
+              &lt;div class=&quot;mds-diagnostic-grid&quot;&gt;
+                &lt;section class=&quot;mds-subpane mds-hotspot&quot; data-hotspot=&quot;diag-trace&quot;&gt;
+                  &lt;div class=&quot;mds-pane-title&quot;&gt;&lt;span&gt;事件与诊断流&lt;/span&gt;&lt;span class=&quot;mds-status mds-status-error&quot;&gt;1 错误&lt;/span&gt;&lt;/div&gt;
+                  &lt;div class=&quot;mds-log-row&quot;&gt;&lt;span&gt;188.190&lt;/span&gt;&lt;span&gt;Guidance&lt;/span&gt;&lt;span&gt;PhaseChanged: Climb → Glide&lt;/span&gt;&lt;/div&gt;
+                  &lt;div class=&quot;mds-log-row&quot;&gt;&lt;span&gt;188.200&lt;/span&gt;&lt;span&gt;Recorder&lt;/span&gt;&lt;span&gt;SampleWritten: trajectory&lt;/span&gt;&lt;/div&gt;
+                  &lt;div class=&quot;mds-log-row is-error&quot;&gt;&lt;span&gt;391.184&lt;/span&gt;&lt;span&gt;Integrator&lt;/span&gt;&lt;span&gt;NumericalError: quaternion norm drift&lt;/span&gt;&lt;/div&gt;
+                  &lt;div class=&quot;mds-log-row&quot;&gt;&lt;span&gt;391.184&lt;/span&gt;&lt;span&gt;Kernel&lt;/span&gt;&lt;span&gt;SnapshotCreated: snap-391184&lt;/span&gt;&lt;/div&gt;
+                &lt;/section&gt;
+                &lt;section class=&quot;mds-subpane mds-hotspot&quot; data-hotspot=&quot;diag-error&quot;&gt;
+                  &lt;div class=&quot;mds-pane-title&quot;&gt;&lt;span&gt;错误详情&lt;/span&gt;&lt;span&gt;NUM-0042&lt;/span&gt;&lt;/div&gt;
+                  &lt;div class=&quot;mds-content-pad&quot;&gt;&lt;dl class=&quot;mds-kv&quot;&gt;&lt;dt&gt;严重度&lt;/dt&gt;&lt;dd&gt;ERROR&lt;/dd&gt;&lt;dt&gt;模块&lt;/dt&gt;&lt;dd&gt;LegacyRk4&lt;/dd&gt;&lt;dt&gt;Step&lt;/dt&gt;&lt;dd&gt;39118&lt;/dd&gt;&lt;dt&gt;状态&lt;/dt&gt;&lt;dd&gt;q_norm = 1.0082&lt;/dd&gt;&lt;dt&gt;建议&lt;/dt&gt;&lt;dd&gt;检查归一化策略；用 dt/2 重放窗口。&lt;/dd&gt;&lt;/dl&gt;&lt;/div&gt;
+                &lt;/section&gt;
+                &lt;section class=&quot;mds-subpane mds-hotspot&quot; data-hotspot=&quot;diag-snapshot&quot;&gt;
+                  &lt;div class=&quot;mds-pane-title&quot;&gt;&lt;span&gt;最后有效快照&lt;/span&gt;&lt;span class=&quot;mds-status&quot;&gt;可重放&lt;/span&gt;&lt;/div&gt;
+                  &lt;div class=&quot;mds-content-pad&quot;&gt;&lt;dl class=&quot;mds-kv&quot;&gt;&lt;dt&gt;快照 ID&lt;/dt&gt;&lt;dd&gt;snap-391184&lt;/dd&gt;&lt;dt&gt;时刻&lt;/dt&gt;&lt;dd&gt;391.180 s&lt;/dd&gt;&lt;dt&gt;配置哈希&lt;/dt&gt;&lt;dd&gt;1e73…9ac4&lt;/dd&gt;&lt;dt&gt;模型锁&lt;/dt&gt;&lt;dd&gt;已保存&lt;/dd&gt;&lt;dt&gt;随机流&lt;/dt&gt;&lt;dd&gt;已保存&lt;/dd&gt;&lt;/dl&gt;&lt;/div&gt;
+                &lt;/section&gt;
+                &lt;section class=&quot;mds-subpane&quot;&gt;&lt;div class=&quot;mds-pane-title&quot;&gt;&lt;span&gt;恢复动作&lt;/span&gt;&lt;/div&gt;&lt;div class=&quot;mds-content-pad&quot;&gt;在独立运行中加载快照，把 dt 改为 0.005 s，并只启用 Dynamics / Integrator 详细追踪。&lt;/div&gt;&lt;/section&gt;
+              &lt;/div&gt;
+            &lt;/article&gt;
+            &lt;aside class=&quot;mds-guide&quot;&gt;
+              &lt;div class=&quot;mds-guide-head&quot;&gt;&lt;div&gt;&lt;h3&gt;如何操作&lt;/h3&gt;&lt;small&gt;从异常定位到最小复现&lt;/small&gt;&lt;/div&gt;&lt;small&gt;3 步&lt;/small&gt;&lt;/div&gt;
+              &lt;div class=&quot;mds-guide-list&quot;&gt;
+                &lt;button type=&quot;button&quot; class=&quot;mds-step&quot; data-target=&quot;diag-trace&quot; aria-pressed=&quot;true&quot;&gt;&lt;span class=&quot;mds-step-number&quot;&gt;1&lt;/span&gt;&lt;span&gt;从事件流选择第一个根因错误，而非后续连锁告警。&lt;/span&gt;&lt;/button&gt;
+                &lt;button type=&quot;button&quot; class=&quot;mds-step&quot; data-target=&quot;diag-error&quot; aria-pressed=&quot;false&quot;&gt;&lt;span class=&quot;mds-step-number&quot;&gt;2&lt;/span&gt;&lt;span&gt;查看错误码、模块、状态上下文和建议动作。&lt;/span&gt;&lt;/button&gt;
+                &lt;button type=&quot;button&quot; class=&quot;mds-step&quot; data-target=&quot;diag-snapshot&quot; aria-pressed=&quot;false&quot;&gt;&lt;span class=&quot;mds-step-number&quot;&gt;3&lt;/span&gt;&lt;span&gt;从最后有效快照重放局部窗口并生成诊断包。&lt;/span&gt;&lt;/button&gt;
+              &lt;/div&gt;
+              &lt;div class=&quot;mds-guide-result&quot;&gt;&lt;strong&gt;产出&lt;/strong&gt;&lt;br&gt;可重现的错误包，而不是一段无法定位来源的控制台文本。&lt;/div&gt;
+            &lt;/aside&gt;
+          &lt;/div&gt;
+        &lt;/section&gt;
+
+        &lt;section class=&quot;mds-screen&quot; data-screen=&quot;plugins&quot; data-title=&quot;插件管理&quot; hidden&gt;
+          &lt;div class=&quot;mds-screen-layout&quot;&gt;
+            &lt;article class=&quot;mds-screen-canvas&quot;&gt;
+              &lt;header class=&quot;mds-screen-header&quot;&gt;
+                &lt;div&gt;&lt;h2&gt;插件与兼容性管理&lt;/h2&gt;&lt;small&gt;发现、校验、启停和锁定可部署模型包&lt;/small&gt;&lt;/div&gt;
+                &lt;div class=&quot;mds-actions&quot;&gt;&lt;button type=&quot;button&quot; class=&quot;mds-action&quot;&gt;扫描目录&lt;/button&gt;&lt;button type=&quot;button&quot; class=&quot;mds-action mds-action-primary&quot;&gt;安装模型包&lt;/button&gt;&lt;/div&gt;
+              &lt;/header&gt;
+              &lt;div class=&quot;mds-plugin-grid&quot;&gt;
+                &lt;section class=&quot;mds-subpane mds-hotspot&quot; data-hotspot=&quot;plugin-list&quot;&gt;
+                  &lt;div class=&quot;mds-pane-title&quot;&gt;&lt;span&gt;已发现插件&lt;/span&gt;&lt;small&gt;4&lt;/small&gt;&lt;/div&gt;
+                  &lt;div class=&quot;mds-list&quot;&gt;
+                    &lt;div class=&quot;mds-list-row is-active&quot;&gt;&lt;i data-lucide=&quot;package&quot; aria-hidden=&quot;true&quot;&gt;&lt;/i&gt;&lt;span&gt;&lt;strong&gt;modeldev.tgc.reference&lt;/strong&gt;&lt;br&gt;&lt;small&gt;1.0.0 · 5 个模型&lt;/small&gt;&lt;/span&gt;&lt;span class=&quot;mds-status&quot;&gt;启用&lt;/span&gt;&lt;/div&gt;
+                    &lt;div class=&quot;mds-list-row&quot;&gt;&lt;i data-lucide=&quot;package&quot; aria-hidden=&quot;true&quot;&gt;&lt;/i&gt;&lt;span&gt;&lt;strong&gt;modeldev.environment.nrlmsise&lt;/strong&gt;&lt;br&gt;&lt;small&gt;1.0.0 · 1 个模型&lt;/small&gt;&lt;/span&gt;&lt;span class=&quot;mds-status&quot;&gt;启用&lt;/span&gt;&lt;/div&gt;
+                    &lt;div class=&quot;mds-list-row&quot;&gt;&lt;i data-lucide=&quot;package&quot; aria-hidden=&quot;true&quot;&gt;&lt;/i&gt;&lt;span&gt;&lt;strong&gt;modeldev.recorder.parquet&lt;/strong&gt;&lt;br&gt;&lt;small&gt;0.9.0 · 1 个记录器&lt;/small&gt;&lt;/span&gt;&lt;span class=&quot;mds-status&quot;&gt;启用&lt;/span&gt;&lt;/div&gt;
+                    &lt;div class=&quot;mds-list-row&quot;&gt;&lt;i data-lucide=&quot;package-x&quot; aria-hidden=&quot;true&quot;&gt;&lt;/i&gt;&lt;span&gt;&lt;strong&gt;legacy.aero.experimental&lt;/strong&gt;&lt;br&gt;&lt;small&gt;0.4.1 · ABI 不兼容&lt;/small&gt;&lt;/span&gt;&lt;span class=&quot;mds-status mds-status-error&quot;&gt;隔离&lt;/span&gt;&lt;/div&gt;
+                  &lt;/div&gt;
+                &lt;/section&gt;
+                &lt;section class=&quot;mds-subpane mds-hotspot&quot; data-hotspot=&quot;plugin-manifest&quot;&gt;
+                  &lt;div class=&quot;mds-pane-title&quot;&gt;&lt;span&gt;Manifest 与兼容性&lt;/span&gt;&lt;span id=&quot;mds-plugin-state&quot; class=&quot;mds-status&quot;&gt;启用&lt;/span&gt;&lt;/div&gt;
+                  &lt;pre class=&quot;mds-code mds-manifest&quot;&gt;&lt;code&gt;{
+  &quot;plugin&quot;: &quot;modeldev.tgc.reference&quot;,
+  &quot;version&quot;: &quot;1.0.0&quot;,
+  &quot;api_version&quot;: &quot;modeldev.plugin/v1&quot;,
+  &quot;compiler_abi&quot;: &quot;msvc-19.4-x64&quot;,
+  &quot;provides&quot;: [&quot;vehicle&quot;, &quot;guidance&quot;, &quot;control&quot;]
+}&lt;/code&gt;&lt;/pre&gt;
+                  &lt;div class=&quot;mds-content-pad&quot;&gt;&lt;p&gt;&lt;span class=&quot;mds-status&quot;&gt;签名有效&lt;/span&gt; &lt;span class=&quot;mds-status&quot;&gt;API 匹配&lt;/span&gt; &lt;span class=&quot;mds-status&quot;&gt;ABI 匹配&lt;/span&gt;&lt;/p&gt;&lt;button type=&quot;button&quot; class=&quot;mds-action mds-hotspot&quot; data-hotspot=&quot;plugin-toggle&quot; id=&quot;mds-plugin-toggle&quot;&gt;停用插件&lt;/button&gt;&lt;/div&gt;
+                &lt;/section&gt;
+              &lt;/div&gt;
+            &lt;/article&gt;
+            &lt;aside class=&quot;mds-guide&quot;&gt;
+              &lt;div class=&quot;mds-guide-head&quot;&gt;&lt;div&gt;&lt;h3&gt;如何操作&lt;/h3&gt;&lt;small&gt;安全引入扩展模型&lt;/small&gt;&lt;/div&gt;&lt;small&gt;3 步&lt;/small&gt;&lt;/div&gt;
+              &lt;div class=&quot;mds-guide-list&quot;&gt;
+                &lt;button type=&quot;button&quot; class=&quot;mds-step&quot; data-target=&quot;plugin-list&quot; aria-pressed=&quot;true&quot;&gt;&lt;span class=&quot;mds-step-number&quot;&gt;1&lt;/span&gt;&lt;span&gt;从受控目录发现插件；不直接加载未知 DLL。&lt;/span&gt;&lt;/button&gt;
+                &lt;button type=&quot;button&quot; class=&quot;mds-step&quot; data-target=&quot;plugin-manifest&quot; aria-pressed=&quot;false&quot;&gt;&lt;span class=&quot;mds-step-number&quot;&gt;2&lt;/span&gt;&lt;span&gt;检查签名、API、ABI、依赖和提供的模型工厂。&lt;/span&gt;&lt;/button&gt;
+                &lt;button type=&quot;button&quot; class=&quot;mds-step&quot; data-target=&quot;plugin-toggle&quot; aria-pressed=&quot;false&quot;&gt;&lt;span class=&quot;mds-step-number&quot;&gt;3&lt;/span&gt;&lt;span&gt;启用后更新 Registry；禁用不影响历史结果解析。&lt;/span&gt;&lt;/button&gt;
+              &lt;/div&gt;
+              &lt;div class=&quot;mds-guide-result&quot;&gt;&lt;strong&gt;产出&lt;/strong&gt;&lt;br&gt;经校验的插件清单、锁文件和隔离失败原因。&lt;/div&gt;
+            &lt;/aside&gt;
+          &lt;/div&gt;
+        &lt;/section&gt;
+
+        &lt;section class=&quot;mds-screen&quot; data-screen=&quot;export&quot; data-title=&quot;导出与发布&quot; hidden&gt;
+          &lt;div class=&quot;mds-screen-layout&quot;&gt;
+            &lt;article class=&quot;mds-screen-canvas&quot;&gt;
+              &lt;header class=&quot;mds-screen-header&quot;&gt;
+                &lt;div&gt;&lt;h2&gt;结果交付与发布包&lt;/h2&gt;&lt;small&gt;导出内容、元数据和门禁结论保持同步&lt;/small&gt;&lt;/div&gt;
+                &lt;div class=&quot;mds-actions&quot;&gt;&lt;button type=&quot;button&quot; class=&quot;mds-action&quot;&gt;保存发布配置&lt;/button&gt;&lt;button type=&quot;button&quot; class=&quot;mds-action mds-action-primary mds-hotspot&quot; data-hotspot=&quot;export-build&quot; id=&quot;mds-export-build&quot;&gt;&lt;i data-lucide=&quot;package-check&quot; aria-hidden=&quot;true&quot;&gt;&lt;/i&gt; 生成发布包&lt;/button&gt;&lt;/div&gt;
+              &lt;/header&gt;
+              &lt;div class=&quot;mds-export-grid&quot;&gt;
+                &lt;section class=&quot;mds-subpane mds-hotspot&quot; data-hotspot=&quot;export-content&quot;&gt;
+                  &lt;div class=&quot;mds-pane-title&quot;&gt;&lt;span&gt;交付内容&lt;/span&gt;&lt;small&gt;modeldev-hxd-1.0.0&lt;/small&gt;&lt;/div&gt;
+                  &lt;div class=&quot;mds-form&quot;&gt;
+                    &lt;label class=&quot;mds-check&quot;&gt;&lt;input type=&quot;checkbox&quot; checked&gt; 可安装 C++ SDK 与 CMake Config&lt;/label&gt;
+                    &lt;label class=&quot;mds-check&quot;&gt;&lt;input type=&quot;checkbox&quot; checked&gt; modeldev CLI 与示例场景&lt;/label&gt;
+                    &lt;label class=&quot;mds-check&quot;&gt;&lt;input type=&quot;checkbox&quot; checked&gt; TGC Reference 模型包&lt;/label&gt;
+                    &lt;label class=&quot;mds-check&quot;&gt;&lt;input type=&quot;checkbox&quot; checked&gt; Schema、迁移器与锁文件&lt;/label&gt;
+                    &lt;label class=&quot;mds-check&quot;&gt;&lt;input type=&quot;checkbox&quot; checked&gt; V&amp;amp;V 报告与发布说明&lt;/label&gt;
+                    &lt;label class=&quot;mds-check&quot;&gt;&lt;input type=&quot;checkbox&quot;&gt; 示例运行结果&lt;/label&gt;
+                  &lt;/div&gt;
+                  &lt;div class=&quot;mds-pane-title&quot;&gt;&lt;span&gt;版本元数据&lt;/span&gt;&lt;/div&gt;
+                  &lt;div class=&quot;mds-form&quot;&gt;&lt;div class=&quot;mds-form-row&quot;&gt;&lt;label&gt;版本&lt;/label&gt;&lt;span&gt;1.0.0&lt;/span&gt;&lt;/div&gt;&lt;div class=&quot;mds-form-row&quot;&gt;&lt;label&gt;平台&lt;/label&gt;&lt;span&gt;windows-x64 / linux-x64&lt;/span&gt;&lt;/div&gt;&lt;div class=&quot;mds-form-row&quot;&gt;&lt;label&gt;许可证&lt;/label&gt;&lt;span&gt;第三方清单已生成&lt;/span&gt;&lt;/div&gt;&lt;div class=&quot;mds-form-row&quot;&gt;&lt;label&gt;哈希&lt;/label&gt;&lt;span&gt;构建后写入 SHA-256&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;
+                &lt;/section&gt;
+                &lt;section class=&quot;mds-subpane mds-hotspot&quot; data-hotspot=&quot;export-gates&quot;&gt;
+                  &lt;div class=&quot;mds-pane-title&quot;&gt;&lt;span&gt;发布检查&lt;/span&gt;&lt;span id=&quot;mds-export-state&quot; class=&quot;mds-status mds-status-warn&quot;&gt;待构建&lt;/span&gt;&lt;/div&gt;
+                  &lt;div class=&quot;mds-export-checks&quot;&gt;
+                    &lt;div class=&quot;mds-export-check&quot;&gt;&lt;i data-lucide=&quot;check-circle-2&quot; aria-hidden=&quot;true&quot;&gt;&lt;/i&gt;&lt;span&gt;黄金回归&lt;/span&gt;&lt;span&gt;通过&lt;/span&gt;&lt;/div&gt;
+                    &lt;div class=&quot;mds-export-check&quot;&gt;&lt;i data-lucide=&quot;check-circle-2&quot; aria-hidden=&quot;true&quot;&gt;&lt;/i&gt;&lt;span&gt;数值 V&amp;amp;V&lt;/span&gt;&lt;span&gt;通过&lt;/span&gt;&lt;/div&gt;
+                    &lt;div class=&quot;mds-export-check&quot;&gt;&lt;i data-lucide=&quot;check-circle-2&quot; aria-hidden=&quot;true&quot;&gt;&lt;/i&gt;&lt;span&gt;公共 API 审查&lt;/span&gt;&lt;span&gt;通过&lt;/span&gt;&lt;/div&gt;
+                    &lt;div class=&quot;mds-export-check&quot;&gt;&lt;i data-lucide=&quot;check-circle-2&quot; aria-hidden=&quot;true&quot;&gt;&lt;/i&gt;&lt;span&gt;干净环境消费&lt;/span&gt;&lt;span&gt;通过&lt;/span&gt;&lt;/div&gt;
+                    &lt;div class=&quot;mds-export-check&quot;&gt;&lt;i data-lucide=&quot;check-circle-2&quot; aria-hidden=&quot;true&quot;&gt;&lt;/i&gt;&lt;span&gt;文档同步&lt;/span&gt;&lt;span&gt;通过&lt;/span&gt;&lt;/div&gt;
+                  &lt;/div&gt;
+                  &lt;div class=&quot;mds-gate&quot; id=&quot;mds-export-result&quot; aria-live=&quot;polite&quot;&gt;&lt;strong&gt;等待生成&lt;/strong&gt;&lt;br&gt;构建完成后显示包路径、大小、哈希与签名结果。&lt;/div&gt;
+                &lt;/section&gt;
+              &lt;/div&gt;
+            &lt;/article&gt;
+            &lt;aside class=&quot;mds-guide&quot;&gt;
+              &lt;div class=&quot;mds-guide-head&quot;&gt;&lt;div&gt;&lt;h3&gt;如何操作&lt;/h3&gt;&lt;small&gt;形成可消费的产品交付&lt;/small&gt;&lt;/div&gt;&lt;small&gt;4 步&lt;/small&gt;&lt;/div&gt;
+              &lt;div class=&quot;mds-guide-list&quot;&gt;
+                &lt;button type=&quot;button&quot; class=&quot;mds-step&quot; data-target=&quot;export-content&quot; aria-pressed=&quot;true&quot;&gt;&lt;span class=&quot;mds-step-number&quot;&gt;1&lt;/span&gt;&lt;span&gt;选择 SDK、CLI、模型包、Schema、报告与示例。&lt;/span&gt;&lt;/button&gt;
+                &lt;button type=&quot;button&quot; class=&quot;mds-step&quot; data-target=&quot;export-gates&quot; aria-pressed=&quot;false&quot;&gt;&lt;span class=&quot;mds-step-number&quot;&gt;2&lt;/span&gt;&lt;span&gt;确认功能、兼容、数值、构建、性能和文档门禁。&lt;/span&gt;&lt;/button&gt;
+                &lt;button type=&quot;button&quot; class=&quot;mds-step&quot; data-target=&quot;export-build&quot; aria-pressed=&quot;false&quot;&gt;&lt;span class=&quot;mds-step-number&quot;&gt;3&lt;/span&gt;&lt;span&gt;生成版本化发布包、清单、哈希和签名。&lt;/span&gt;&lt;/button&gt;
+                &lt;button type=&quot;button&quot; class=&quot;mds-step&quot; data-target=&quot;export-gates&quot; aria-pressed=&quot;false&quot;&gt;&lt;span class=&quot;mds-step-number&quot;&gt;4&lt;/span&gt;&lt;span&gt;在干净机器安装、运行教程并归档发布证据。&lt;/span&gt;&lt;/button&gt;
+              &lt;/div&gt;
+              &lt;div class=&quot;mds-guide-result&quot;&gt;&lt;strong&gt;产出&lt;/strong&gt;&lt;br&gt;可安装、可验证、可追溯、可卸载的 ModelDev 产品包。&lt;/div&gt;
+            &lt;/aside&gt;
+          &lt;/div&gt;
+        &lt;/section&gt;
+      &lt;/section&gt;
+    &lt;/div&gt;
+
+    &lt;footer class=&quot;mds-footer&quot;&gt;&lt;span&gt;概念原型：所有命令与界面均为目标态&lt;/span&gt;&lt;span&gt;工作流：场景 → 校验 → 运行 → 分析 → 比较 → 发布&lt;/span&gt;&lt;/footer&gt;
+  &lt;/div&gt;
+
+  &lt;script&gt;
+    (() =&gt; {
+      const root = document.getElementById(&#x27;modeldev-studio-concept-ui&#x27;);
+      const navButtons = [...root.querySelectorAll(&#x27;.mds-nav-button&#x27;)];
+      const screens = [...root.querySelectorAll(&#x27;.mds-screen&#x27;)];
+      const featureTitle = root.querySelector(&#x27;#mds-feature-title&#x27;);
+      const currentTitle = root.querySelector(&#x27;.mds-current-title&#x27;);
+      const featureCount = root.querySelector(&#x27;#mds-feature-count&#x27;);
+      let activeIndex = 0;
+      let activeProjectFolder = &#x27;intercept&#x27;;
+
+      const projectFolders = {
+        all: {
+          label: &#x27;HXD 项目&#x27;,
+          listTitle: &#x27;全部任务 · 场景列表&#x27;,
+          fields: [[&#x27;范围&#x27;, &#x27;4 个任务目录&#x27;], [&#x27;模型基线&#x27;, &#x27;TGC Reference 1.0&#x27;], [&#x27;环境基线&#x27;, &#x27;NRLMSISE-00&#x27;], [&#x27;场景总数&#x27;, &#x27;10&#x27;], [&#x27;最近运行&#x27;, &#x27;今天 10:42&#x27;]],
+          scenes: [
+            { name: &#x27;HXD_Intercept_001&#x27;, note: &#x27;拦截任务 · 基准任务&#x27;, version: &#x27;v7&#x27;, status: &#x27;有效&#x27;, recent: &#x27;今天 10:42&#x27; },
+            { name: &#x27;HXD_Route_Corridor_A&#x27;, note: &#x27;航路任务 · 走廊飞行&#x27;, version: &#x27;v5&#x27;, status: &#x27;有效&#x27;, recent: &#x27;今天 09:18&#x27; },
+            { name: &#x27;HXD_Sensitivity_Wind&#x27;, note: &#x27;敏感性实验 · 风场扫描&#x27;, version: &#x27;v4&#x27;, status: &#x27;有效&#x27;, recent: &#x27;昨天 21:06&#x27; },
+            { name: &#x27;HXD_Intercept_LongRange&#x27;, note: &#x27;拦截任务 · 远距边界&#x27;, version: &#x27;v2&#x27;, status: &#x27;待校验&#x27;, recent: &#x27;—&#x27; },
+            { name: &#x27;HXD_Legacy_2025Q4&#x27;, note: &#x27;归档任务 · 历史基线&#x27;, version: &#x27;v12&#x27;, status: &#x27;已归档&#x27;, recent: &#x27;2025-12-18&#x27; }
+          ]
+        },
+        intercept: {
+          label: &#x27;拦截任务&#x27;,
+          listTitle: &#x27;拦截任务 · 场景列表&#x27;,
+          fields: [[&#x27;飞行器&#x27;, &#x27;TGC Reference 1.0&#x27;], [&#x27;目标&#x27;, &#x27;Point Target&#x27;], [&#x27;环境&#x27;, &#x27;NRLMSISE-00&#x27;], [&#x27;制导&#x27;, &#x27;Phase + L1&#x27;], [&#x27;控制&#x27;, &#x27;P6DOF&#x27;], [&#x27;步长&#x27;, &#x27;0.01 s&#x27;], [&#x27;随机种子&#x27;, &#x27;20260823&#x27;]],
+          scenes: [
+            { name: &#x27;HXD_Intercept_001&#x27;, note: &#x27;基准拦截任务&#x27;, version: &#x27;v7&#x27;, status: &#x27;有效&#x27;, recent: &#x27;今天 10:42&#x27; },
+            { name: &#x27;HXD_Intercept_NoWind&#x27;, note: &#x27;无风对照任务&#x27;, version: &#x27;v3&#x27;, status: &#x27;有效&#x27;, recent: &#x27;昨天 18:20&#x27; },
+            { name: &#x27;HXD_Intercept_LongRange&#x27;, note: &#x27;远距离边界任务&#x27;, version: &#x27;v2&#x27;, status: &#x27;待校验&#x27;, recent: &#x27;—&#x27; }
+          ]
+        },
+        route: {
+          label: &#x27;航路任务&#x27;,
+          listTitle: &#x27;航路任务 · 场景列表&#x27;,
+          fields: [[&#x27;飞行器&#x27;, &#x27;TGC Reference 1.0&#x27;], [&#x27;航路点&#x27;, &#x27;WP01–WP08&#x27;], [&#x27;走廊宽度&#x27;, &#x27;±250 m&#x27;], [&#x27;环境&#x27;, &#x27;Standard Atmosphere&#x27;], [&#x27;制导&#x27;, &#x27;Waypoint + L1&#x27;], [&#x27;终止条件&#x27;, &#x27;到达 WP08&#x27;]],
+          scenes: [
+            { name: &#x27;HXD_Route_Corridor_A&#x27;, note: &#x27;标准航路走廊&#x27;, version: &#x27;v5&#x27;, status: &#x27;有效&#x27;, recent: &#x27;今天 09:18&#x27; },
+            { name: &#x27;HXD_Route_TerrainFollow&#x27;, note: &#x27;地形跟随航路&#x27;, version: &#x27;v3&#x27;, status: &#x27;有效&#x27;, recent: &#x27;昨天 16:02&#x27; },
+            { name: &#x27;HXD_Route_RestrictedZone&#x27;, note: &#x27;禁飞区绕行验证&#x27;, version: &#x27;v1&#x27;, status: &#x27;待校验&#x27;, recent: &#x27;—&#x27; }
+          ]
+        },
+        sensitivity: {
+          label: &#x27;敏感性实验&#x27;,
+          listTitle: &#x27;敏感性实验 · 实验列表&#x27;,
+          fields: [[&#x27;基准场景&#x27;, &#x27;HXD_Intercept_001 @ v7&#x27;], [&#x27;扫描参数&#x27;, &#x27;wind.speed&#x27;], [&#x27;取值&#x27;, &#x27;0, 5, 10, 15 m/s&#x27;], [&#x27;重复次数&#x27;, &#x27;12 / 组合&#x27;], [&#x27;并发 Worker&#x27;, &#x27;8&#x27;], [&#x27;聚合指标&#x27;, &#x27;脱靶量、飞行时间&#x27;]],
+          scenes: [
+            { name: &#x27;HXD_Sensitivity_Wind&#x27;, note: &#x27;风速参数扫描&#x27;, version: &#x27;v4&#x27;, status: &#x27;有效&#x27;, recent: &#x27;昨天 21:06&#x27; },
+            { name: &#x27;HXD_Sensitivity_Gain&#x27;, note: &#x27;制导增益扫描&#x27;, version: &#x27;v2&#x27;, status: &#x27;待校验&#x27;, recent: &#x27;—&#x27; }
+          ]
+        },
+        archive: {
+          label: &#x27;归档任务&#x27;,
+          listTitle: &#x27;归档任务 · 只读列表&#x27;,
+          fields: [[&#x27;归档策略&#x27;, &#x27;冻结模型锁与结果&#x27;], [&#x27;保留周期&#x27;, &#x27;长期&#x27;], [&#x27;恢复方式&#x27;, &#x27;复制为新版本&#x27;], [&#x27;完整性&#x27;, &#x27;SHA-256 已验证&#x27;], [&#x27;权限&#x27;, &#x27;只读&#x27;]],
+          scenes: [
+            { name: &#x27;HXD_Legacy_2025Q4&#x27;, note: &#x27;2025 Q4 发布基线&#x27;, version: &#x27;v12&#x27;, status: &#x27;已归档&#x27;, recent: &#x27;2025-12-18&#x27; },
+            { name: &#x27;HXD_Prototype_A&#x27;, note: &#x27;早期方案验证&#x27;, version: &#x27;v6&#x27;, status: &#x27;已归档&#x27;, recent: &#x27;2025-08-03&#x27; }
+          ]
+        }
+      };
+      let activeModelCategory = &#x27;vehicle&#x27;;
+
+      const modelCategories = {
+        vehicle: {
+          label: &#x27;飞行器&#x27;,
+          name: &#x27;TGC Reference&#x27;,
+          version: &#x27;1.0.0 已验证&#x27;,
+          capabilities: [[&#x27;类型&#x27;, &#x27;6DOF Vehicle&#x27;], [&#x27;速度域&#x27;, &#x27;Ma 0–5&#x27;], [&#x27;高度域&#x27;, &#x27;0–80 km&#x27;], [&#x27;坐标&#x27;, &#x27;ECF / NUE / Body&#x27;], [&#x27;线程&#x27;, &#x27;实例隔离&#x27;]],
+          contracts: [&#x27;IPropulsion&#x27;, &#x27;IAerodynamics&#x27;, &#x27;IGuidance&#x27;, &#x27;IController&#x27;, &#x27;ISensor&#x27;],
+          dependencies: &#x27;依赖：modeldev.contracts/v1 · modeldev.kernel ≥ 0.8&#x27;,
+          templates: &#x27;geometry.json · propulsion.yaml · guidance.json · control.json&#x27;,
+          evidence: &#x27;黄金任务 5 / 5 · 数值收敛通过 · ABI 检查通过&#x27;
+        },
+        environment: {
+          label: &#x27;环境&#x27;,
+          name: &#x27;NRLMSISE Environment&#x27;,
+          version: &#x27;1.0.0 已验证&#x27;,
+          capabilities: [[&#x27;类型&#x27;, &#x27;Atmosphere Model&#x27;], [&#x27;高度域&#x27;, &#x27;0–1000 km&#x27;], [&#x27;时间&#x27;, &#x27;UTC / DOY&#x27;], [&#x27;输入坐标&#x27;, &#x27;LLA / ECF&#x27;], [&#x27;输出&#x27;, &#x27;密度 / 温度 / 压强&#x27;]],
+          contracts: [&#x27;IEnvironment&#x27;, &#x27;IAtmosphere&#x27;, &#x27;IDensityField&#x27;],
+          dependencies: &#x27;依赖：nrlmsise-00 · modeldev.coordinates/v1&#x27;,
+          templates: &#x27;atmosphere.yaml · solar-activity.json · wind-profile.csv&#x27;,
+          evidence: &#x27;标准大气对照通过 · 高度边界通过 · 单位审计通过&#x27;
+        },
+        guidance: {
+          label: &#x27;制导&#x27;,
+          name: &#x27;Phase L1 Guidance&#x27;,
+          version: &#x27;1.2.0 已验证&#x27;,
+          capabilities: [[&#x27;类型&#x27;, &#x27;Multi-phase Guidance&#x27;], [&#x27;目标&#x27;, &#x27;点目标 / 机动目标&#x27;], [&#x27;阶段&#x27;, &#x27;Boost / Climb / Glide&#x27;], [&#x27;输出&#x27;, &#x27;法向加速度指令&#x27;], [&#x27;频率&#x27;, &#x27;50–200 Hz&#x27;]],
+          contracts: [&#x27;IGuidance&#x27;, &#x27;ITargetTrack&#x27;, &#x27;IPhasePolicy&#x27;],
+          dependencies: &#x27;依赖：modeldev.guidance/v1 · modeldev.math ≥ 0.9&#x27;,
+          templates: &#x27;phase-policy.yaml · l1-gain.json · terminal-guidance.json&#x27;,
+          evidence: &#x27;阶段切换 18 / 18 · 指令连续性通过 · 极限输入通过&#x27;
+        },
+        control: {
+          label: &#x27;控制&#x27;,
+          name: &#x27;P6DOF Controller&#x27;,
+          version: &#x27;1.1.0 已验证&#x27;,
+          capabilities: [[&#x27;类型&#x27;, &#x27;Autopilot&#x27;], [&#x27;通道&#x27;, &#x27;俯仰 / 偏航 / 滚转&#x27;], [&#x27;控制律&#x27;, &#x27;PID + 限幅&#x27;], [&#x27;执行器&#x27;, &#x27;舵面偏转&#x27;], [&#x27;频率&#x27;, &#x27;200 Hz&#x27;]],
+          contracts: [&#x27;IController&#x27;, &#x27;IActuatorCommand&#x27;, &#x27;IControlState&#x27;],
+          dependencies: &#x27;依赖：modeldev.control/v1 · Eigen3&#x27;,
+          templates: &#x27;pid-gains.yaml · actuator-limits.json · trim-state.json&#x27;,
+          evidence: &#x27;阶跃响应通过 · 饱和恢复通过 · 闭环稳定性通过&#x27;
+        },
+        sensor: {
+          label: &#x27;传感器&#x27;,
+          name: &#x27;IMU Reference&#x27;,
+          version: &#x27;1.0.0 已验证&#x27;,
+          capabilities: [[&#x27;类型&#x27;, &#x27;6-axis IMU&#x27;], [&#x27;量程&#x27;, &#x27;±40 g / ±2000 °/s&#x27;], [&#x27;采样率&#x27;, &#x27;100–1000 Hz&#x27;], [&#x27;噪声&#x27;, &#x27;白噪声 + 随机游走&#x27;], [&#x27;输出坐标&#x27;, &#x27;Body&#x27;]],
+          contracts: [&#x27;ISensor&#x27;, &#x27;IImuSample&#x27;, &#x27;INoiseSource&#x27;],
+          dependencies: &#x27;依赖：modeldev.sensor/v1 · modeldev.random/v1&#x27;,
+          templates: &#x27;imu-bias.yaml · noise-model.json · mounting.json&#x27;,
+          evidence: &#x27;Allan 方差匹配 · 随机种子复现 · 坐标变换通过&#x27;
+        },
+        recorder: {
+          label: &#x27;记录器&#x27;,
+          name: &#x27;Parquet Recorder&#x27;,
+          version: &#x27;0.9.0 候选&#x27;,
+          capabilities: [[&#x27;类型&#x27;, &#x27;Async Result Sink&#x27;], [&#x27;格式&#x27;, &#x27;Parquet / CSV&#x27;], [&#x27;写入&#x27;, &#x27;批量异步&#x27;], [&#x27;分区&#x27;, &#x27;run_id / signal&#x27;], [&#x27;压缩&#x27;, &#x27;ZSTD&#x27;]],
+          contracts: [&#x27;IRecorder&#x27;, &#x27;IResultSink&#x27;, &#x27;ISchemaWriter&#x27;],
+          dependencies: &#x27;依赖：modeldev.result/v1 · Arrow ABI 15&#x27;,
+          templates: &#x27;signals.yaml · partition.json · retention-policy.json&#x27;,
+          evidence: &#x27;吞吐压力测试通过 · Schema 演进通过 · ABI 候选待签署&#x27;
+        }
+      };
+
+      function renderModelCategory(key) {
+        const category = modelCategories[key];
+        if (!category) return;
+        activeModelCategory = key;
+        root.querySelectorAll(&#x27;[data-model-category]&#x27;).forEach((button) =&gt; button.setAttribute(&#x27;aria-pressed&#x27;, button.dataset.modelCategory === key ? &#x27;true&#x27; : &#x27;false&#x27;));
+        root.querySelector(&#x27;#mds-model-name&#x27;).textContent = category.name;
+        const version = root.querySelector(&#x27;#mds-model-version&#x27;);
+        version.textContent = category.version;
+        version.className = category.version.includes(&#x27;候选&#x27;) ? &#x27;mds-status mds-status-warn&#x27; : &#x27;mds-status&#x27;;
+        root.querySelector(&#x27;#mds-model-capabilities&#x27;).innerHTML = category.capabilities.map((item) =&gt; &#x27;&lt;dt&gt;&#x27; + item[0] + &#x27;&lt;/dt&gt;&lt;dd&gt;&#x27; + item[1] + &#x27;&lt;/dd&gt;&#x27;).join(&#x27;&#x27;);
+        root.querySelector(&#x27;#mds-model-contract-list&#x27;).innerHTML = category.contracts.map((item) =&gt; &#x27;&lt;span class=&quot;mds-chip&quot;&gt;&#x27; + item + &#x27;&lt;/span&gt;&#x27;).join(&#x27;&#x27;);
+        root.querySelector(&#x27;#mds-model-dependencies&#x27;).textContent = category.dependencies;
+        root.querySelector(&#x27;#mds-model-templates&#x27;).textContent = category.templates;
+        root.querySelector(&#x27;#mds-model-evidence&#x27;).textContent = category.evidence;
+        if (!screens[1].hidden) currentTitle.textContent = &#x27;模型库 / &#x27; + category.label;
+      }
+
+      function projectStatusClass(status) {
+        return status === &#x27;有效&#x27; ? &#x27;mds-status&#x27; : &#x27;mds-status mds-status-warn&#x27;;
+      }
+
+      function renderProjectDetail(folder, sceneIndex) {
+        const scene = folder.scenes[sceneIndex] || folder.scenes[0];
+        root.querySelector(&#x27;#mds-project-detail-title&#x27;).textContent = scene.name;
+        const status = root.querySelector(&#x27;#mds-project-detail-status&#x27;);
+        status.textContent = scene.status === &#x27;有效&#x27; ? &#x27;可运行&#x27; : scene.status;
+        status.className = projectStatusClass(scene.status);
+        const fields = [[&#x27;目录&#x27;, folder.label], [&#x27;版本&#x27;, scene.version], ...folder.fields];
+        root.querySelector(&#x27;#mds-project-detail-fields&#x27;).innerHTML = fields.map((field) =&gt; &#x27;&lt;dt&gt;&#x27; + field[0] + &#x27;&lt;/dt&gt;&lt;dd&gt;&#x27; + field[1] + &#x27;&lt;/dd&gt;&#x27;).join(&#x27;&#x27;);
+      }
+
+      function renderProjectFolder(key) {
+        const folder = projectFolders[key];
+        if (!folder) return;
+        activeProjectFolder = key;
+        root.querySelectorAll(&#x27;[data-project-folder]&#x27;).forEach((button) =&gt; button.setAttribute(&#x27;aria-pressed&#x27;, button.dataset.projectFolder === key ? &#x27;true&#x27; : &#x27;false&#x27;));
+        root.querySelector(&#x27;#mds-project-list-title&#x27;).textContent = folder.listTitle;
+        root.querySelector(&#x27;#mds-project-list-count&#x27;).textContent = folder.scenes.length + (key === &#x27;sensitivity&#x27; ? &#x27; 个实验&#x27; : &#x27; 个场景&#x27;);
+        root.querySelector(&#x27;#mds-project-scene-rows&#x27;).innerHTML = folder.scenes.map((scene, index) =&gt; (
+          &#x27;&lt;tr&gt;&lt;td&gt;&lt;button type=&quot;button&quot; class=&quot;mds-scene-link&quot; data-project-scene=&quot;&#x27; + index + &#x27;&quot;&gt;&lt;strong&gt;&#x27; + scene.name + &#x27;&lt;/strong&gt;&lt;br&gt;&lt;small&gt;&#x27; + scene.note + &#x27;&lt;/small&gt;&lt;/button&gt;&lt;/td&gt;&#x27; +
+          &#x27;&lt;td&gt;&#x27; + scene.version + &#x27;&lt;/td&gt;&lt;td&gt;&lt;span class=&quot;&#x27; + projectStatusClass(scene.status) + &#x27;&quot;&gt;&#x27; + scene.status + &#x27;&lt;/span&gt;&lt;/td&gt;&lt;td&gt;&#x27; + scene.recent + &#x27;&lt;/td&gt;&lt;/tr&gt;&#x27;
+        )).join(&#x27;&#x27;);
+        if (!screens[0].hidden) currentTitle.textContent = &#x27;项目与场景 / &#x27; + folder.label;
+        renderProjectDetail(folder, 0);
+      }
+
+      function activateGuideStep(screen, step) {
+        screen.querySelectorAll(&#x27;.mds-step&#x27;).forEach((item) =&gt; item.setAttribute(&#x27;aria-pressed&#x27;, item === step ? &#x27;true&#x27; : &#x27;false&#x27;));
+        screen.querySelectorAll(&#x27;.mds-hotspot&#x27;).forEach((item) =&gt; item.classList.remove(&#x27;is-guided&#x27;));
+        const target = screen.querySelector(`[data-hotspot=&quot;${step.dataset.target}&quot;]`);
+        if (target) target.classList.add(&#x27;is-guided&#x27;);
+      }
+
+      function showScreen(index) {
+        activeIndex = (index + screens.length) % screens.length;
+        const screen = screens[activeIndex];
+        screens.forEach((item, i) =&gt; { item.hidden = i !== activeIndex; });
+        navButtons.forEach((item, i) =&gt; item.setAttribute(&#x27;aria-selected&#x27;, i === activeIndex ? &#x27;true&#x27; : &#x27;false&#x27;));
+        featureTitle.textContent = screen.dataset.title;
+        if (screen.dataset.screen === &#x27;projects&#x27;) currentTitle.textContent = &#x27;项目与场景 / &#x27; + projectFolders[activeProjectFolder].label;
+        else if (screen.dataset.screen === &#x27;models&#x27;) currentTitle.textContent = &#x27;模型库 / &#x27; + modelCategories[activeModelCategory].label;
+        else currentTitle.textContent = screen.dataset.title;
+        featureCount.textContent = `${activeIndex + 1} / ${screens.length}`;
+        const firstStep = screen.querySelector(&#x27;.mds-step&#x27;);
+        if (firstStep) activateGuideStep(screen, firstStep);
+      }
+
+      navButtons.forEach((button, index) =&gt; button.addEventListener(&#x27;click&#x27;, () =&gt; showScreen(index)));
+      root.querySelectorAll(&#x27;[data-project-folder]&#x27;).forEach((button) =&gt; button.addEventListener(&#x27;click&#x27;, () =&gt; renderProjectFolder(button.dataset.projectFolder)));
+      root.querySelectorAll(&#x27;[data-model-category]&#x27;).forEach((button) =&gt; button.addEventListener(&#x27;click&#x27;, () =&gt; renderModelCategory(button.dataset.modelCategory)));
+      root.querySelector(&#x27;#mds-project-scene-rows&#x27;).addEventListener(&#x27;click&#x27;, (event) =&gt; {
+        const button = event.target.closest(&#x27;[data-project-scene]&#x27;);
+        if (button) renderProjectDetail(projectFolders[activeProjectFolder], Number(button.dataset.projectScene));
+      });
+      screens.forEach((screen) =&gt; screen.querySelectorAll(&#x27;.mds-step&#x27;).forEach((step) =&gt; step.addEventListener(&#x27;click&#x27;, () =&gt; activateGuideStep(screen, step))));
+      root.querySelector(&#x27;#mds-prev-feature&#x27;).addEventListener(&#x27;click&#x27;, () =&gt; showScreen(activeIndex - 1));
+      root.querySelector(&#x27;#mds-next-feature&#x27;).addEventListener(&#x27;click&#x27;, () =&gt; showScreen(activeIndex + 1));
+
+      root.querySelector(&#x27;#mds-validate&#x27;).addEventListener(&#x27;click&#x27;, () =&gt; {
+        root.querySelector(&#x27;#mds-validation-status&#x27;).textContent = &#x27;7 项通过&#x27;;
+        root.querySelector(&#x27;#mds-validation-list&#x27;).insertAdjacentHTML(&#x27;beforeend&#x27;, &#x27;&lt;div class=&quot;mds-validation-item&quot;&gt;校验完成：配置哈希 1e73…9ac4&lt;/div&gt;&#x27;);
+      });
+
+      const runToggle = root.querySelector(&#x27;#mds-run-toggle&#x27;);
+      runToggle.addEventListener(&#x27;click&#x27;, () =&gt; {
+        const state = root.querySelector(&#x27;#mds-run-state&#x27;);
+        const paused = state.textContent === &#x27;Paused&#x27;;
+        state.textContent = paused ? &#x27;Running&#x27; : &#x27;Paused&#x27;;
+        runToggle.innerHTML = paused ? &#x27;&lt;i data-lucide=&quot;pause&quot; aria-hidden=&quot;true&quot;&gt;&lt;/i&gt; 暂停&#x27; : &#x27;&lt;i data-lucide=&quot;play&quot; aria-hidden=&quot;true&quot;&gt;&lt;/i&gt; 继续&#x27;;
+        if (window.lucide) window.lucide.createIcons({ attrs: { width: 16, height: 16 } });
+      });
+      root.querySelector(&#x27;#mds-snapshot&#x27;).addEventListener(&#x27;click&#x27;, () =&gt; {
+        root.querySelector(&#x27;#mds-snapshot-result&#x27;).innerHTML = &#x27;&lt;strong&gt;快照已创建&lt;/strong&gt;&lt;br&gt;snapshot-188200 已保存状态、模型锁、随机流和事件游标。&#x27;;
+      });
+
+      root.querySelector(&#x27;#mds-series-alt&#x27;).addEventListener(&#x27;change&#x27;, (event) =&gt; { root.querySelector(&#x27;#mds-alt-line&#x27;).style.display = event.target.checked ? &#x27;&#x27; : &#x27;none&#x27;; });
+      root.querySelector(&#x27;#mds-series-speed&#x27;).addEventListener(&#x27;change&#x27;, (event) =&gt; { root.querySelector(&#x27;#mds-speed-line&#x27;).style.display = event.target.checked ? &#x27;&#x27; : &#x27;none&#x27;; });
+
+      root.querySelector(&#x27;#mds-batch-start&#x27;).addEventListener(&#x27;click&#x27;, () =&gt; {
+        root.querySelector(&#x27;#mds-batch-state&#x27;).textContent = &#x27;Running&#x27;;
+        root.querySelector(&#x27;#mds-batch-progress&#x27;).style.width = &#x27;38%&#x27;;
+        root.querySelector(&#x27;.mds-progress&#x27;).setAttribute(&#x27;aria-valuenow&#x27;, &#x27;38&#x27;);
+        root.querySelector(&#x27;#mds-batch-label&#x27;).textContent = &#x27;92 / 240 完成&#x27;;
+        root.querySelector(&#x27;#mds-batch-ok&#x27;).textContent = &#x27;92&#x27;;
+        root.querySelector(&#x27;#mds-batch-wait&#x27;).textContent = &#x27;140&#x27;;
+        root.querySelector(&#x27;#mds-batch-eta&#x27;).textContent = &#x27;6 分 24 秒&#x27;;
+      });
+
+      root.querySelector(&#x27;#mds-compare-run&#x27;).addEventListener(&#x27;click&#x27;, () =&gt; {
+        const status = root.querySelector(&#x27;#mds-compare-status&#x27;);
+        status.textContent = &#x27;全部通过&#x27;;
+        status.className = &#x27;mds-status&#x27;;
+        const gate = root.querySelector(&#x27;#mds-release-gate&#x27;);
+        gate.classList.add(&#x27;is-passed&#x27;);
+        gate.innerHTML = &#x27;&lt;strong&gt;发布门禁：通过&lt;/strong&gt;&lt;br&gt;5 类字段均在批准容差内；比较报告 CMP-HXD-008 已生成。&#x27;;
+      });
+
+      root.querySelector(&#x27;#mds-plugin-toggle&#x27;).addEventListener(&#x27;click&#x27;, (event) =&gt; {
+        const state = root.querySelector(&#x27;#mds-plugin-state&#x27;);
+        const enabled = state.textContent === &#x27;启用&#x27;;
+        state.textContent = enabled ? &#x27;已停用&#x27; : &#x27;启用&#x27;;
+        event.currentTarget.textContent = enabled ? &#x27;启用插件&#x27; : &#x27;停用插件&#x27;;
+      });
+
+      root.querySelector(&#x27;#mds-export-build&#x27;).addEventListener(&#x27;click&#x27;, () =&gt; {
+        const state = root.querySelector(&#x27;#mds-export-state&#x27;);
+        state.textContent = &#x27;包已生成&#x27;;
+        state.className = &#x27;mds-status&#x27;;
+        const result = root.querySelector(&#x27;#mds-export-result&#x27;);
+        result.classList.add(&#x27;is-passed&#x27;);
+        result.innerHTML = &#x27;&lt;strong&gt;modeldev-hxd-1.0.0.zip&lt;/strong&gt;&lt;br&gt;128.4 MB · SHA-256 8f17…a92c · 签名有效&#x27;;
+      });
+
+      renderProjectFolder(activeProjectFolder);
+      renderModelCategory(activeModelCategory);
+      showScreen(0);
+    })();
+  &lt;/script&gt;
+&lt;/main&gt;
+
+&lt;script src=&quot;https://unpkg.com/@floating-ui/core@1.7.3/dist/floating-ui.core.umd.min.js&quot;&gt;&lt;/script&gt;
+&lt;script src=&quot;https://unpkg.com/@floating-ui/dom@1.7.4/dist/floating-ui.dom.umd.min.js&quot;&gt;&lt;/script&gt;
+&lt;script&gt;
+(() =&gt; {
+  if (window.FloatingUIDOM == null) {
+    return;
+  }
+  const { autoUpdate, computePosition, flip, offset, shift, size } =
+    window.FloatingUIDOM;
+  const tooltipPlacements = new Set([&quot;top&quot;, &quot;right&quot;, &quot;bottom&quot;, &quot;left&quot;]);
+  const tooltipId = `codex-visualization-tooltip-${
+    window.crypto?.randomUUID?.() ?? Date.now().toString(36)
+  }`;
+  const tooltipGap = 5;
+  const hoverDelay = 700;
+  const skipDelay = 300;
+  let activeTrigger = null;
+  let pendingTrigger = null;
+  let tooltip = null;
+  let openTimeout = null;
+  let autoUpdateCleanup = null;
+  let positionRequest = 0;
+  let skipDelayUntil = 0;
+
+  const getTrigger = (target) =&gt;
+    target?.nodeType === Node.ELEMENT_NODE
+      ? target.closest(&quot;[data-tooltip]&quot;)
+      : null;
+  const containsTarget = (trigger, target) =&gt;
+    target?.nodeType != null &amp;&amp; trigger.contains(target);
+  const getContent = (trigger) =&gt;
+    trigger.getAttribute(&quot;data-tooltip&quot;)?.trim() ?? &quot;&quot;;
+  const getPlacement = (trigger) =&gt; {
+    const placement = trigger.getAttribute(&quot;data-tooltip-placement&quot;);
+    return tooltipPlacements.has(placement) ? placement : &quot;top&quot;;
+  };
+  const getTooltip = () =&gt; {
+    if (tooltip == null) {
+      tooltip = document.createElement(&quot;div&quot;);
+      tooltip.id = tooltipId;
+      tooltip.className = &quot;tooltip&quot;;
+      tooltip.setAttribute(&quot;role&quot;, &quot;tooltip&quot;);
+    }
+    return tooltip;
+  };
+  const setDescribedBy = (trigger, described) =&gt; {
+    const ids = new Set(
+      (trigger.getAttribute(&quot;aria-describedby&quot;) ?? &quot;&quot;)
+        .split(/\s+/)
+        .filter(Boolean),
+    );
+    if (described) {
+      ids.add(tooltipId);
+    } else {
+      ids.delete(tooltipId);
+    }
+    if (ids.size === 0) {
+      trigger.removeAttribute(&quot;aria-describedby&quot;);
+    } else {
+      trigger.setAttribute(&quot;aria-describedby&quot;, [...ids].join(&quot; &quot;));
+    }
+  };
+  const clearOpenTimeout = () =&gt; {
+    if (openTimeout != null) {
+      window.clearTimeout(openTimeout);
+      openTimeout = null;
+    }
+    pendingTrigger = null;
+  };
+  const closeTooltip = (activateSkipDelay = true) =&gt; {
+    clearOpenTimeout();
+    positionRequest += 1;
+    autoUpdateCleanup?.();
+    autoUpdateCleanup = null;
+    if (activeTrigger == null) {
+      return;
+    }
+    setDescribedBy(activeTrigger, false);
+    activeTrigger = null;
+    tooltip?.remove();
+    if (activateSkipDelay) {
+      skipDelayUntil = Date.now() + skipDelay;
+    }
+  };
+  const updatePosition = (trigger, floating) =&gt; {
+    const request = ++positionRequest;
+    void computePosition(trigger, floating, {
+      middleware: [
+        offset(tooltipGap),
+        flip({ padding: tooltipGap }),
+        shift({ padding: tooltipGap }),
+        size({
+          padding: tooltipGap,
+          apply({ availableHeight, availableWidth, elements }) {
+            elements.floating.style.setProperty(
+              &quot;--tooltip-available-width&quot;,
+              `${Math.max(0, availableWidth)}px`,
+            );
+            elements.floating.style.setProperty(
+              &quot;--tooltip-available-height&quot;,
+              `${Math.max(0, availableHeight)}px`,
+            );
+          },
+        }),
+      ],
+      placement: getPlacement(trigger),
+      strategy: &quot;fixed&quot;,
+    })
+      .then(({ x, y }) =&gt; {
+        if (activeTrigger !== trigger || request !== positionRequest) {
+          return;
+        }
+        const scale = window.devicePixelRatio || 1;
+        floating.style.transform = `translate(${Math.round(x * scale) / scale}px, ${Math.round(y * scale) / scale}px)`;
+        floating.style.visibility = &quot;visible&quot;;
+      })
+      .catch(() =&gt; {
+        if (activeTrigger === trigger &amp;&amp; request === positionRequest) {
+          closeTooltip(false);
+        }
+      });
+  };
+  const openTooltip = (trigger) =&gt; {
+    const content = getContent(trigger);
+    if (!trigger.isConnected || content.length === 0) {
+      return;
+    }
+    clearOpenTimeout();
+    if (activeTrigger === trigger) {
+      return;
+    }
+    closeTooltip();
+    const floating = getTooltip();
+    floating.textContent = content;
+    floating.style.visibility = &quot;hidden&quot;;
+    floating.style.transform = &quot;translate(0, 0)&quot;;
+    document.body.appendChild(floating);
+    activeTrigger = trigger;
+    setDescribedBy(trigger, true);
+    autoUpdateCleanup = autoUpdate(trigger, floating, () =&gt; {
+      updatePosition(trigger, floating);
+    });
+  };
+  const requestOpen = (trigger, immediate = false) =&gt; {
+    if (
+      getContent(trigger).length === 0 ||
+      activeTrigger === trigger ||
+      pendingTrigger === trigger
+    ) {
+      return;
+    }
+    clearOpenTimeout();
+    pendingTrigger = trigger;
+    const delay =
+      immediate || activeTrigger != null || Date.now() &lt; skipDelayUntil
+        ? 0
+        : hoverDelay;
+    if (delay === 0) {
+      openTooltip(trigger);
+      return;
+    }
+    openTimeout = window.setTimeout(() =&gt; {
+      openTimeout = null;
+      pendingTrigger = null;
+      openTooltip(trigger);
+    }, delay);
+  };
+  const handlePointerOpen = (event) =&gt; {
+    if (event.pointerType === &quot;touch&quot;) {
+      return;
+    }
+    const trigger = getTrigger(event.target);
+    if (trigger == null || containsTarget(trigger, event.relatedTarget)) {
+      return;
+    }
+    requestOpen(trigger);
+  };
+  const handleLeave = (event) =&gt; {
+    const trigger = getTrigger(event.target);
+    if (trigger == null || containsTarget(trigger, event.relatedTarget)) {
+      return;
+    }
+    if (activeTrigger === trigger || pendingTrigger === trigger) {
+      closeTooltip();
+    }
+  };
+  const handleFocusIn = (event) =&gt; {
+    const trigger = getTrigger(event.target);
+    if (trigger?.matches(&quot;:focus-visible&quot;)) {
+      requestOpen(trigger, true);
+    }
+  };
+  const handleKeyDown = (event) =&gt; {
+    if (event.key === &quot;Escape&quot;) {
+      closeTooltip();
+    }
+  };
+  const handleContextMenu = (event) =&gt; {
+    const trigger = getTrigger(event.target);
+    if (activeTrigger === trigger || pendingTrigger === trigger) {
+      closeTooltip();
+    }
+  };
+  const destroy = () =&gt; {
+    closeTooltip(false);
+    document.removeEventListener(&quot;pointerover&quot;, handlePointerOpen);
+    document.removeEventListener(&quot;pointerout&quot;, handleLeave);
+    document.removeEventListener(&quot;focusin&quot;, handleFocusIn);
+    document.removeEventListener(&quot;focusout&quot;, handleLeave);
+    document.removeEventListener(&quot;keydown&quot;, handleKeyDown);
+    document.removeEventListener(&quot;contextmenu&quot;, handleContextMenu);
+    tooltip = null;
+  };
+
+  document.addEventListener(&quot;pointerover&quot;, handlePointerOpen);
+  document.addEventListener(&quot;pointerout&quot;, handleLeave);
+  document.addEventListener(&quot;focusin&quot;, handleFocusIn);
+  document.addEventListener(&quot;focusout&quot;, handleLeave);
+  document.addEventListener(&quot;keydown&quot;, handleKeyDown);
+  document.addEventListener(&quot;contextmenu&quot;, handleContextMenu);
+  window.addEventListener(&quot;pagehide&quot;, destroy, { once: true });
+})();
+&lt;/script&gt;
+&lt;script id=&quot;codex-visualization-lucide&quot; async src=&quot;https://unpkg.com/lucide@1.17.0/dist/umd/lucide.js&quot;&gt;&lt;/script&gt;
+&lt;script&gt;
+(() =&gt; {
+  const initialize = () =&gt; {
+    globalThis.lucide?.createIcons({ attrs: { width: 16, height: 16 } });
+  };
+  if (globalThis.lucide != null) {
+    initialize();
+    return;
+  }
+  document
+    .getElementById(&quot;codex-visualization-lucide&quot;)
+    ?.addEventListener(&quot;load&quot;, initialize, { once: true });
+})();
+&lt;/script&gt;
+
+&lt;/body&gt;
+&lt;/html&gt;
+"></iframe>
+</body>
+</html>

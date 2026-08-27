@@ -1,9 +1,9 @@
 //
-// Created by Administrator on 2026/1/30.
+// Created by 17298 on 2026/4/22.
 //
 
 
-#pragma once 
+#pragma once
 
 // region Include
 // region STL
@@ -12,8 +12,9 @@
 // endregion
 // region Self
 #include "CommonStructs.h"
-#include "Eigen/Core"
-#include "Eigen/Dense"
+#include <Eigen/Core>
+#include <Eigen/Dense>
+#include "CoordinateHelper.h"
 #include "State.h"
 // endregion
 // endregion
@@ -22,21 +23,20 @@
 // endregion
 
 // region Define
-#define PRETTY_FILE_NAME "ModelDevelop/GPI/GPI"
+#define PRETTY_FILE_NAME "ModelDevelop/HTV2/HTV2"
 // endregion
 
-namespace ModelDevelop::GPI {
-class Seeker {
+namespace ModelDevelop::HTV2 {
+    class IMU {
 // region USING/FRIEND
     private:
-    using State = ModelDevelop::Utils::State;
 // endregion
 
 // region Constructor
     public:
-        Seeker() = default;
+        IMU() = default;
 
-        ~Seeker() = default;
+        ~IMU() = default;
 
 // endregion
 
@@ -47,13 +47,12 @@ class Seeker {
 // region Public Methods
     public:
         /*!
-         * @brief 模拟导引头工作
-         * @param targetPosEcf
-         * @param targetVelEcf
-         * @param state
+         * @brief 获取imu信息
+         * @param state 自身状态
+         * @param total_acc_ecf ecf系下和力 后续减去重力作为加表输出
          * @return
          */
-        LosInfo getLOSInfo(const Eigen::Vector3d &targetPosEcf, const Eigen::Vector3d &targetVelEcf, const State &state);
+        ImuInfo getImuInfoBody(const State &state, const Eigen::Vector3d &total_acc_ecf);
 
 // endregion
 

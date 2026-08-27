@@ -1,9 +1,9 @@
 //
-// Created by Administrator on 2026/1/30.
+// Created by 17298 on 2026/4/22.
 //
 
 
-#pragma once 
+#pragma once
 
 // region Include
 // region STL
@@ -22,14 +22,13 @@
 // endregion
 
 // region Define
-#define PRETTY_FILE_NAME "ModelDevelop/GPI/GPI"
+#define PRETTY_FILE_NAME "ModelDevelop/HTV2/HTV2"
 // endregion
 
-namespace ModelDevelop::GPI {
-class Seeker {
+namespace ModelDevelop::HTV2 {
+    class Seeker {
 // region USING/FRIEND
     private:
-    using State = ModelDevelop::Utils::State;
 // endregion
 
 // region Constructor

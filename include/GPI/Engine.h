@@ -29,6 +29,7 @@ namespace ModelDevelop::GPI {
 class Engine {
 // region USING/FRIEND
     private:
+ using State = ModelDevelop::Utils::State;
 // endregion
 
 // region Constructor

@@ -1,9 +1,9 @@
 //
-// Created by Administrator on 2026/1/30.
+// Created by 17298 on 2026/4/22.
 //
 
 
-#pragma once 
+#pragma once
 
 // region Include
 // region STL
@@ -15,21 +15,22 @@
 #include <deque>
 #include <filesystem>
 #include <optional>
-#include "CommonStructs.h"
+#include <string_view>
 #include "Control.h"
 #include "Engine.h"
 #include "FileSaver.h"
 #include "Guidance.h"
 #include "IMU.h"
+#include "TerminalAttitudeHold.h"
 #include "Eigen/Core"
 #include "CoordinateHelper.h"
 #include "Kinematics.h"
 // endregion
 // endregion
 // region Define
-#define PRETTY_FILE_NAME "ModelDevelop/GPI/GPI"
-#if defined(_WIN32) && !defined(StaticGPI_Build)
-#ifdef SharedGPI_Build
+#define PRETTY_FILE_NAME "ModelDevelop/HTV2/HTV2"
+#if defined(_WIN32) && !defined(StaticHTV2_Build)
+#ifdef SharedHTV2_Build
 #define DLL_EXPORT_IMPORT __declspec(dllexport)
 #else
 #define DLL_EXPORT_IMPORT __declspec(dllimport)
@@ -42,14 +43,15 @@
 // endregion
 
 // region Define
-#define PRETTY_FILE_NAME "ModelDevelop/GPI/GPI"
+#define PRETTY_FILE_NAME "ModelDevelop/HTV2/HTV2"
 // endregion
 
-namespace ModelDevelop::GPI {
-class DLL_EXPORT_IMPORT Missile {
+namespace ModelDevelop::HTV2 {
+    class DLL_EXPORT_IMPORT Missile {
+        EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+
 // region USING/FRIEND
     private:
- using State = ModelDevelop::Utils::State;
 // endregion
 
 // region Constructor
@@ -70,30 +72,38 @@ class DLL_EXPORT_IMPORT Missile {
          * @brief 模型初始化
          * @param step  仿真步长 秒
          * @param lla 经纬高 度 米
-         */
+        */
         void init(double step, const Eigen::Vector3d &lla);
+
+        void initDiveTest(double step, const Eigen::Vector3d &lla, double speed, double theta_d, double psi_d);
 
         /*!
          * @brief 发射
          * @param theta_f_d 发射倾角 度
          * @param psi_f_d 发射偏角 度
-         * @param launch_v 发射速度
          */
-        void launch(double theta_f_d, double psi_f_d ,double launch_v);
+        void launch(double theta_f_d, double psi_f_d);
 
         /*!
          * @brief 设置目标
          * @param targetPosEcf 目标位置
          * @param targetVelEcf 目标速度
          */
-        void setTargetEcf(const Eigen::Vector3d &targetPosEcf, const Eigen::Vector3d &targetVelEcf);
+        void setTargetEcf(const Eigen::Vector3d &targetPosEcf, const Eigen::Vector3d &targetVelEcf, const bool clearQueue);
 
         /*!
          * @brief 设置目标
          * @param targetPosLLa 目标位置
          * @param targetVelEcf 目标速度
          */
-        void setTargetLLA(const Eigen::Vector3d &targetPosLLa, const Eigen::Vector3d &targetVelEcf);
+        void setTargetLLA(const Eigen::Vector3d &targetPosLLa, const Eigen::Vector3d &targetVelEcf, const bool clearQueue);
+
+        void setTerminalAttitudeHold(const TerminalAttitudeHoldConfig &config);
+
+        void setTerminalAttitudeHold(bool enable, double startDistance, double duration, double rollDeg = 0.0);
+
+        void setTerminalAttitudeHold(bool enable, double startDistance, double duration, const Eigen::Vector3d &aimAxisBody, double rollDeg = 0.0);
+
 
         /*!
          * @brief 仿真更新
@@ -137,7 +147,7 @@ class DLL_EXPORT_IMPORT Missile {
          */
         [[nodiscard]]
         double Ma() const {
-            return _state.velEcf.norm()/340.0;
+            return _state.velEcf.norm() / 340.0;
         }
 
         /*!
@@ -158,6 +168,15 @@ class DLL_EXPORT_IMPORT Missile {
             Eigen::Vector3d lla           = ModelDevelop::Utils::CoordinateHelper::ecefToLla(_state.posEcf);
             const Eigen::Vector3d vel_nue = ModelDevelop::Utils::CoordinateHelper::ecefToNueVelocity(_state.velEcf, lla.x(), lla.y());
             return ModelDevelop::Utils::CoordinateHelper::getTheta(vel_nue) * 57.3;
+        }
+
+        /*!
+         * @brief 获取速度倾角指令 度
+         * @return
+         */
+        [[nodiscard]]
+        double thetaCmd() const {
+            return _theta_cmd * 57.3;
         }
 
         /*!
@@ -197,6 +216,16 @@ class DLL_EXPORT_IMPORT Missile {
             const Eigen::Vector3d vel_nue = ModelDevelop::Utils::CoordinateHelper::ecefToNueVelocity(_state.velEcf, lla.x(), lla.y());
             ModelDevelop::Utils::CoordinateHelper::calculateAngleOfAttack(vel_nue, _state.qbn, alpha, beta);
             return beta * 57.3;
+        }
+
+        [[nodiscard]]
+        double alphaCmd() const {
+            return _control.alphaCmd();
+        }
+
+        [[nodiscard]]
+        double betaCmd() const {
+            return _control.betaCmd();
         }
 
         /*!
@@ -244,12 +273,23 @@ class DLL_EXPORT_IMPORT Missile {
             return ModelDevelop::Utils::CoordinateHelper::ecefToNuePosition(_state.posEcf, _launchLLA.x(), _launchLLA.y());
         }
 
+        Eigen::Vector3d targetLLA() const {
+            if (_targetPosEcf.has_value()) {
+                return ModelDevelop::Utils::CoordinateHelper::ecefToLla(_targetPosEcf.value());
+            }
+            return lla();
+        }
+
         /*
          * @brief 获取舵偏 度
          * @return
          */
         [[nodiscard]] Eigen::Vector3d rudder() const {
             return _rudder * 57.3;
+        }
+
+        [[nodiscard]] Eigen::Vector3d tvcCommand() const {
+            return _tvcCommand * 57.3;
         }
 
         /*
@@ -299,6 +339,18 @@ class DLL_EXPORT_IMPORT Missile {
             return _acc_cmd_b_z;
         }
 
+        [[nodiscard]] auto acc_cmd_v_x() const -> double {
+            return _acc_cmd_v.x();
+        }
+
+        [[nodiscard]] auto acc_cmd_v_y() const -> double {
+            return _acc_cmd_v.y();
+        }
+
+        [[nodiscard]] auto acc_cmd_v_z() const -> double {
+            return _acc_cmd_v.z();
+        }
+
         /*!
          * @brief 获取视线倾角,类别速度倾角
          * @return
@@ -331,17 +383,26 @@ class DLL_EXPORT_IMPORT Missile {
             return _sigma_az_dot * 57.3;
         }
 
-        /*!
-         * @brief 气动导数计算
-         * @return
-         */
-        [[nodiscard]]
+
+        [[nodiscard]] GuidancePhase phase() const {
+            return _phase;
+        }
+
+        [[nodiscard]] bool terminalHoldPhaseActive() const {
+            return _terminalHoldPhaseActive;
+        }
+
+        [[nodiscard]] int phaseId() const;
+
+        [[nodiscard]] const char *phaseName() const;
+
         Derivative derivative() const;
 
 // endregion
 
 // region Private Attributes
     private:
+
         /*!
          * @brief 仿真步长
          */
@@ -383,11 +444,7 @@ class DLL_EXPORT_IMPORT Missile {
         /*!
          * @brief 最大过载
          */
-        double _maxLoad       = 0;
-        /*!
-         * @brief 发射速度
-         */
-        double _launch_v_body =0;
+        double _maxLoad = 0;
         /*!
          * @brief 转动惯量矩阵
          */
@@ -413,8 +470,10 @@ class DLL_EXPORT_IMPORT Missile {
          * @brief 体侧向加速度指令
          */
         double _acc_cmd_b_z = 0;
+        Eigen::Vector3d _acc_cmd_v{0, 0, 0};
+        double _theta_cmd = std::numeric_limits<double>::quiet_NaN();
 
-        /*!
+        /*! 
          * @brief 视线倾角
          */
         double _sigma_elv = 0;
@@ -430,10 +489,19 @@ class DLL_EXPORT_IMPORT Missile {
          * @brief 视线偏角变化率
          */
         double _sigma_az_dot = 0;
+        GuidancePhase _phase = GuidancePhase::Boost;
+        bool _terminalHoldPhaseActive = false;
+        bool _terminalHoldMomentActive = false;
+        bool _terminalHoldInsideCone = false;
+        double _terminalHoldViewAngleDeg = 0.0;
+        std::optional<double> _terminalHoldAltitudeRef = std::nullopt;
+        std::optional<double> _terminalHoldEndTime = std::nullopt;
+        bool _postHoldAlignmentCompleted = false;
         /*!
          * @brief 舵偏
          */
         Eigen::Vector3d _rudder{0, 0, 0};
+        Eigen::Vector3d _tvcCommand{0, 0, 0};
         /*!
          * @brief 弹体系推力向量
          */
@@ -464,6 +532,10 @@ class DLL_EXPORT_IMPORT Missile {
          * @brief 控制系统
          */
         Control _control{};
+        /*!
+         * @brief 末制导姿态保持
+         */
+        TerminalAttitudeHold _terminalAttitudeHold{};
         /*!
          * @brief 惯组
          */

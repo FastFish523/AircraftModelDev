@@ -1,9 +1,9 @@
 //
-// Created by Administrator on 2026/1/30.
+// Created by 17298 on 2026/4/22.
 //
 
 
-#pragma once 
+#pragma once
 
 // region Include
 // region STL
@@ -21,20 +21,21 @@
 // endregion
 
 // region Define
-#define PRETTY_FILE_NAME "ModelDevelop/GPI/GPI"
+#define PRETTY_FILE_NAME "ModelDevelop/HTV2/HTV2"
 // endregion
 
-namespace ModelDevelop::GPI {
- class  Control {
+namespace ModelDevelop::HTV2 {
+    class Control {
 // region USING/FRIEND
     private:
-     using State = ModelDevelop::Utils::State;
 // endregion
 
 // region Constructor
     public:
-        Control()=default;
-        ~Control()=default;
+        Control() = default;
+
+        ~Control() = default;
+
 // endregion
 
 // region Public Attributes
@@ -56,7 +57,10 @@ namespace ModelDevelop::GPI {
          * @param s 参考面积
          * @return rudder moment_body
          */
-        std::pair<Eigen::Vector3d, Eigen::Vector3d> P6dof_Control(double step,const Eigen::Vector3d &acc_cmd_v, const State &state,double totalMass,const Eigen::Vector3d& p_body,const ImuInfo& imu_info,double rel_dis,double rel_dis_dot,double s);
+        std::pair<Eigen::Vector3d, Eigen::Vector3d> P6dof_Control(double step, const Eigen::Vector3d &acc_cmd_v, const State &state, double totalMass,
+                                                                  const Eigen::Vector3d &p_body, const ImuInfo &imu_info, double rel_dis, double rel_dis_dot, double s);
+
+        void reset();
 
         /*!
          * @brief 最简单的一阶惯性环节
@@ -73,23 +77,31 @@ namespace ModelDevelop::GPI {
          * @param upper
          * @return
          */
-        static double limit(double x, double lower, double upper) ;
+        static double limit(double x, double lower, double upper);
+
 // endregion
 
 // region Get/Set选择器
     public:
+        [[nodiscard]] double alphaCmd() const {
+            return alpha_cmd * 57.3;
+        }
+
+        [[nodiscard]] double betaCmd() const {
+            return beta_cmd * 57.3;
+        }
 // endregion
 
 // region Private Attributes
     private:
         double alpha_cmd = 0;
         double beta_cmd  = 0;
-        double pre_ex           = 0;
-        double pre_ey           = 0;
-        double pre_ez           = 0;
-        double ex         = 0;
-        double ey         = 0;
-        double ez         = 0;
+        double pre_ex    = 0;
+        double pre_ey    = 0;
+        double pre_ez    = 0;
+        double ex        = 0;
+        double ey        = 0;
+        double ez        = 0;
         double iex       = 0;
         double iey       = 0;
         double iez       = 0;
