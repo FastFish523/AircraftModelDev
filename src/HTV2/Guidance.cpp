@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <cmath>
 #include <limits>
+#include <stdexcept>
 // endregion
 // region ThirdParty
 // endregion
@@ -26,6 +27,24 @@
 // endregion
 
 namespace ModelDevelop::HTV2 {
+    void Guidance::configure(const GuidanceModuleConfig &config) {
+        switch (config.module) {
+            case GuidanceModule::PhasePullBias:
+            case GuidanceModule::PhaseStandard:
+                break;
+            default:
+                throw std::invalid_argument("HTV2 guidance module is invalid");
+        }
+        if (!std::isfinite(config.terminalPnNavigationConstant) ||
+            config.terminalPnNavigationConstant < 1.0 ||
+            config.terminalPnNavigationConstant > 8.0) {
+            throw std::invalid_argument(
+                "HTV2 guidance navigation constant must be finite and in [1, 8]");
+        }
+        _config = config;
+        reset();
+    }
+
     GCInfo Guidance::getMissionGCInfo(const double flyTime, const double P, const double Mass, const Eigen::Vector3d &targetPosEcf, const Eigen::Vector3d &targetVelEcf,
                                       const State &state, const double maxLoad) {
         constexpr double safeSeparationTime = 0.4;
@@ -188,7 +207,8 @@ namespace ModelDevelop::HTV2 {
         gcInfo.theta_cmd = thetaCmd;
 
         if (phase == GuidancePhase::DiveHandover || phase == GuidancePhase::DiveTerminal) {
-            auto terminalAccCmd = guidancePN(theta, losTerminal.sigma_az_dot, losTerminal.sigma_elv_dot, losTerminal.dis_dot);
+            auto terminalAccCmd = guidancePN(theta, losTerminal.sigma_az_dot, losTerminal.sigma_elv_dot, losTerminal.dis_dot,
+                                             _config.terminalPnNavigationConstant);
             _lastTerminalAccCmd = terminalAccCmd;
             _lastTerminalAccCmdTime = flyTime;
 
@@ -348,7 +368,8 @@ namespace ModelDevelop::HTV2 {
         const double theta = ModelDevelop::Utils::CoordinateHelper::getTheta(velocityNue);
         const auto losToTarget = _seeker.getLOSInfo(targetPosEcf, targetVelEcf, state);
 
-        Eigen::Vector3d accCmdV = guidancePN(theta, losToTarget.sigma_az_dot, losToTarget.sigma_elv_dot, losToTarget.dis_dot);
+        Eigen::Vector3d accCmdV = guidancePN(theta, losToTarget.sigma_az_dot, losToTarget.sigma_elv_dot, losToTarget.dis_dot,
+                                             _config.terminalPnNavigationConstant);
         accCmdV.y() = clamp(accCmdV.y(), -9.8 * maxLoad, 9.8 * maxLoad);
         accCmdV.z() = clamp(accCmdV.z(), -9.8 * maxLoad, 9.8 * maxLoad);
 
@@ -390,11 +411,11 @@ namespace ModelDevelop::HTV2 {
         return los_info;
     }
 
-    Eigen::Vector3d Guidance::guidancePN(const double theta, const double sigmaAzDot, const double sigmaElvDot, const double distanceRate) {
-        constexpr double K = 4;
+    Eigen::Vector3d Guidance::guidancePN(const double theta, const double sigmaAzDot, const double sigmaElvDot, const double distanceRate,
+                                        const double navigationConstant) {
         constexpr double gravity = 9.8;
-        const auto ny_tc = K * std::fabs(distanceRate) * sigmaElvDot + gravity * std::cos(theta);
-        const auto nz_tc = -K * std::fabs(distanceRate) * sigmaAzDot;
+        const auto ny_tc = navigationConstant * std::fabs(distanceRate) * sigmaElvDot + gravity * std::cos(theta);
+        const auto nz_tc = -navigationConstant * std::fabs(distanceRate) * sigmaAzDot;
         return Eigen::Vector3d(0, ny_tc, nz_tc);
     }
 

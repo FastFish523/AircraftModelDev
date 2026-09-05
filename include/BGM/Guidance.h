@@ -50,6 +50,10 @@ namespace ModelDevelop::BGM {
         void setGetLOSInfoFunction(GetLOSInfoFunction getLOSInfoFunction){
             _seeker.setGetLOSInfoFunction(getLOSInfoFunction);
         }
+
+        void configure(const GuidanceModuleConfig &config);
+
+        void reset();
         /*!
          * @brief 获取制导控制信息
          * @param flyTime 飞行时间
@@ -125,6 +129,7 @@ namespace ModelDevelop::BGM {
 
 // region Private Attributes
     private:
+        GuidanceModuleConfig _config{};
         /*!
          * @brief 导引头
          */
@@ -186,7 +191,7 @@ namespace ModelDevelop::BGM {
          * @param dis_dot 弹目距离变化率 m/s
          * @return
          */
-        static Eigen::Vector3d guidance_pn(double theta, double sigma_az_dot, double sigma_elv_dot, double dis_dot);
+        static Eigen::Vector3d guidance_pn(double theta, double sigma_az_dot, double sigma_elv_dot, double dis_dot, double navigationConstant);
 
 
 // endregion

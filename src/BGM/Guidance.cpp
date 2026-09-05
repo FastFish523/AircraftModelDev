@@ -4,6 +4,8 @@
 
 // region Include
 // region STL
+#include <cmath>
+#include <stdexcept>
 // endregion
 // region ThirdParty
 // endregion
@@ -33,6 +35,32 @@ namespace ModelDevelop::BGM {
     // endregion
 
     // region Public Methods
+    void Guidance::configure(const GuidanceModuleConfig &config) {
+        switch (config.module) {
+            case GuidanceModule::PhaseL1:
+            case GuidanceModule::PhasePn:
+                break;
+            default:
+                throw std::invalid_argument("BGM guidance module is invalid");
+        }
+        if (!std::isfinite(config.pnNavigationConstant) ||
+            config.pnNavigationConstant < 1.0 || config.pnNavigationConstant > 8.0) {
+            throw std::invalid_argument(
+                "BGM guidance navigation constant must be finite and in [1, 8]");
+        }
+        if (!std::isfinite(config.l1LookaheadFactor) ||
+            config.l1LookaheadFactor < 1.0 || config.l1LookaheadFactor > 20.0) {
+            throw std::invalid_argument(
+                "BGM guidance L1 lookahead factor must be finite and in [1, 20]");
+        }
+        _config = config;
+        reset();
+    }
+
+    void Guidance::reset() {
+        lastDesiredH = 0.0;
+    }
+
     GCInfo Guidance::getGCInfo(const double flyTime, const double P, const double Mass, const Eigen::Vector3d &targetPosEcf, const Eigen::Vector3d &targetVelEcf,
                                const State &state, const double maxLoad) {
         const auto selfPositionEcf = state.posEcf;
@@ -42,11 +70,11 @@ namespace ModelDevelop::BGM {
         const auto theta           = ModelDevelop::Utils::CoordinateHelper::getTheta(selfVel_nue);
         Eigen::Vector3d acc_cmd_v  = {0, 0, 0};
         LosInfo losInfo            = {};
-        if (flyTime < 2.6) // 策略 无控建立速度
+        if (flyTime < GuidanceTiming::INITIAL_COAST_TIME_S) // 策略 无控建立速度
         {
             acc_cmd_v.y() = 0;
             acc_cmd_v.z() = 0;
-        } else if (flyTime < 2.6 + 15) // 策略 无控建立速度
+        } else if (flyTime < GuidanceTiming::ROUTE_GUIDANCE_START_TIME_S) // 策略 无控建立速度
         {
             acc_cmd_v.y() = 9.8 * std::cos(theta) + ((-10) / 57.3 - theta) * 50;
             acc_cmd_v.z() = 0;
@@ -55,21 +83,21 @@ namespace ModelDevelop::BGM {
             {
                 // 中制导指令
                 losInfo       = getLOSInfo(targetPosEcf, targetVelEcf, state);
-                acc_cmd_v     = guidance_pn(theta, losInfo.sigma_az_dot, losInfo.sigma_elv_dot, losInfo.dis_dot);
+                acc_cmd_v     = guidance_pn(theta, losInfo.sigma_az_dot, losInfo.sigma_elv_dot, losInfo.dis_dot, _config.pnNavigationConstant);
                 acc_cmd_v.y() = acc_cmd_v.y() + 2.5 * (losInfo.sigma_elv - (-20) / 57.3) * selfVel_nue.norm() / (target_dis / selfVel_nue.norm());
                 std::cout << "midgc: elv: " << losInfo.sigma_elv_b * 57.3 << ";  az: " << losInfo.sigma_az_b * 57.3 << " dis: " << target_dis << std::endl;
             } else if (target_dis > 30000) //末制导开始距离
             {
                 // 配合导引头锁定
                 losInfo       = getLOSInfo(targetPosEcf, targetVelEcf, state);
-                acc_cmd_v     = guidance_pn(theta, losInfo.sigma_az_dot, losInfo.sigma_elv_dot, losInfo.dis_dot);
+                acc_cmd_v     = guidance_pn(theta, losInfo.sigma_az_dot, losInfo.sigma_elv_dot, losInfo.dis_dot, _config.pnNavigationConstant);
                 acc_cmd_v.y() = acc_cmd_v.y() + 8 * (losInfo.sigma_elv_b - (-0) / 57.3) * selfVel_nue.norm() / (target_dis / selfVel_nue.norm());
                 std::cout << "handover elv: " << losInfo.sigma_elv_b * 57.3 << ";  az: " << losInfo.sigma_az_b * 57.3 << " dis: " << target_dis << std::endl;
             } else //末制导
             {
                 // 末制导指令
                 losInfo   = _seeker.getLOSInfo(targetPosEcf, targetVelEcf, state);
-                acc_cmd_v = guidance_pn(theta, losInfo.sigma_az_dot, losInfo.sigma_elv_dot, losInfo.dis_dot);
+                acc_cmd_v = guidance_pn(theta, losInfo.sigma_az_dot, losInfo.sigma_elv_dot, losInfo.dis_dot, _config.pnNavigationConstant);
                 std::cout << "termgc elv: " << losInfo.sigma_elv_b * 57.3 << ";  az: " << losInfo.sigma_az_b * 57.3 << " dis: " << target_dis << std::endl;
             }
         }
@@ -190,7 +218,7 @@ namespace ModelDevelop::BGM {
         double speed = vel_nue.norm();
         double R_min = (speed * speed) / (maxLoad * 9.8);
         // L1应该大于最小转弯半径
-        double L1_distance = 5 * R_min; // 经验系数
+        double L1_distance = _config.l1LookaheadFactor * R_min; // 经验系数
 
         // 只使用北-东平面
         Eigen::Vector2d pos_2d(pos_nue[0], pos_nue[2]);
@@ -279,11 +307,11 @@ namespace ModelDevelop::BGM {
         return lateral_acc;
     }
 
-    Eigen::Vector3d Guidance::guidance_pn(const double theta, const double sigma_az_dot, const double sigma_elv_dot, const double dis_dot) {
-        constexpr double K     = 4;
+    Eigen::Vector3d Guidance::guidance_pn(const double theta, const double sigma_az_dot, const double sigma_elv_dot, const double dis_dot,
+                                         const double navigationConstant) {
         constexpr auto gravity = 9.8;
-        const auto ny_tc       = K * fabs(dis_dot) * sigma_elv_dot + gravity * cos(theta);
-        const auto nz_tc       = -K * fabs(dis_dot) * sigma_az_dot;
+        const auto ny_tc       = navigationConstant * fabs(dis_dot) * sigma_elv_dot + gravity * cos(theta);
+        const auto nz_tc       = -navigationConstant * fabs(dis_dot) * sigma_az_dot;
         auto acc_cmd_v         = Eigen::Vector3d(0, ny_tc, nz_tc);
         return acc_cmd_v;
     }

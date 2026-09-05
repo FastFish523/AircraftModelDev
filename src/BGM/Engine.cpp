@@ -32,6 +32,10 @@ namespace ModelDevelop::BGM {
 // endregion
 
 // region Public Methods
+    void Engine::reset() {
+        m = 450.0;
+    }
+
     EigenInfo Engine::getEigenInfo(const double simStep,const double flyTime, const State& state, const double dx, const double dy, const double dz) {
         double t1 = dT1_up;
         double t2=t1+T1;

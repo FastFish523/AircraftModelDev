@@ -23,6 +23,34 @@
 // endregion
 
 namespace ModelDevelop::BGM {
+    namespace GuidanceTiming {
+        constexpr double INITIAL_COAST_TIME_S = 2.6;
+        constexpr double PULL_BIAS_DURATION_S = 15.0;
+        constexpr double ROUTE_GUIDANCE_START_TIME_S = INITIAL_COAST_TIME_S + PULL_BIAS_DURATION_S;
+    }
+
+    enum class GuidanceModule {
+        PhaseL1,
+        PhasePn
+    };
+
+    enum class ControlModule {
+        P6dofPi,
+        P6dofP
+    };
+
+    struct GuidanceModuleConfig {
+        GuidanceModule module = GuidanceModule::PhaseL1;
+        double pnNavigationConstant = 4.0;
+        double l1LookaheadFactor = 5.0;
+    };
+
+    struct ControlModuleConfig {
+        ControlModule module = ControlModule::P6dofPi;
+        double gainScale = 1.0;
+        double rudderLimitDeg = 45.0;
+    };
+
 struct EigenInfo {
         double mass=0;
         Eigen::Vector3d P_body{};

@@ -58,6 +58,9 @@ class Engine {
          */
         EigenInfo getEigenInfo(double simStep, double flyTime, const State& state, double dx = 0, double dy = 0, double dz = 0);
 
+        /*! @brief Restore the consumable engine state for a new simulation run. */
+        void reset();
+
 // endregion
 
 // region Get/Set选择器

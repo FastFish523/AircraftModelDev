@@ -57,6 +57,10 @@ namespace ModelDevelop::BGM {
          */
         std::pair<Eigen::Vector3d, Eigen::Vector3d> P6dof_Control(double step,const Eigen::Vector3d &acc_cmd_v, const State &state,double totalMass,const Eigen::Vector3d& p_body,const ImuInfo& imu_info,double rel_dis,double rel_dis_dot,double s);
 
+        void configure(const ControlModuleConfig &config);
+
+        void reset();
+
         /*!
          * @brief 最简单的一阶惯性环节
          * @param input
@@ -81,6 +85,7 @@ namespace ModelDevelop::BGM {
 
 // region Private Attributes
     private:
+        ControlModuleConfig _config{};
         double alpha_cmd = 0;
         double beta_cmd  = 0;
         double pre_ex           = 0;

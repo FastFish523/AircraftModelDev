@@ -6,6 +6,8 @@
 // region STL
 #include <algorithm>
 #include <array>
+#include <cmath>
+#include <stdexcept>
 #include <unordered_map>
 // endregion
 // region ThirdParty
@@ -57,6 +59,29 @@ namespace ModelDevelop::HTV2 {
         }
 
         std::unordered_map<const Missile *, TerminalHoldBlendState> terminalHoldBlendStates;
+
+        void validatePullBiasConfig(const TerminalAttitudeHoldConfig &config) {
+            if (!std::isfinite(config.startDistance) ||
+                config.startDistance < 1000.0 || config.startDistance > 500000.0) {
+                throw std::invalid_argument(
+                    "HTV2 guidance hold start distance must be finite and in [1000, 500000] m");
+            }
+            if (!std::isfinite(config.duration) ||
+                config.duration < 0.1 || config.duration > 120.0) {
+                throw std::invalid_argument(
+                    "HTV2 guidance hold duration must be finite and in [0.1, 120] s");
+            }
+            if (!std::isfinite(config.view.mountAzDeg) ||
+                config.view.mountAzDeg < -180.0 || config.view.mountAzDeg > 180.0) {
+                throw std::invalid_argument(
+                    "HTV2 guidance mount azimuth must be finite and in [-180, 180] deg");
+            }
+            if (!std::isfinite(config.view.mountElDeg) ||
+                config.view.mountElDeg < -89.0 || config.view.mountElDeg > 89.0) {
+                throw std::invalid_argument(
+                    "HTV2 guidance mount elevation must be finite and in [-89, 89] deg");
+            }
+        }
     }
 // region Static Attributes Init
 // endregion
@@ -111,6 +136,7 @@ namespace ModelDevelop::HTV2 {
         _engine.reset();
         _guidance.reset();
         _control.reset();
+        _terminalAttitudeHold.reset();
         _terminalHoldAltitudeRef.reset();
         _terminalHoldEndTime.reset();
         terminalHoldBlendStates.erase(this);
@@ -168,6 +194,20 @@ namespace ModelDevelop::HTV2 {
         }
         _targetPosEcf = ModelDevelop::Utils::CoordinateHelper::llaToEcef(targetPosLLa);
         _targetVelEcf = targetVelEcf;
+    }
+
+    void Missile::configureGuidance(const GuidanceModuleConfig &config, const TerminalAttitudeHoldConfig &pullBiasConfig) {
+        validatePullBiasConfig(pullBiasConfig);
+        _guidance.configure(config);
+
+        auto effectivePullBiasConfig = pullBiasConfig;
+        effectivePullBiasConfig.enable = config.module == GuidanceModule::PhasePullBias;
+        setTerminalAttitudeHold(effectivePullBiasConfig);
+        _guidanceModuleConfig = config;
+    }
+
+    void Missile::configureControl(const ControlModuleConfig &config) {
+        _control.configure(config);
     }
 
     void Missile::setTerminalAttitudeHold(const TerminalAttitudeHoldConfig &config) {
@@ -383,7 +423,8 @@ namespace ModelDevelop::HTV2 {
                 const auto velocityNue = ModelDevelop::Utils::CoordinateHelper::ecefToNueVelocity(
                     _state.velEcf, currentLla.x(), currentLla.y());
                 const double theta = ModelDevelop::Utils::CoordinateHelper::getTheta(velocityNue);
-                acc_cmd_v = Guidance::guidancePN(theta, losInfo.sigma_az_dot, losInfo.sigma_elv_dot, losInfo.dis_dot);
+                acc_cmd_v = Guidance::guidancePN(theta, losInfo.sigma_az_dot, losInfo.sigma_elv_dot, losInfo.dis_dot,
+                                                 _guidance.terminalPnNavigationConstant());
                 acc_cmd_v.y() = Guidance::clamp(acc_cmd_v.y(), -9.8 * _maxLoad, 9.8 * _maxLoad);
                 acc_cmd_v.z() = Guidance::clamp(acc_cmd_v.z(), -9.8 * _maxLoad, 9.8 * _maxLoad);
             }

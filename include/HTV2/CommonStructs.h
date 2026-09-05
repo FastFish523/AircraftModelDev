@@ -36,6 +36,27 @@ namespace ModelDevelop::HTV2 {
         DiveTerminal
     };
 
+    enum class GuidanceModule {
+        PhasePullBias,
+        PhaseStandard
+    };
+
+    enum class ControlModule {
+        P6dofPi,
+        P6dofP
+    };
+
+    struct GuidanceModuleConfig {
+        GuidanceModule module = GuidanceModule::PhasePullBias;
+        double terminalPnNavigationConstant = 4.0;
+    };
+
+    struct ControlModuleConfig {
+        ControlModule module = ControlModule::P6dofPi;
+        double gainScale = 1.0;
+        double rudderLimitDeg = 45.0;
+    };
+
     struct DiveGuidanceConfig {
        double entryDistance = 200000.0;
         double entryAltitude = 30000.0;

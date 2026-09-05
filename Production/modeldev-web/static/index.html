@@ -1,0 +1,94 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="ModelDev Studio 本地飞行器模型仿真工作台">
+  <title>ModelDev Studio</title>
+  <link rel="icon" href="data:,">
+  <link rel="stylesheet" href="./styles.css">
+  <script defer src="./app.js"></script>
+</head>
+<body>
+  <div class="studio-shell">
+    <header class="studio-topbar">
+      <div class="studio-brand" aria-label="ModelDev Studio">
+        <span class="studio-brand-mark" aria-hidden="true">M</span>
+        <div><strong>MODELDEV STUDIO</strong><small>FLIGHT MODEL WORKBENCH</small></div>
+      </div>
+      <div class="studio-title-block">
+        <h1 id="workspace-title">模型库</h1>
+        <p id="workspace-subtitle">浏览已发现的模型类别、集成状态与运行能力</p>
+      </div>
+      <div class="studio-service" aria-live="polite">
+        <span class="connection-dot" id="connection-dot" aria-hidden="true"></span>
+        <span><small>本地服务</small><strong id="connection-label">正在连接</strong></span>
+      </div>
+    </header>
+
+    <div class="studio-body">
+      <aside class="studio-sidebar" aria-label="工作台功能">
+        <p class="sidebar-label">工作台</p>
+        <nav class="studio-nav">
+          <button type="button" class="studio-nav-item is-active" data-screen-target="catalog" aria-selected="true"><span class="nav-icon" aria-hidden="true">▦</span><span><strong>模型库</strong><small>类别与集成状态</small></span></button>
+          <button type="button" class="studio-nav-item" data-screen-target="scenario" aria-selected="false"><span class="nav-icon" aria-hidden="true">⌘</span><span><strong>场景配置</strong><small>模型、参数与模块</small></span></button>
+          <button type="button" class="studio-nav-item" data-screen-target="runtime" aria-selected="false"><span class="nav-icon" aria-hidden="true">◉</span><span><strong>运行监控</strong><small>状态、进度与日志</small></span></button>
+          <button type="button" class="studio-nav-item" data-screen-target="results" aria-selected="false"><span class="nav-icon" aria-hidden="true">⌁</span><span><strong>结果分析</strong><small>曲线与摘要</small></span></button>
+          <button type="button" class="studio-nav-item" data-screen-target="history" aria-selected="false"><span class="nav-icon" aria-hidden="true">▤</span><span><strong>运行历史</strong><small>载入与导出</small></span></button>
+          <button type="button" class="studio-nav-item" data-screen-target="compare" aria-selected="false"><span class="nav-icon" aria-hidden="true">⇄</span><span><strong>结果对比</strong><small>同模型运行叠加</small></span></button>
+        </nav>
+        <div class="sidebar-status"><small>当前运行</small><strong id="top-run-state">尚未启动</strong></div>
+      </aside>
+
+      <main class="studio-workspace" id="top">
+        <div class="workspace-strip"><p>ModelDev / <strong id="workspace-crumb">模型库</strong></p><span class="workspace-context">真实接口 · 本地执行 · 结果可追溯</span></div>
+
+        <div class="notice notice-error" id="global-error" role="alert" hidden><div><strong>操作失败</strong><p id="global-error-message"></p></div><button type="button" class="icon-button" id="dismiss-error" aria-label="关闭错误提示">×</button></div>
+
+        <section class="workspace-screen" id="catalog" data-workspace-screen="catalog" aria-labelledby="catalog-title">
+          <header class="screen-header"><div><h2 id="catalog-title">模型库与能力目录</h2><p>目录内容来自服务端维护清单与源码存在性检查，展示不同模型类别及其当前集成状态。</p></div><div class="heading-actions"><span class="catalog-summary" id="catalog-summary">正在读取目录…</span><button type="button" class="button button-quiet" id="reload-catalog">刷新目录</button></div></header>
+          <div class="catalog-empty" id="catalog-empty" role="status"><strong>正在加载模型库</strong><p>正在请求 GET /api/model-catalog。</p></div>
+          <div class="catalog-layout" id="catalog-content" hidden>
+            <section class="catalog-pane catalog-categories" aria-labelledby="catalog-category-title"><div class="pane-title"><strong id="catalog-category-title">模型类别</strong><span id="catalog-category-count">0</span></div><div class="catalog-category-list" id="catalog-category-list" role="list"></div></section>
+            <section class="catalog-pane catalog-models" aria-labelledby="catalog-model-list-title"><div class="pane-title"><div><strong id="catalog-model-list-title">模型列表</strong><small id="catalog-category-description"></small></div><span id="catalog-model-count">0</span></div><div class="catalog-model-list" id="catalog-model-list" role="list"></div></section>
+            <article class="catalog-pane catalog-detail" aria-labelledby="catalog-detail-title"><div class="pane-title"><strong>模型详情</strong><span class="catalog-status" id="catalog-detail-status">—</span></div><div id="catalog-detail-body" class="catalog-detail-body"><div class="catalog-detail-empty"><strong id="catalog-detail-title">请选择模型</strong><p>模型详情、能力和可运行状态将在这里显示。</p></div></div></article>
+          </div>
+        </section>
+
+        <section class="workspace-screen" id="scenario" data-workspace-screen="scenario" aria-labelledby="scenario-title" hidden>
+          <header class="screen-header"><div><h2 id="scenario-title">场景配置</h2><p>配置一次确定性运行使用的模型、场景参数与制导/控制模块。</p></div><button type="button" class="button button-quiet" id="reload-models">刷新运行模型</button></header>
+          <form id="run-form" class="screen-panel form-panel" novalidate>
+            <fieldset><legend>运行模型</legend><div class="model-picker-grid scenario-basics-grid"><label class="field"><span>飞行器模型</span><select id="model-select" name="model" required disabled><option value="">正在加载模型…</option></select><small id="model-help">模型列表来自 GET /api/models</small></label><label class="field"><span>场景名称</span><input id="scenario-name" name="scenario-name" type="text" maxlength="80" required placeholder="例如：HTV2 基准场景"><small>用于区分历史记录和比较图例。</small></label></div></fieldset>
+            <fieldset id="parameter-fieldset" aria-labelledby="parameter-legend"><div class="fieldset-heading"><strong class="fieldset-legend" id="parameter-legend">模型参数</strong><button type="button" class="text-button" id="reset-parameters" disabled>恢复全部默认</button></div><div id="parameter-fields" class="field-grid field-grid-three" aria-live="polite"></div><div class="scenario-scope" id="parameter-empty"><strong>等待模型参数</strong><p>选择模型后，系统将按照服务端 Schema 生成可运行参数。</p></div></fieldset>
+            <fieldset id="module-fieldset" aria-labelledby="module-legend"><div class="fieldset-heading"><strong class="fieldset-legend" id="module-legend">制导与控制模块</strong><span class="fieldset-note">选项与参数均来自服务端白名单</span></div><div id="module-fields" class="module-grid" aria-live="polite"></div><div class="scenario-scope" id="module-empty"><strong>等待模块配置</strong><p>选择模型后，可在此选择服务端为该模型开放的制导与控制实现。</p></div><div class="module-contract-note"><strong>配置语义</strong><p>HTV2 的拉偏方案叠加于现有阶段制导；BGM 的 L1“首航点距离”用于仿真开始时生成首个航路点，不是飞行中的实时触发距离。</p></div></fieldset>
+            <div class="form-actions"><p id="form-message" class="form-message" aria-live="polite">选择可用模型后即可创建运行任务。</p><button type="submit" class="button button-primary" id="run-button" disabled><span class="button-indicator" aria-hidden="true"></span>启动仿真</button></div>
+          </form>
+        </section>
+
+        <section class="workspace-screen" id="runtime" data-workspace-screen="runtime" aria-labelledby="runtime-title" hidden>
+          <header class="screen-header"><div><h2 id="runtime-title">运行监控</h2><p>任务状态定时从服务端刷新，完成后自动加载真实结果。</p></div><div class="heading-actions"><button type="button" class="button button-danger" id="cancel-run" hidden>取消运行</button><span class="status-badge status-idle" id="run-status">未运行</span></div></header>
+          <div class="screen-panel runtime-grid"><div class="runtime-overview"><dl class="run-facts"><div><dt>运行 ID</dt><dd id="run-id">—</dd></div><div><dt>服务端状态</dt><dd id="run-state">等待启动</dd></div><div><dt>仿真时间</dt><dd id="sim-time">—</dd></div><div><dt>更新时间</dt><dd id="updated-at">—</dd></div></dl><div class="progress-block"><div class="progress-label"><span>运行进度</span><strong id="progress-label">0%</strong></div><div class="progress-track" id="progress-track" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><span id="progress-bar"></span></div></div></div><div class="log-panel"><div class="panel-heading"><div><span class="live-dot" aria-hidden="true"></span><strong>运行日志</strong></div><button type="button" class="text-button" id="clear-logs">清空显示</button></div><pre id="log-output" tabindex="0" aria-label="运行日志">等待运行任务…</pre></div></div>
+        </section>
+
+        <section class="workspace-screen" id="results" data-workspace-screen="results" aria-labelledby="results-title" hidden>
+          <header class="screen-header"><div><h2 id="results-title">结果分析</h2><p id="results-caption">任务完成后将在此显示时序和轨迹。</p></div><div class="heading-actions result-actions" id="result-actions" hidden><button type="button" class="button button-quiet" id="copy-result">复制 JSON</button><a class="button button-quiet" id="download-result-json" href="#">下载 JSON</a><a class="button button-quiet" id="download-result-csv" href="#">下载 CSV</a><a class="button button-quiet" id="download-result-raw" href="#">下载原始结果</a></div></header>
+          <div class="empty-state" id="results-empty"><div class="empty-orbit" aria-hidden="true"><span></span></div><strong>暂无结果</strong><p>完成仿真或从运行历史载入记录后，可在此查看结果。</p></div>
+          <div id="results-content" hidden><div class="chart-grid"><figure class="card chart-card"><figcaption><strong>高度－时间</strong><span id="altitude-caption">高度 (m)</span></figcaption><svg id="altitude-chart" class="chart" viewBox="0 0 720 320" role="img" aria-label="高度随时间变化曲线"></svg></figure><figure class="card chart-card"><figcaption><strong>速度－时间</strong><span id="speed-caption">速度 (m/s)</span></figcaption><svg id="speed-chart" class="chart" viewBox="0 0 720 320" role="img" aria-label="速度随时间变化曲线"></svg></figure><figure class="card chart-card chart-card-wide"><figcaption><strong>二维轨迹</strong><span id="trajectory-caption">东向 / 北向位置 (m)</span></figcaption><svg id="trajectory-chart" class="chart" viewBox="0 0 720 360" role="img" aria-label="二维飞行轨迹"></svg></figure><section class="card summary-card" aria-labelledby="summary-title"><div class="panel-heading"><div><span class="summary-mark" aria-hidden="true"></span><strong id="summary-title">运行摘要</strong></div></div><dl id="summary-grid" class="summary-grid"></dl></section></div></div>
+        </section>
+
+        <section class="workspace-screen" id="history" data-workspace-screen="history" aria-labelledby="history-title" hidden>
+          <header class="screen-header"><div><h2 id="history-title">运行历史与导出</h2><p>查看、载入和导出运行记录，并选择同模型成功记录用于结果对比。</p></div><div class="heading-actions"><span class="selection-count" id="compare-selection-count">已选 0 / 4</span><button type="button" class="button button-quiet" id="reload-history">刷新历史</button></div></header>
+          <div class="screen-panel"><div class="history-empty" id="history-empty"><strong>暂无运行记录</strong><p>完成一次仿真后，记录会显示在这里。</p></div><div class="history-table-wrap" id="history-content" hidden><table class="history-table"><thead><tr><th scope="col">比较</th><th scope="col">场景 / 运行 ID</th><th scope="col">模型</th><th scope="col">模块 / 参数</th><th scope="col">状态</th><th scope="col">创建时间</th><th scope="col">操作</th></tr></thead><tbody id="run-history-body"></tbody></table></div></div>
+        </section>
+
+        <section class="workspace-screen" id="compare" data-workspace-screen="compare" aria-labelledby="compare-title" hidden>
+          <header class="screen-header"><div><h2 id="compare-title">结果对比</h2><p id="comparison-caption">请在运行历史中选择 2–4 条同模型成功运行；模块组合可以不同。</p></div><button type="button" class="button button-primary" id="compare-runs" disabled>执行比较</button></header>
+          <div class="empty-state comparison-empty" id="comparison-empty"><div class="compare-glyph" aria-hidden="true"><span></span><span></span></div><strong>尚未选择可比较运行</strong><p>运行历史中的比较复选框控制待比较集合。</p></div>
+          <div id="comparison-content" hidden><div class="comparison-legend card" id="comparison-legend" aria-label="比较图例"></div><div class="chart-grid comparison-chart-grid"><figure class="card chart-card"><figcaption><strong>高度－时间叠加</strong><span>高度 (m)</span></figcaption><svg id="comparison-altitude-chart" class="chart" viewBox="0 0 720 320" role="img" aria-label="多运行高度随时间变化对比"></svg></figure><figure class="card chart-card"><figcaption><strong>速度－时间叠加</strong><span>速度 (m/s)</span></figcaption><svg id="comparison-speed-chart" class="chart" viewBox="0 0 720 320" role="img" aria-label="多运行速度随时间变化对比"></svg></figure></div><section class="card comparison-metrics" aria-labelledby="comparison-metrics-title"><div class="panel-heading"><div><span class="summary-mark" aria-hidden="true"></span><strong id="comparison-metrics-title">指标对比</strong></div></div><div class="comparison-table-wrap"><table class="history-table comparison-table"><thead id="comparison-metrics-head"></thead><tbody id="comparison-metrics-body"></tbody></table></div></section></div>
+        </section>
+      </main>
+    </div>
+    <footer class="studio-footer"><span>ModelDev Studio · 本地仿真工作台</span><span>运行模型、参数、模块与结果均来自真实服务</span></footer>
+  </div>
+</body>
+</html>

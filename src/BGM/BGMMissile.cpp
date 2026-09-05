@@ -68,7 +68,15 @@ namespace ModelDevelop::BGM {
 
 // region Public Methods
     void Missile::init(const double step, const Eigen::Vector3d &lla) {
-        _step         = step;
+        _step = step;
+        _flyTime = 0.0;
+        _launchFlag = false;
+        _engine.reset();
+        _guidance.reset();
+        _control.reset();
+        _currentRouteId = 0;
+        _routePoints.clear();
+        distance_deque.clear();
         _state.posEcf = ModelDevelop::Utils::CoordinateHelper::llaToEcef(lla);
         _state.velEcf.setZero();
         _state.wnb_b.setZero();
@@ -107,6 +115,15 @@ namespace ModelDevelop::BGM {
         _targetVelEcf = targetVelEcf;
     }
 
+    void Missile::configureGuidance(const GuidanceModuleConfig &config) {
+        _guidance.configure(config);
+        _guidanceModuleConfig = config;
+    }
+
+    void Missile::configureControl(const ControlModuleConfig &config) {
+        _control.configure(config);
+    }
+
     void Missile::setRoutePoints(const std::deque<Eigen::Vector3d> &routes) {
         if(routes.size()<=1) {
             std::cout<<"min route point count is 2"<<std::endl;
@@ -135,7 +152,7 @@ namespace ModelDevelop::BGM {
             LosInfo losInfo{};
             Eigen::Vector3d acc_cmd_v;
 
-            if(_routePoints.empty()) {
+            if(_guidanceModuleConfig.module == GuidanceModule::PhasePn || _routePoints.empty()) {
                 const auto gcInfo = _guidance.getGCInfo(flyTime(), _p_body.norm(), _totalMass, _targetPosEcf.value(), _targetVelEcf, _state, _maxLoad);
                 losInfo = gcInfo.losInfo;
                 acc_cmd_v = gcInfo.acc_cmd_v;
@@ -144,7 +161,7 @@ namespace ModelDevelop::BGM {
                 const auto gcInfo = _guidance.getGCInfoRouteL1( _state, _maxLoad,_routePoints,_currentRouteId);
                 losInfo = gcInfo.losInfo;
                 acc_cmd_v = gcInfo.acc_cmd_v;
-                if(flyTime()<2.6+15) {
+                if(flyTime() < GuidanceTiming::ROUTE_GUIDANCE_START_TIME_S) {
                     const auto gcInfo = _guidance.getGCInfo(flyTime(), _p_body.norm(), _totalMass, _targetPosEcf.value(), _targetVelEcf, _state, _maxLoad);
                     losInfo = gcInfo.losInfo;
                     acc_cmd_v = gcInfo.acc_cmd_v;

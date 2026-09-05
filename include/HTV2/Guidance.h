@@ -62,7 +62,13 @@ namespace ModelDevelop::HTV2 {
         GCInfo getDiveGCInfo(double flyTime, const Eigen::Vector3d &targetPosEcf, const Eigen::Vector3d &targetVelEcf, const State &state, double maxLoad,
                              const DiveGuidanceConfig &config = DiveGuidanceConfig{});
 
-        static Eigen::Vector3d guidancePN(double theta, double sigmaAzDot, double sigmaElvDot, double distanceRate);
+        static Eigen::Vector3d guidancePN(double theta, double sigmaAzDot, double sigmaElvDot, double distanceRate, double navigationConstant);
+
+        void configure(const GuidanceModuleConfig &config);
+
+        [[nodiscard]] double terminalPnNavigationConstant() const {
+            return _config.terminalPnNavigationConstant;
+        }
 
         void reset();
 // endregion
@@ -73,6 +79,7 @@ namespace ModelDevelop::HTV2 {
 
 // region Private Attributes
     private:
+        GuidanceModuleConfig _config{};
         /*!
          * @brief 导引头
          */

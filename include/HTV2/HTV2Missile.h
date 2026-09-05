@@ -98,6 +98,10 @@ namespace ModelDevelop::HTV2 {
          */
         void setTargetLLA(const Eigen::Vector3d &targetPosLLa, const Eigen::Vector3d &targetVelEcf, const bool clearQueue);
 
+        void configureGuidance(const GuidanceModuleConfig &config, const TerminalAttitudeHoldConfig &pullBiasConfig);
+
+        void configureControl(const ControlModuleConfig &config);
+
         void setTerminalAttitudeHold(const TerminalAttitudeHoldConfig &config);
 
         void setTerminalAttitudeHold(bool enable, double startDistance, double duration, double rollDeg = 0.0);
@@ -490,6 +494,7 @@ namespace ModelDevelop::HTV2 {
          */
         double _sigma_az_dot = 0;
         GuidancePhase _phase = GuidancePhase::Boost;
+        GuidanceModuleConfig _guidanceModuleConfig{};
         bool _terminalHoldPhaseActive = false;
         bool _terminalHoldMomentActive = false;
         bool _terminalHoldInsideCone = false;

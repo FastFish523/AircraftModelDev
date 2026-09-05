@@ -98,6 +98,10 @@ namespace ModelDevelop::BGM {
          */
         void setTargetLLA(const Eigen::Vector3d &targetPosLLa, const Eigen::Vector3d &targetVelEcf, const bool clearQueue);
 
+        void configureGuidance(const GuidanceModuleConfig &config);
+
+        void configureControl(const ControlModuleConfig &config);
+
         /*!
          * @brief 设置路径点
          * @param routes
@@ -354,6 +358,7 @@ namespace ModelDevelop::BGM {
 
 // region Private Attributes
     private:
+        GuidanceModuleConfig _guidanceModuleConfig{};
         int _currentRouteId = 0;
         /*!
          * @brief 路径点

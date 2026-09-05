@@ -4,6 +4,8 @@
 
 // region Include
 // region STL
+#include <cmath>
+#include <stdexcept>
 // endregion
 // region ThirdParty
 // endregion
@@ -33,6 +35,28 @@ namespace ModelDevelop::HTV2 {
 // endregion
 
 // region Public Methods
+    void Control::configure(const ControlModuleConfig &config) {
+        switch (config.module) {
+            case ControlModule::P6dofPi:
+            case ControlModule::P6dofP:
+                break;
+            default:
+                throw std::invalid_argument("HTV2 control module is invalid");
+        }
+        if (!std::isfinite(config.gainScale) ||
+            config.gainScale < 0.25 || config.gainScale > 2.0) {
+            throw std::invalid_argument(
+                "HTV2 control gain scale must be finite and in [0.25, 2]");
+        }
+        if (!std::isfinite(config.rudderLimitDeg) ||
+            config.rudderLimitDeg < 5.0 || config.rudderLimitDeg > 45.0) {
+            throw std::invalid_argument(
+                "HTV2 control rudder limit must be finite and in [5, 45] deg");
+        }
+        _config = config;
+        reset();
+    }
+
     void Control::reset() {
         alpha_cmd = 0.0;
         beta_cmd = 0.0;
@@ -98,7 +122,7 @@ namespace ModelDevelop::HTV2 {
         const double wx         = imu_info.imu_w_xyz_body.x();
         const double wy         = imu_info.imu_w_xyz_body.y();
         const double wz         = imu_info.imu_w_xyz_body.z();
-        constexpr double rudderLimit = 45.0 / 57.3;
+        const double rudderLimit = _config.rudderLimitDeg / 57.3;
         constexpr double rudderRateLimit = 120.0 / 57.3;
         constexpr double rateDamping = 0.05;
         constexpr double integratorLimit = 10.0;
@@ -109,19 +133,23 @@ namespace ModelDevelop::HTV2 {
             //ey = beta_cmd - beta;
             ez = acc_cmd_body.y() - imu_info.imu_acc_body.y();
             //ez = alpha_cmd - alpha;
-            iex += (pre_ex + ex) * 0.5 * step;
-            iey += (pre_ey + ey) * 0.5 * step;
-            iez += (pre_ez + ez) * 0.5 * step;
-            iex = limit(iex, -integratorLimit, integratorLimit);
-            iey = limit(iey, -integratorLimit, integratorLimit);
-            iez = limit(iez, -integratorLimit, integratorLimit);
+            if (_config.module == ControlModule::P6dofPi) {
+                iex += (pre_ex + ex) * 0.5 * step;
+                iey += (pre_ey + ey) * 0.5 * step;
+                iez += (pre_ez + ez) * 0.5 * step;
+                iex = limit(iex, -integratorLimit, integratorLimit);
+                iey = limit(iey, -integratorLimit, integratorLimit);
+                iez = limit(iez, -integratorLimit, integratorLimit);
+            } else {
+                iex = iey = iez = 0.0;
+            }
             pre_ex = ex;
             pre_ey = ey;
             pre_ez = ez;
 
-            rudder.z() = -alpha_cmd + rateDamping * wz + (-0.001 * ez - 0.01 * iez);
-            rudder.y() = -beta_cmd + rateDamping * wy + (+0.0001 * ey + 0.005 * iey);
-            rudder.x() = 0.8 * wx - 4.0 * ex - 0.1 * iex;
+            rudder.z() = -alpha_cmd + rateDamping * wz + _config.gainScale * (-0.001 * ez - 0.01 * iez);
+            rudder.y() = -beta_cmd + rateDamping * wy + _config.gainScale * (+0.0001 * ey + 0.005 * iey);
+            rudder.x() = 0.8 * wx + _config.gainScale * (-4.0 * ex - 0.1 * iex);
 
             rudder.z() = limit(rudder.z(), last_dz - rudderRateLimit * step, last_dz + rudderRateLimit * step);
             rudder.y() = limit(rudder.y(), last_dy - rudderRateLimit * step, last_dy + rudderRateLimit * step);
