@@ -23,6 +23,14 @@
 // endregion
 
 namespace ModelDevelop::R11 {
+struct TerminalImpactKinematicsConfig {
+        bool enable = false;
+        double startDistance = 60000.0;
+        double duration = 60.0;
+        double impactAngleDeg = 85.0;
+        double terminalSpeed = 1000.0;
+    };
+
 struct EigenInfo {
         double mass=0;
         Eigen::Vector3d P_body{};

@@ -103,6 +103,12 @@ class DLL_EXPORT_IMPORT Missile {
         void setTerminalAttitudeHold(bool enable, double startDistance, double duration, const Eigen::Vector3d &aimAxisBody, double rollDeg = 0.0);
 
         /*!
+         * @brief 配置末段运动学命中轨迹
+         * @details 默认关闭；启用后在指定距离内沿三次曲线到达目标，终点速度满足给定入射角。
+         */
+        void setTerminalImpactKinematics(const TerminalImpactKinematicsConfig &config);
+
+        /*!
          * @brief 仿真更新
          */
         double update();
@@ -164,7 +170,7 @@ class DLL_EXPORT_IMPORT Missile {
         double velocityTheta() const {
             Eigen::Vector3d lla           = ModelDevelop::Utils::CoordinateHelper::ecefToLla(_state.posEcf);
             const Eigen::Vector3d vel_nue = ModelDevelop::Utils::CoordinateHelper::ecefToNueVelocity(_state.velEcf, lla.x(), lla.y());
-            return ModelDevelop::Utils::CoordinateHelper::getTheta(vel_nue) * 57.3;
+            return ModelDevelop::Utils::CoordinateHelper::getTheta(vel_nue) * ModelDevelop::Utils::Constants::RAD_TO_DEG;
         }
 
         /*!
@@ -364,6 +370,10 @@ class DLL_EXPORT_IMPORT Missile {
             return _terminalHoldViewAngleDeg;
         }
 
+        [[nodiscard]] bool terminalImpactKinematicsActive() const {
+            return _terminalImpactKinematicsStarted;
+        }
+
         /*!
          * @brief 气动导数计算
          * @return
@@ -472,6 +482,15 @@ class DLL_EXPORT_IMPORT Missile {
         bool _terminalHoldMomentActive = false;
         bool _terminalHoldInsideCone = false;
         double _terminalHoldViewAngleDeg = 0.0;
+        TerminalImpactKinematicsConfig _terminalImpactKinematicsConfig{};
+        bool _terminalImpactKinematicsStarted = false;
+        double _terminalImpactElapsed = 0.0;
+        double _terminalImpactReferenceLonDeg = 0.0;
+        double _terminalImpactReferenceLatDeg = 0.0;
+        Eigen::Vector3d _terminalImpactStartPositionNue{0.0, 0.0, 0.0};
+        Eigen::Vector3d _terminalImpactTargetPositionNue{0.0, 0.0, 0.0};
+        Eigen::Vector3d _terminalImpactStartVelocityNue{0.0, 0.0, 0.0};
+        Eigen::Vector3d _terminalImpactFinalVelocityNue{0.0, 0.0, 0.0};
         /*!
          * @brief 舵偏
          */
@@ -537,6 +556,10 @@ class DLL_EXPORT_IMPORT Missile {
          * @return
          */
         Eigen::Vector3d rk4(const Eigen::Vector3d &_rudder, const Eigen::Vector3d &P_body, const Eigen::Vector3d &M_body);
+
+        void startTerminalImpactKinematics();
+
+        bool advanceTerminalImpactKinematics();
 
 // endregion
     };

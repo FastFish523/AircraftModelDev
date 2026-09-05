@@ -8,7 +8,10 @@
 // region ThirdParty
 // endregion
 // region Self
+#include <algorithm>
+#include <cmath>
 #include <iostream>
+#include <stdexcept>
 
 #include "R11/R11Missile.h"
 // endregion
@@ -85,6 +88,8 @@ namespace ModelDevelop::R11 {
         _state.qbn.setIdentity();
         _launchLLA = lla;
         _terminalAttitudeHold.reset();
+        _terminalImpactKinematicsStarted = false;
+        _terminalImpactElapsed = 0.0;
     }
 
     void Missile::launch(const double theta_f_d, const double psi_f_d) {
@@ -162,6 +167,18 @@ namespace ModelDevelop::R11 {
         setTerminalAttitudeHold(config);
     }
 
+    void Missile::setTerminalImpactKinematics(const TerminalImpactKinematicsConfig &config) {
+        if (!std::isfinite(config.startDistance) || config.startDistance <= 0.0 ||
+            !std::isfinite(config.duration) || config.duration <= 0.0 ||
+            !std::isfinite(config.impactAngleDeg) || config.impactAngleDeg < 0.0 || config.impactAngleDeg >= 90.0 ||
+            !std::isfinite(config.terminalSpeed) || config.terminalSpeed <= 0.0) {
+            throw std::invalid_argument("invalid R11 terminal impact kinematics configuration");
+        }
+        _terminalImpactKinematicsConfig = config;
+        _terminalImpactKinematicsStarted = false;
+        _terminalImpactElapsed = 0.0;
+    }
+
     double Missile::update() {
         if (!_launchFlag)
             return -1;
@@ -173,47 +190,63 @@ namespace ModelDevelop::R11 {
         _terminalHoldInsideCone = false;
         _terminalHoldViewAngleDeg = 0.0;
 
-        // 推力 质量 转动惯量更新
-        const auto [mass, P_body, inertia] = _engine.getEigenInfo(_step, _flyTime,_state);
-        _p_body                            = P_body;
-        _totalMass                         = _mass + mass;
-        _inertia                           = _inertia + inertia;
+        bool terminalImpactReached = false;
+        Eigen::Vector3d acc_ecf{0.0, 0.0, 0.0};
+        if (_terminalImpactKinematicsStarted) {
+            terminalImpactReached = advanceTerminalImpactKinematics();
+        } else {
+            // 推力 质量 转动惯量更新
+            const auto [mass, P_body, inertia] = _engine.getEigenInfo(_step, _flyTime,_state);
+            _p_body                            = P_body;
+            _totalMass                         = _mass + mass;
+            _inertia                           = _inertia + inertia;
 
-        if (_targetPosEcf.has_value()) {
-            const auto [losInfo, acc_cmd_v] = _guidance.getGCInfo(flyTime(), _p_body.norm(), _totalMass,_cutOffPointPosEcf,_cutOffPointVelEcf, _targetPosEcf.value(), _targetVelEcf, _state, _maxLoad);
+            if (_targetPosEcf.has_value()) {
+                const auto [losInfo, acc_cmd_v] = _guidance.getGCInfo(flyTime(), _p_body.norm(), _totalMass,_cutOffPointPosEcf,_cutOffPointVelEcf, _targetPosEcf.value(), _targetVelEcf, _state, _maxLoad);
 
-            auto acc_cmd_b = ModelDevelop::Utils::CoordinateHelper::velocityToBodyAcceleration(acc_cmd_v, this->alpha() / 57.3, this->beta() / 57.3);
-            _p_body = acc_cmd_b*_totalMass;
-            _acc_cmd_b_y   = acc_cmd_b.y();
-            _acc_cmd_b_z   = acc_cmd_b.z();
-            _sigma_az_dot  = losInfo.sigma_az_dot;
-            _sigma_elv_dot = losInfo.sigma_elv_dot;
-            _sigma_elv     = losInfo.sigma_elv;
-            _sigma_az      = losInfo.sigma_az;
+                auto acc_cmd_b = ModelDevelop::Utils::CoordinateHelper::velocityToBodyAcceleration(acc_cmd_v, this->alpha() / 57.3, this->beta() / 57.3);
+                _p_body = acc_cmd_b*_totalMass;
+                _acc_cmd_b_y   = acc_cmd_b.y();
+                _acc_cmd_b_z   = acc_cmd_b.z();
+                _sigma_az_dot  = losInfo.sigma_az_dot;
+                _sigma_elv_dot = losInfo.sigma_elv_dot;
+                _sigma_elv     = losInfo.sigma_elv;
+                _sigma_az      = losInfo.sigma_az;
 
 
-            const auto [fst, snd] = _control.P6dof_Control(_step, acc_cmd_v, _state, _totalMass, _p_body, _imu_info, targetDis(), losInfo.dis_dot, _s);
-            _rudder               = fst;
-            _m_body               = snd;
+                const auto [fst, snd] = _control.P6dof_Control(_step, acc_cmd_v, _state, _totalMass, _p_body, _imu_info, targetDis(), losInfo.dis_dot, _s);
+                _rudder               = fst;
+                _m_body               = snd;
 
-            const auto holdOutput = _terminalAttitudeHold.update(flyTime(), targetDis(), _targetPosEcf.value(), _state, _imu_info);
-            _terminalHoldPhaseActive = holdOutput.phaseActive;
-            _terminalHoldMomentActive = holdOutput.active;
-            _terminalHoldInsideCone = holdOutput.insideCone;
-            _terminalHoldViewAngleDeg = holdOutput.viewAngleDeg;
-            if (holdOutput.active) {
-                _m_body = holdOutput.momentBody;
-                //_p_body = P_body;
+                const auto holdOutput = _terminalAttitudeHold.update(flyTime(), targetDis(), _targetPosEcf.value(), _state, _imu_info);
+                _terminalHoldPhaseActive = holdOutput.phaseActive;
+                _terminalHoldMomentActive = holdOutput.active;
+                _terminalHoldInsideCone = holdOutput.insideCone;
+                _terminalHoldViewAngleDeg = holdOutput.viewAngleDeg;
+                if (holdOutput.active) {
+                    _m_body = holdOutput.momentBody;
+                    //_p_body = P_body;
+                }
+            }
+            // rk4更新
+            acc_ecf = rk4(_rudder, _p_body, _m_body);
+
+            if (_terminalImpactKinematicsConfig.enable && _targetPosEcf.has_value() &&
+                targetDis() <= _terminalImpactKinematicsConfig.startDistance) {
+                startTerminalImpactKinematics();
+                terminalImpactReached = advanceTerminalImpactKinematics();
             }
         }
-        // rk4更新
-        const Eigen::Vector3d acc_ecf = rk4(_rudder, _p_body, _m_body);
         _imu_info                     = _imu.getImuInfoBody(_state, acc_ecf);
 
         _flyTime += _step;
 
         _fileSaver->save_traj(this);
         _fileSaver->save_aero(this);
+
+        if (terminalImpactReached) {
+            return targetDis();
+        }
 
         const auto dis = targetDis();
         distance_deque.emplace_back(dis);
@@ -234,6 +267,89 @@ namespace ModelDevelop::R11 {
             }
         }
         return -1;
+    }
+
+    void Missile::startTerminalImpactKinematics() {
+        const auto targetLla = Utils::CoordinateHelper::ecefToLla(_targetPosEcf.value());
+        _terminalImpactReferenceLonDeg = targetLla.x();
+        _terminalImpactReferenceLatDeg = targetLla.y();
+        _terminalImpactStartPositionNue = Utils::CoordinateHelper::ecefToNuePosition(
+            _state.posEcf, _terminalImpactReferenceLonDeg, _terminalImpactReferenceLatDeg);
+        _terminalImpactTargetPositionNue = Utils::CoordinateHelper::ecefToNuePosition(
+            _targetPosEcf.value(), _terminalImpactReferenceLonDeg, _terminalImpactReferenceLatDeg);
+        _terminalImpactStartVelocityNue = Utils::CoordinateHelper::ecefToNueVelocity(
+            _state.velEcf, _terminalImpactReferenceLonDeg, _terminalImpactReferenceLatDeg);
+
+        Eigen::Vector3d horizontalDirection = _terminalImpactTargetPositionNue - _terminalImpactStartPositionNue;
+        horizontalDirection.y() = 0.0;
+        if (horizontalDirection.norm() < 1e-9) {
+            horizontalDirection = _terminalImpactStartVelocityNue;
+            horizontalDirection.y() = 0.0;
+        }
+        if (horizontalDirection.norm() < 1e-9) {
+            horizontalDirection = {1.0, 0.0, 0.0};
+        } else {
+            horizontalDirection.normalize();
+        }
+
+        constexpr double DEG_TO_RAD = 0.017453292519943295;
+        const double impactAngleRad = _terminalImpactKinematicsConfig.impactAngleDeg * DEG_TO_RAD;
+        _terminalImpactFinalVelocityNue = _terminalImpactKinematicsConfig.terminalSpeed * Eigen::Vector3d{
+            std::cos(impactAngleRad) * horizontalDirection.x(),
+            -std::sin(impactAngleRad),
+            std::cos(impactAngleRad) * horizontalDirection.z()
+        };
+        _terminalImpactKinematicsStarted = true;
+        _terminalImpactElapsed = 0.0;
+    }
+
+    bool Missile::advanceTerminalImpactKinematics() {
+        _terminalImpactElapsed = std::min(
+            _terminalImpactElapsed + _step,
+            _terminalImpactKinematicsConfig.duration);
+        const double s = _terminalImpactElapsed / _terminalImpactKinematicsConfig.duration;
+        const double s2 = s * s;
+        const double s3 = s2 * s;
+        const double h00 = 2.0 * s3 - 3.0 * s2 + 1.0;
+        const double h10 = s3 - 2.0 * s2 + s;
+        const double h01 = -2.0 * s3 + 3.0 * s2;
+        const double h11 = s3 - s2;
+        const double dh00 = 6.0 * s2 - 6.0 * s;
+        const double dh10 = 3.0 * s2 - 4.0 * s + 1.0;
+        const double dh01 = -6.0 * s2 + 6.0 * s;
+        const double dh11 = 3.0 * s2 - 2.0 * s;
+        const double duration = _terminalImpactKinematicsConfig.duration;
+
+        const Eigen::Vector3d positionNue =
+            h00 * _terminalImpactStartPositionNue +
+            h10 * duration * _terminalImpactStartVelocityNue +
+            h01 * _terminalImpactTargetPositionNue +
+            h11 * duration * _terminalImpactFinalVelocityNue;
+        const Eigen::Vector3d velocityNue =
+            (dh00 * _terminalImpactStartPositionNue +
+             dh10 * duration * _terminalImpactStartVelocityNue +
+             dh01 * _terminalImpactTargetPositionNue +
+             dh11 * duration * _terminalImpactFinalVelocityNue) / duration;
+
+        _state.posEcf = Utils::CoordinateHelper::nueToEcefPosition(
+            positionNue, _terminalImpactReferenceLonDeg, _terminalImpactReferenceLatDeg);
+        _state.velEcf = Utils::CoordinateHelper::nueToEcefVelocity(
+            velocityNue, _terminalImpactReferenceLonDeg, _terminalImpactReferenceLatDeg);
+        _state.wnb_b.setZero();
+        if (velocityNue.norm() > 1e-9) {
+            constexpr double RAD_TO_DEG = 57.29577951308232;
+            const double pitchDeg = Utils::CoordinateHelper::getTheta(velocityNue) * RAD_TO_DEG;
+            const double yawDeg = Utils::CoordinateHelper::getPsi(velocityNue) * RAD_TO_DEG;
+            _state.qbn = Utils::CoordinateHelper::euler231ToQuaternion(yawDeg, pitchDeg, 0.0);
+        }
+
+        if (s >= 1.0) {
+            _state.posEcf = _targetPosEcf.value();
+            _state.velEcf = Utils::CoordinateHelper::nueToEcefVelocity(
+                _terminalImpactFinalVelocityNue, _terminalImpactReferenceLonDeg, _terminalImpactReferenceLatDeg);
+            return true;
+        }
+        return false;
     }
 
 // endregion
